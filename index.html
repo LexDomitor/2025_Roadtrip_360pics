@@ -8,50 +8,29 @@
 body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#000; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
 #footerBar { position: fixed; bottom:0; left:0; width:100%; height:18px; backdrop-filter: blur(8px); background: rgba(40,40,40,0.45); color:#ccc; font-size:12px; display:flex; align-items:center; justify-content:center; pointer-events:none; white-space: pre-wrap; user-select: none; }
 #instructionOverlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.65); color:#ccc; display:flex; justify-content:center; align-items:center; text-align:center; font-size:16px; padding:20px; cursor:pointer; z-index:10; display:none; user-select: none; }
-.sideHotspot { position: fixed; top:0; width:15%; height:100%; z-index:5; display:none; }
-#leftHotspot { left:0; }
-#rightHotspot { right:0; }
-.arrowBtn { position: fixed; top:50%; transform:translateY(-50%); width:60px; height:60px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.22); border-radius:12px; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s; z-index:6; display:none; }
-#leftArrow { left:30px; }
-#rightArrow { right:30px; }
-.arrowBtn img { width:32px; filter: invert(1); }
 #loadingOverlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.85); color:#ccc; display:flex; justify-content:center; align-items:center; font-size:18px; z-index:20; flex-direction: column; user-select: none; }
 </style>
 </head>
 <body>
+
 <div id="instructionOverlay">
     <div>
         <p>Controls:<br>
         - Drag with mouse or finger to rotate.<br>
-        - Scroll or pinch to zoom.<br>
-        - Tap/Click left or right edge to cycle images.<br><br>
+        - Scroll or pinch to zoom.<br><br>
         <b>Click this message to dismiss it.</b></p>
     </div>
 </div>
 
-<div id="leftHotspot" class="sideHotspot"></div>
-<div id="rightHotspot" class="sideHotspot"></div>
-
-<div id="leftArrow" class="arrowBtn"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNS41OSAyMS4wN2EuOTkuOTkgMCAwIDEtLjcwMy0uMjkxbC03LjUtNy41YS45OTkuOTk5IDAgMCAxIDAtMS40MTlsNy41LTcuNWExIDEgMCAxIDEgMS40MTkgMS40MTlsLTYuNzkxIDYuNzkxIDYuNzkxIDYuNzkxQTEgMSAwIDAgMSAxNS41OSAyMS4wN1oiLz48L3N2Zz4=" /></div>
-<div id="rightArrow" class="arrowBtn"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMC40MSAyMS4wN2EuOTkuOTkgMCAwIDAgLjcwMy0uMjkxbDcuNS03LjVhLjk5OS45OTkgMCAwIDAgMC0xLjQxOWwtNy41LTcuNWExIDEgMCAxIDAtMS40MTkgMS40MTlsNi43OTEgNi43OTEtNi43OTEgNi43OTFBMSAxIDAgMCAwIDEwLjQxIDIxLjA3WiIvPjwvc3ZnPg==\" /></div>
-
-<div id="loadingOverlay">Loading 0/0 images...</div>
+<div id="loadingOverlay">Loading image...</div>
 <div id="footerBar">Loading...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-let imageFilenames = [];
-let textures = [];
-let currentIndex = 0;
-
 const loadingOverlay = document.getElementById('loadingOverlay');
 const overlay = document.getElementById('instructionOverlay');
 const footerBar = document.getElementById('footerBar');
-const leftHotspot = document.getElementById('leftHotspot');
-const rightHotspot = document.getElementById('rightHotspot');
-const leftArrow = document.getElementById('leftArrow');
-const rightArrow = document.getElementById('rightArrow');
 
 // === Scene setup ===
 const scene = new THREE.Scene();
@@ -72,85 +51,40 @@ let sphereGeo = new THREE.SphereGeometry(500, 60, 40);
 sphereGeo.scale(-1,1,1);
 let sphereMat, sphereMesh;
 
-function preloadTextures(files, callback){
-    if(!files || files.length === 0){
-        showNoImages();
-        return;
-    }
-    let loaded = 0;
-    textures = new Array(files.length);
-    const loader = new THREE.TextureLoader();
-    files.forEach((fname,i)=>{
-        loader.load(fname, tex=>{
-            tex.minFilter = THREE.LinearFilter;
-            textures[i] = tex;
-            loaded++;
-            loadingOverlay.textContent = `Loading ${loaded}/${files.length} images...`;
-            if(loaded === files.length) callback();
-        }, undefined, err=>{
-            console.error('Error loading', fname, err);
-            loaded++;
-            if(loaded === files.length) callback();
-        });
-    });
-}
-
-function showTexture(index){
-    currentIndex = (index + textures.length) % textures.length;
-    if(sphereMesh) scene.remove(sphereMesh);
-    sphereMat = new THREE.MeshBasicMaterial({map: textures[currentIndex]});
+// === Load single image ===
+const imagePath = 'CAM_20251114123835_0045_D.JPG';
+const loader = new THREE.TextureLoader();
+loader.load(imagePath, tex=>{
+    tex.minFilter = THREE.LinearFilter;
+    sphereMat = new THREE.MeshBasicMaterial({map: tex});
     sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(sphereMesh);
-}
 
+    loadingOverlay.style.display='none';
+    overlay.style.display='flex';
+
+    // Load LICENSE footer
+    fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(e=>footerBar.textContent='© 2025. Do not distribute.');
+
+}, undefined, err=>{
+    console.error('Error loading image', err);
+    loadingOverlay.textContent='No images were found on server.';
+    setTimeout(()=>loadingOverlay.style.display='none',3000);
+});
+
+// === Animation ===
 function animate(){ requestAnimationFrame(animate); renderer.render(scene, camera); }
 animate();
+
 function onWindowResize(){ camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
 window.addEventListener('resize', onWindowResize);
 
-// === Fetch image JSON from root directory ===
-fetch('images.json')
-.then(r=>r.json())
-.then(files=>{
-    imageFilenames = files;
-    if(!imageFilenames || imageFilenames.length === 0){
-        showNoImages();
-        return;
-    }
-    preloadTextures(imageFilenames, ()=>{
-        loadingOverlay.style.display='none';
-        overlay.style.display='flex';
-        leftHotspot.style.display='block';
-        rightHotspot.style.display='block';
-        leftArrow.style.display='flex';
-        rightArrow.style.display='flex';
-        showTexture(0);
-    });
-})
-.catch(e=>{
-    console.error('Error loading images.json', e);
-    showNoImages();
-});
-
-function showNoImages(){
-    loadingOverlay.textContent='No images were found on server.';
-    setTimeout(()=>loadingOverlay.style.display='none',3000);
-}
-
-// === Controls ===
-leftHotspot.onclick = ()=>showTexture(currentIndex-1);
-rightHotspot.onclick = ()=>showTexture(currentIndex+1);
-leftHotspot.addEventListener('mouseenter', ()=>leftArrow.style.opacity=1);
-leftHotspot.addEventListener('mouseleave', ()=>leftArrow.style.opacity=0);
-rightHotspot.addEventListener('mouseenter', ()=>rightArrow.style.opacity=1);
-rightHotspot.addEventListener('mouseleave', ()=>rightArrow.style.opacity=0);
+// === Overlay dismiss ===
 overlay.onclick = ()=>overlay.style.display='none';
-
-// === LICENSE footer ===
-fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(e=>console.warn('Could not load LICENSE', e));
 
 // === Disable right-click ===
 document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 </script>
+
 </body>
 </html>
