@@ -27,7 +27,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   max-width: 90%;
-  background: rgba(0,0,0,0.09375); /* lighter frosted glass */
+  background: rgba(0,0,0,0.125); /* 25% lighter frosted glass */
   backdrop-filter: blur(10px);
   color: #fff;
   padding: 10px 20px;
@@ -98,7 +98,7 @@ body {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.09375); /* lighter frosted glass */
+  background: rgba(0,0,0,0.125); /* lighter frosted glass */
   backdrop-filter: blur(10px);
   padding: 15px 20px;
   border-radius: 15px;
@@ -129,15 +129,15 @@ body {
   animation: pulseWhite 2s ease-in-out;
 }
 @keyframes pulseWhite {
-  0%   { background: rgba(0,0,0,0.09375); }
+  0%   { background: rgba(0,0,0,0.125); }
   50%  { background: rgba(255,255,255,0.9); } 
-  100% { background: rgba(0,0,0,0.09375); }
+  100% { background: rgba(0,0,0,0.125); }
 }
-#top-qr-button {
+#top-qr-button, #vr-button {
   position: fixed;
   top: 10px;
   right: 10px;
-  background: rgba(0,0,0,0.09375);
+  background: rgba(0,0,0,0.125);
   backdrop-filter: blur(10px);
   color: #fff;
   padding: 8px 15px;
@@ -145,6 +145,15 @@ body {
   font-family: 'Saira', sans-serif;
   cursor: pointer;
   z-index: 25;
+}
+#vr-button {
+  right: 80px; /* separate from QR button */
+}
+#youtube-overlay iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
 }
 </style>
 </head>
@@ -193,10 +202,13 @@ body {
 <!-- Top right QR button -->
 <div id="top-qr-button">QR</div>
 
+<!-- Top VR button (appears only if VR detected) -->
+<div id="vr-button" style="display:none;">VR</div>
+
 <!-- YouTube modal overlay -->
 <div id="youtube-overlay">
   <div id="youtube-content">
-    <iframe id="youtube-frame" width="100%" height="100%" style="border:none; border-radius:12px;" allowfullscreen></iframe>
+    <iframe id="youtube-frame" allowfullscreen></iframe>
   </div>
   <p id="youtube-dismiss-message">Click Here to Dismiss</p>
 </div>
@@ -230,12 +242,14 @@ overlay.addEventListener('click', () => {
   hotspotPanel.style.display = 'block';
   hotspotPanel.classList.add('pulse-white');
   setTimeout(() => hotspotPanel.classList.remove('pulse-white'), 2000);
+
   // VR detection
   detectVRHeadset().then(info => {
     if (!info) return;
     const vrOverlay = document.getElementById('vr-detect-overlay');
     const vrContent = document.getElementById('vr-detect-content');
     vrContent.innerHTML = `Detected VR Headset: ${info.manufacturer} ${info.model}<br><br>Press the fullscreen button on the top left corner to project the image in VR immersive mode.`;
+    document.getElementById('vr-button').style.display='block';
     vrOverlay.style.display = 'flex';
     setTimeout(()=> vrOverlay.style.opacity=1,50);
     vrOverlay.addEventListener('click', ()=>vrOverlay.style.display='none');
@@ -266,6 +280,26 @@ previewLink.addEventListener('click', (e)=>{
   window.open("https://linktr.ee/lexofdystopia","_blank");
 });
 
+// QR modal
+const topQR = document.getElementById('top-qr-button');
+const qrOverlay = document.getElementById('qr-overlay');
+topQR.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  qrOverlay.style.display = 'flex';
+  setTimeout(()=> qrOverlay.style.opacity=1,50);
+});
+qrOverlay.addEventListener('click', ()=>qrOverlay.style.display='none');
+
+// YouTube modal
+function openYouTube() {
+  const ytOverlay = document.getElementById('youtube-overlay');
+  const ytFrame = document.getElementById('youtube-frame');
+  ytFrame.src = "https://www.youtube.com/embed/sfYM1-_WbWk";
+  ytOverlay.style.display = 'flex';
+  setTimeout(()=> ytOverlay.style.opacity=1,50);
+}
+document.getElementById('youtube-overlay').addEventListener('click', ()=> document.getElementById('youtube-overlay').style.display='none');
+
 // VR detection using WebXR
 async function detectVRHeadset() {
   if (navigator.xr) {
@@ -285,25 +319,12 @@ async function detectVRHeadset() {
   } else return null;
 }
 
-// QR modal
-const topQR = document.getElementById('top-qr-button');
-const qrOverlay = document.getElementById('qr-overlay');
-topQR.addEventListener('click', (e)=>{
+// VR immersive mode button
+const vrButton = document.getElementById('vr-button');
+vrButton.addEventListener('click', (e)=>{
   e.stopPropagation();
-  qrOverlay.style.display = 'flex';
-  setTimeout(()=> qrOverlay.style.opacity=1,50);
+  viewer.enterVR();
 });
-qrOverlay.addEventListener('click', ()=>qrOverlay.style.display='none');
-
-// YouTube modal example (you can trigger elsewhere)
-function openYouTube(url){
-  const ytOverlay = document.getElementById('youtube-overlay');
-  const ytFrame = document.getElementById('youtube-frame');
-  ytFrame.src = url;
-  ytOverlay.style.display = 'flex';
-  setTimeout(()=> ytOverlay.style.opacity=1,50);
-}
-document.getElementById('youtube-overlay').addEventListener('click', ()=> document.getElementById('youtube-overlay').style.display='none');
 
 </script>
 </body>
