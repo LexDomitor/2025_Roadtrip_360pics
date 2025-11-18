@@ -1,42 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>360 Viewer v5</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@5.14.0/dist/photo-sphere-viewer.min.css">
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    overflow: hidden;
-    user-select: none; /* disable text selection */
-  }
-  #viewer { 
-    width: 100vw; 
-    height: 100vh; 
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>360° Panorama - Half Moon Bay</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.6.0/build/pannellum.css"/>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #panorama {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
 
-<div id="viewer"></div>
+  <div id="panorama"></div>
 
-<script type="module">
-  import { Viewer } from 'https://cdn.jsdelivr.net/npm/photo-sphere-viewer@5.14.0/dist/photo-sphere-viewer.min.js';
-
-  // Initialize the viewer
-  const viewer = new Viewer({
-    container: document.querySelector('#viewer'),
-    panorama: 'halfmoonbay4k360.jpg', // image in root directory
-    defaultYaw: 0,
-    navbar: ['zoom','fullscreen'],
-    mousewheel: true,
-    touchmoveTwoFingers: false, // one-finger drag rotates
-  });
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/pannellum@2.6.0/build/pannellum.js"></script>
+  <script>
+    pannellum.viewer('panorama', {
+      "type": "equirectangular",
+      "panorama": "halfmoonbay4k360.jpg",
+      "autoLoad": true,
+      "compass": false,
+      "showZoomCtrl": true
+    });
+  </script>
 
 </body>
 </html>
