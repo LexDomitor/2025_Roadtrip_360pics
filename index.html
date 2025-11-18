@@ -25,11 +25,13 @@ body { margin:0; overflow:hidden; font-family:'Saira', sans-serif; background:#0
 <body>
 
 <div id="viewer"></div>
+
 <div id="instructionOverlay">
     <div>
         <p>Controls:<br>- Drag with mouse/finger to rotate.<br>- Scroll/pinch to zoom.<br><br><b>Click to dismiss.</b></p>
     </div>
 </div>
+
 <div id="footerBar">Loading...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
@@ -38,12 +40,13 @@ body { margin:0; overflow:hidden; font-family:'Saira', sans-serif; background:#0
 const overlay = document.getElementById('instructionOverlay');
 const footerBar = document.getElementById('footerBar');
 
+// Hide overlay when clicked
 overlay.onclick = ()=>overlay.style.display='none';
 
 // Initialize Photo Sphere Viewer
 const viewer = new PhotoSphereViewer.Viewer({
     container: document.getElementById('viewer'),
-    panorama: 'https://i.imgur.com/FYdmUI3.jpeg', // your 360 image
+    panorama: 'halfmoonbay4k360.jpg', // your local 360 image
     defaultYaw: 0,
     navbar: ['zoom', 'fullscreen'],
     mousewheel: true,
@@ -52,10 +55,13 @@ const viewer = new PhotoSphereViewer.Viewer({
 });
 
 // Load LICENSE if present
-fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(()=>footerBar.textContent='© 2025. Do not distribute.');
+fetch('LICENSE')
+    .then(r => r.text())
+    .then(txt => footerBar.textContent = txt)
+    .catch(() => footerBar.textContent = '© 2025. Do not distribute.');
 
 // Disable right-click
-document.addEventListener('contextmenu', e=>e.preventDefault());
+document.addEventListener('contextmenu', e => e.preventDefault());
 </script>
 
 </body>
