@@ -13,7 +13,6 @@
       position: relative;
     }
 
-    /* Panorama container */
     #panorama {
       width: 100vw;
       height: 100vh;
@@ -21,7 +20,6 @@
       z-index: 0;
     }
 
-    /* Frosted glass bar at bottom with centered text */
     #license-bar {
       position: fixed;
       bottom: 0;
@@ -39,19 +37,18 @@
       white-space: pre-wrap;
     }
 
-    /* Centered overlay for instructions */
     #overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.4); /* darken background */
+      background: rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 20;
-      cursor: pointer; /* allow dismiss by clicking anywhere */
+      cursor: pointer;
     }
 
     #overlay-content {
@@ -60,10 +57,11 @@
       padding: 40px 50px;
       border-radius: 20px;
       color: #fff;
-      max-width: 500px;
+      max-width: 600px;
       text-align: center;
-      font-size: 1.5em; /* bigger message */
+      font-size: 1.5em;
       pointer-events: auto;
+      line-height: 1.4em;
     }
 
     #overlay-content a {
@@ -74,10 +72,10 @@
     /* Small frosted glass hotspot panel */
     #hotspot-panel {
       position: fixed;
-      top: 50%;
+      top: 20px; /* align to top */
       left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(10px);
       padding: 15px 20px;
       border-radius: 15px;
@@ -87,38 +85,46 @@
       max-width: 80%;
       z-index: 15;
     }
+
+    /* Pulse animation class */
+    .pulse {
+      animation: pulseHighlight 2s ease-in-out;
+    }
+
+    @keyframes pulseHighlight {
+      0%   { background: rgba(0,0,0,0.5); }
+      50%  { background: rgba(0,0,0,0.7); } /* brighter */
+      100% { background: rgba(0,0,0,0.5); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Panorama container -->
   <div id="panorama"></div>
 
   <!-- Overlay with instructions -->
   <div id="overlay">
     <div id="overlay-content">
       <p>
-        Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>
-        These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.<br>
-        If you would like to learn more about me <a href="https://linktr.ee/lexofdystopia" target="_blank">here</a>.
+        Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.
       </p>
       <p>
-        Click and drag to look around.<br>
-        Scroll to zoom in/out.<br>
-        Use fullscreen button for best experience.
+        If you would like to learn more about me <a href="https://linktr.ee/lexofdystopia" target="_blank" onclick="event.stopPropagation()">here</a>.
+      </p>
+      <p>
+        Click and drag to look around. Scroll to zoom in/out. Use fullscreen button for best experience.
       </p>
       <p style="font-weight: bold; margin-top: 20px;">Click Anywhere to Dismiss this Message</p>
     </div>
   </div>
 
-  <!-- Small centered hotspot panel -->
+  <!-- Small frosted glass hotspot panel -->
   <div id="hotspot-panel">
     Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
     The Ritz-Carlton can be seen on the distant cliffs.<br>
     The coastal shores are lined with miles of golf courses.
   </div>
 
-  <!-- Bottom frosted glass license bar -->
   <div id="license-bar">Loading license...</div>
 
   <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
@@ -129,15 +135,25 @@
       "panorama": "https://i.imgur.com/FYdmUI3.jpeg",
       "autoLoad": true,
       "compass": false,
-      "showZoomCtrl": false,  // Removed zoom buttons
+      "showZoomCtrl": false,
       "showFullscreenCtrl": true,
       "hfov": 100
     });
 
-    // Dismiss overlay by clicking anywhere
     const overlay = document.getElementById('overlay');
+    const hotspotPanel = document.getElementById('hotspot-panel');
+
+    // Dismiss overlay by clicking anywhere
     overlay.addEventListener('click', () => {
       overlay.style.display = 'none';
+
+      // Trigger pulse on hotspot panel after overlay dismissed
+      hotspotPanel.classList.add('pulse');
+
+      // Remove pulse class after animation completes so it can re-trigger if needed
+      setTimeout(() => {
+        hotspotPanel.classList.remove('pulse');
+      }, 2000);
     });
 
     // Load LICENSE text dynamically
