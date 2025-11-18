@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  body, #overlay, #overlay-content, #hotspot-panel, #license-bar {
+  body, #overlay, #overlay-content, #hotspot-panel, #license-bar, #tooltip-preview {
     user-select: none;
   }
 
@@ -31,7 +31,7 @@
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(0,0,0,0.3); /* lighter */
+    background: rgba(0,0,0,0.4); /* lighter */
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -79,29 +79,19 @@
   }
 
   /* Tooltip preview */
-  #overlay-content a span.tooltip {
-    visibility: hidden;
-    opacity: 0;
+  #tooltip-preview {
+    display: none;
+    position: absolute;
     width: 270px;
     background: rgba(0,0,0,0.85);
     color: #fff;
     text-align: center;
     padding: 10px;
     border-radius: 8px;
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 30;
+    pointer-events: none;
     font-size: 0.8em;
     line-height: 1.2em;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  #overlay-content a:hover span.tooltip {
-    visibility: visible;
-    opacity: 1;
   }
 
   /* Manhattan Beach panel */
@@ -111,7 +101,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.3); /* lighter */
+    background: rgba(0, 0, 0, 0.4); /* lighter */
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -129,9 +119,9 @@
   }
 
   @keyframes pulseWhite {
-    0%   { background: rgba(0,0,0,0.3); }
+    0%   { background: rgba(0,0,0,0.4); }
     50%  { background: rgba(255,255,255,0.9); } 
-    100% { background: rgba(0,0,0,0.3); }
+    100% { background: rgba(0,0,0,0.4); }
   }
 
   .pulse-white {
@@ -211,16 +201,7 @@
       Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.
     </p>
     <p>
-      If you would like to see my other work click 
-      <a href="#" style="color:#fff; text-decoration:underline; position: relative;">
-        here
-        <span class="tooltip">
-          <div style="text-align: center;">
-            <img src="https://i.imgur.com/eKxOrcZ.jpeg" width="250" style="border-radius:8px; display:block; margin:0 auto;"><br>
-            <a href="https://linktr.ee/lexofdystopia" target="_blank" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a>
-          </div>
-        </span>
-      </a>.
+      If you would like to see my other work click <a href="#" id="preview-link">here</a>.
     </p>
 
     <br><br>
@@ -237,6 +218,12 @@
   </div>
 
   <p id="dismiss-message">Click Anywhere to Dismiss this Message</p>
+</div>
+
+<!-- Tooltip preview window -->
+<div id="tooltip-preview">
+  <img src="https://i.imgur.com/eKxOrcZ.jpeg" width="250" style="border-radius:8px; display:block; margin:0 auto;"><br>
+  <a href="https://linktr.ee/lexofdystopia" target="_blank" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a>
 </div>
 
 <!-- Manhattan Beach info panel -->
@@ -321,6 +308,20 @@
 
   videoContainer.addEventListener('click', (e) => e.stopPropagation());
 
+  // Tooltip hover
+  const previewLink = document.getElementById('preview-link');
+  const tooltip = document.getElementById('tooltip-preview');
+
+  previewLink.addEventListener('mouseenter', (e) => {
+      const rect = e.target.getBoundingClientRect();
+      tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+      tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
+      tooltip.style.display = 'block';
+  });
+
+  previewLink.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+  });
 </script>
 
 </body>
