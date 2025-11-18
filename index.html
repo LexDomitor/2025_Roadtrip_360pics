@@ -33,7 +33,7 @@ body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#
 <div id="rightHotspot" class="sideHotspot"></div>
 
 <div id="leftArrow" class="arrowBtn"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNS41OSAyMS4wN2EuOTkuOTkgMCAwIDEtLjcwMy0uMjkxbC03LjUtNy41YS45OTkuOTk5IDAgMCAxIDAtMS40MTlsNy41LTcuNWExIDEgMCAxIDEgMS40MTkgMS40MTlsLTYuNzkxIDYuNzkxIDYuNzkxIDYuNzkxQTEgMSAwIDAgMSAxNS41OSAyMS4wN1oiLz48L3N2Zz4=" /></div>
-<div id="rightArrow" class="arrowBtn"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMC40MSAyMS4wN2EuOTkuOTkgMCAwIDAgLjcwMy0uMjkxbDcuNS03LjVhLjk5OS45OTkgMCAwIDAgMC0xLjQxOWwtNy41LTcuNWExIDEgMCAxIDAtMS40MTkgMS40MTlsNi43OTEgNi43OTEtNi43OTEgNi43OTFBMSAxIDAgMCAwIDEwLjQxIDIxLjA3WiIvPjwvc3ZnPg==" /></div>
+<div id="rightArrow" class="arrowBtn"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJ3aGl0ZSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMC40MSAyMS4wN2EuOTkuOTkgMCAwIDAgLjcwMy0uMjkxbDcuNS03LjVhLjk5OS45OTkgMCAwIDAgMC0xLjQxOWwtNy41LTcuNWExIDEgMCAxIDAtMS40MTkgMS40MTlsNi43OTEgNi43OTEtNi43OTEgNi43OTFBMSAxIDAgMCAwIDEwLjQxIDIxLjA3WiIvPjwvc3ZnPg==\" /></div>
 
 <div id="loadingOverlay">Loading 0/0 images...</div>
 <div id="footerBar">Loading...</div>
@@ -73,9 +73,8 @@ sphereGeo.scale(-1,1,1);
 let sphereMat, sphereMesh;
 
 function preloadTextures(files, callback){
-    if(files.length === 0){
-        loadingOverlay.textContent = 'No images were found on server.';
-        setTimeout(()=>loadingOverlay.style.display='none',3000);
+    if(!files || files.length === 0){
+        showNoImages();
         return;
     }
     let loaded = 0;
@@ -110,8 +109,14 @@ function onWindowResize(){ camera.aspect = window.innerWidth/window.innerHeight;
 window.addEventListener('resize', onWindowResize);
 
 // === Fetch image JSON from root directory ===
-fetch('images.json').then(r=>r.json()).then(files=>{
+fetch('images.json')
+.then(r=>r.json())
+.then(files=>{
     imageFilenames = files;
+    if(!imageFilenames || imageFilenames.length === 0){
+        showNoImages();
+        return;
+    }
     preloadTextures(imageFilenames, ()=>{
         loadingOverlay.style.display='none';
         overlay.style.display='flex';
@@ -121,10 +126,16 @@ fetch('images.json').then(r=>r.json()).then(files=>{
         rightArrow.style.display='flex';
         showTexture(0);
     });
-}).catch(e=>{
+})
+.catch(e=>{
     console.error('Error loading images.json', e);
-    loadingOverlay.textContent='Error loading images';
+    showNoImages();
 });
+
+function showNoImages(){
+    loadingOverlay.textContent='No images were found on server.';
+    setTimeout(()=>loadingOverlay.style.display='none',3000);
+}
 
 // === Controls ===
 leftHotspot.onclick = ()=>showTexture(currentIndex-1);
