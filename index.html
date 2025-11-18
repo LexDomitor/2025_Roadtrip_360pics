@@ -1,52 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>360 Viewer</title>
-<link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.css">
-<style>
-body { margin:0; overflow:hidden; font-family:'Saira', sans-serif; background:#000; user-select:none; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; }
-#viewer { width:100vw; height:100vh; }
-#instructionOverlay {
-    position:fixed; top:0; left:0; width:100vw; height:100vh;
-    background: rgba(0,0,0,0.65); color:#ccc; display:flex;
-    justify-content:center; align-items:center; text-align:center;
-    font-size:16px; padding:20px; cursor:pointer; z-index:10;
-}
-#footerBar {
-    position: fixed; bottom:0; left:0; width:100%; height:18px;
-    backdrop-filter: blur(8px); background: rgba(40,40,40,0.45);
-    color:#ccc; font-size:12px; display:flex; align-items:center;
-    justify-content:center; pointer-events:none; user-select:none;
-}
-</style>
-</head>
-<body>
+<script>
+// Immediately load LICENSE before anything else
+const footerBar = document.getElementById('footerBar');
 
-<div id="viewer"></div>
-
-<div id="instructionOverlay">
-    <div>
-        <p>Controls:<br>- Drag with mouse/finger to rotate.<br>- Scroll/pinch to zoom.<br><br><b>Click to dismiss.</b></p>
-    </div>
-</div>
-
-<div id="footerBar">Loading...</div>
+fetch('LICENSE') // adjust path if needed
+  .then(r => {
+      if (!r.ok) throw new Error('Not found');
+      return r.text();
+  })
+  .then(txt => footerBar.textContent = txt)
+  .catch(() => footerBar.textContent = '© 2025. Do not distribute.');
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.js"></script>
 <script>
+// Initialize Photo Sphere Viewer only after footer started loading
 const overlay = document.getElementById('instructionOverlay');
-const footerBar = document.getElementById('footerBar');
 
-// Hide overlay when clicked
 overlay.onclick = ()=>overlay.style.display='none';
 
-// Initialize Photo Sphere Viewer
 const viewer = new PhotoSphereViewer.Viewer({
     container: document.getElementById('viewer'),
-    panorama: 'halfmoonbay4k360.jpg', // your local 360 image
+    panorama: 'halfmoonbay4k360.jpg', // local 360 image
     defaultYaw: 0,
     navbar: ['zoom', 'fullscreen'],
     mousewheel: true,
@@ -54,15 +29,6 @@ const viewer = new PhotoSphereViewer.Viewer({
     moveSpeed: 1.0
 });
 
-// Load LICENSE if present
-fetch('LICENSE')
-    .then(r => r.text())
-    .then(txt => footerBar.textContent = txt)
-    .catch(() => footerBar.textContent = '© 2025. Do not distribute.');
-
 // Disable right-click
 document.addEventListener('contextmenu', e => e.preventDefault());
 </script>
-
-</body>
-</html>
