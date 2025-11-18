@@ -73,6 +73,11 @@ sphereGeo.scale(-1,1,1);
 let sphereMat, sphereMesh;
 
 function preloadTextures(files, callback){
+    if(files.length === 0){
+        loadingOverlay.textContent = 'No images were found on server.';
+        setTimeout(()=>loadingOverlay.style.display='none',3000);
+        return;
+    }
     let loaded = 0;
     textures = new Array(files.length);
     const loader = new THREE.TextureLoader();
