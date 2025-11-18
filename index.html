@@ -56,16 +56,20 @@
       cursor: default;
       opacity: 1;
       transition: opacity 0.5s ease; /* smooth fade */
+      padding: 20px; /* small padding for mobile edges */
+      box-sizing: border-box;
     }
 
     #overlay-content {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
-      padding: 60px 70px; /* slightly bigger box */
+      padding: 50px 40px; /* slightly bigger box, reduced horizontal padding for mobile */
       border-radius: 20px;
       color: #fff;
       max-width: 600px;
+      width: 100%;
       text-align: center;
+      box-sizing: border-box;
     }
 
     #overlay-content a {
@@ -75,6 +79,32 @@
 
     #overlay-content a:hover {
       color: #ffcc00;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #overlay-content {
+        padding: 40px 25px;
+        max-width: 90%;
+      }
+      #overlay-content h2 {
+        font-size: 1.4em;
+      }
+      #overlay-content p {
+        font-size: 1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #overlay-content {
+        padding: 30px 20px;
+      }
+      #overlay-content h2 {
+        font-size: 1.2em;
+      }
+      #overlay-content p {
+        font-size: 0.95em;
+      }
     }
   </style>
 </head>
