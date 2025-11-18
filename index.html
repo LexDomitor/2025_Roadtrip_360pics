@@ -24,36 +24,35 @@
 
 <div id="viewer"></div>
 
+<!-- Load Photo Sphere Viewer -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.js"></script>
 
 <script>
-// *** YOUR IMAGE, but routed through JSDelivr (fixes GitHub CORS) ***
-const panoramaURL =
-  "https://cdn.jsdelivr.net/gh/lexdomitor/2025_Roadtrip_360pics/halfmoonbay4k360.jpg";
+// *** EXACT URL you gave me — nothing to fill in ***
+const panoramaURL = "https://lexdomitor.github.io/2025_Roadtrip_360pics/halfmoonbay4k360.jpg";
 
-// Debug
-console.log("Attempting to load through CDN:", panoramaURL);
+// Log for debugging
+console.log("Loading panorama:", panoramaURL);
 
-// Preload check
+// Preload test to confirm the image actually loads
 const img = new Image();
-img.crossOrigin = "anonymous";
 img.onload = function () {
-    console.log("Image loaded OK. Launching viewer.");
+    console.log("Image loaded OK. Creating viewer.");
 
     new PhotoSphereViewer.Viewer({
         container: document.querySelector('#viewer'),
         panorama: panoramaURL,
-        withCredentials: false,
-        mousewheel: true,
-        navbar: ['zoom', 'fullscreen']
+        navbar: ['zoom', 'fullscreen'],
+        defaultYaw: 0,
+        mousewheel: true
     });
 };
 
 img.onerror = function () {
-    console.error("FAILED to load image through CDN.");
+    console.error("Image FAILED to load. Check if URL works in browser.");
     document.body.innerHTML =
-      "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Image failed to load even through CDN.<br>Check console.</div>";
+      "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Image failed to load.<br>Check console.</div>";
 };
 
 img.src = panoramaURL;
