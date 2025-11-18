@@ -29,12 +29,15 @@
       width: 100%;
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
-      color: #fff;
+      color: #333; /* dark gray */
       padding: 10px 20px;
       font-size: 14px;
       z-index: 10;
       overflow-x: auto;
       white-space: nowrap;
+      text-align: center; /* center text */
+      user-select: none; /* prevent text selection */
+      cursor: default; /* no text cursor */
     }
 
     /* Centered overlay for controls */
@@ -49,32 +52,18 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
+      user-select: none; /* prevent text selection */
+      cursor: default;
     }
 
     #overlay-content {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px);
-      padding: 30px 40px;
+      padding: 50px 60px; /* slightly bigger box */
       border-radius: 20px;
       color: #fff;
-      max-width: 500px;
+      max-width: 600px;
       text-align: center;
-      pointer-events: auto; /* allow clicks inside the box */
-    }
-
-    #overlay-content button {
-      margin-top: 15px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      padding: 8px 16px;
-      border-radius: 12px;
-      color: #fff;
-      font-family: 'Saira', sans-serif;
-      cursor: pointer;
-    }
-
-    #overlay-content button:hover {
-      background: rgba(255, 255, 255, 0.5);
     }
   </style>
 </head>
@@ -90,9 +79,9 @@
       <p>
         Click and drag to look around.<br>
         Scroll to zoom in/out.<br>
-        Use fullscreen button for best experience.
+        Use fullscreen button for best experience.<br><br>
+        Click anywhere to dismiss this message.
       </p>
-      <button id="dismiss-btn">Click here to dismiss this message</button>
     </div>
   </div>
 
@@ -107,13 +96,13 @@
       "panorama": "https://i.imgur.com/FYdmUI3.jpeg",
       "autoLoad": true,
       "compass": false,
-      "showZoomCtrl": true,
+      "showZoomCtrl": false, // hide zoom buttons
       "showFullscreenCtrl": true,
       "hfov": 100
     });
 
-    // Dismiss overlay
-    document.getElementById('dismiss-btn').addEventListener('click', () => {
+    // Dismiss overlay when anywhere is clicked
+    document.getElementById('overlay').addEventListener('click', () => {
       document.getElementById('overlay').style.display = 'none';
     });
 
