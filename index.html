@@ -24,14 +24,14 @@
     z-index: 0;
   }
 
-  /* Frosted glass bottom bar */
+  /* Bottom license bar */
   #license-bar {
     position: fixed;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(0,0,0,0.6); /* matched top panel */
+    background: rgba(0,0,0,0.6);
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -43,7 +43,7 @@
     border-radius: 10px;
   }
 
-  /* Overlay instructions */
+  /* Intro overlay */
   #overlay {
     position: fixed;
     top: 0;
@@ -52,6 +52,7 @@
     height: 100vh;
     background: rgba(0, 0, 0, 0.35);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 20;
@@ -77,11 +78,12 @@
     position: relative;
   }
 
-  /* Tooltip preview for 'here' */
+  /* Tooltip preview */
   #overlay-content a span.tooltip {
     visibility: hidden;
-    width: 250px;
-    background: rgba(0,0,0,0.8);
+    opacity: 0;
+    width: 270px;
+    background: rgba(0,0,0,0.85);
     color: #fff;
     text-align: center;
     padding: 10px;
@@ -93,20 +95,23 @@
     z-index: 30;
     font-size: 0.8em;
     line-height: 1.2em;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
   }
 
   #overlay-content a:hover span.tooltip {
     visibility: visible;
+    opacity: 1;
   }
 
-  /* Small frosted glass hotspot panel */
+  /* Manhattan Beach panel */
   #hotspot-panel {
     display: none;
     position: fixed;
-    top: 20px; 
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.6); /* matches bottom bar */
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -139,29 +144,38 @@
     max-width: 400px;
     line-height: 1.6em;
   }
+
+  /* Dismiss message below panel */
+  #dismiss-message {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #ccc;
+    text-align: center;
+  }
 </style>
 </head>
 <body>
 
 <div id="panorama"></div>
 
+<!-- Intro overlay -->
 <div id="overlay">
   <div id="overlay-content">
     <p>
       Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.
     </p>
     <p>
-      If you would like to see my other work click <a href="https://linktr.ee/lexofdystopia" target="_blank" onclick="event.stopPropagation()">
-        here<span class="tooltip">
-          <div style="text-align:center;">
-            <img src="https://i.imgur.com/eKxOrcZ.jpeg" width="250" style="border-radius:8px;"><br>
+      If you would like to see my other work click 
+      <a href="https://linktr.ee/lexofdystopia" target="_blank" onclick="event.stopPropagation()" style="position: relative;">
+        here
+        <span class="tooltip">
+          <div style="text-align: center;">
+            <img src="https://i.imgur.com/eKxOrcZ.jpeg" width="250" style="border-radius:8px; display:block; margin:0 auto;"><br>
             https://linktr.ee/lexofdystopia
           </div>
         </span>
       </a>.
     </p>
-
-    <p style="font-weight: bold; margin-top: 20px;">Click Anywhere to Dismiss this Message</p>
 
     <br><br>
 
@@ -175,14 +189,19 @@
       <p>• Use fullscreen button for best experience.</p>
     </div>
   </div>
+
+  <!-- Smaller dismiss message below panel -->
+  <p id="dismiss-message">Click Anywhere to Dismiss this Message</p>
 </div>
 
+<!-- Manhattan Beach info panel -->
 <div id="hotspot-panel">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
   The coastal shores are lined with miles of golf courses.
 </div>
 
+<!-- License bar -->
 <div id="license-bar">Loading license...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
