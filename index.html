@@ -29,16 +29,16 @@
 <script src="https://cdn.jsdelivr.net/npm/photo-sphere-viewer@4/dist/photo-sphere-viewer.js"></script>
 
 <script>
-// *** CRITICAL: Make sure this URL is CORRECT ***
+// *** EXACT URL you gave me — nothing to fill in ***
 const panoramaURL = "https://lexdomitor.github.io/2025_Roadtrip_360pics/halfmoonbay4k360.jpg";
 
-// Quick sanity log
+// Log for debugging
 console.log("Loading panorama:", panoramaURL);
 
-// Test-load the image before creating viewer so we know if it fails
+// Preload test to confirm the image actually loads
 const img = new Image();
 img.onload = function () {
-    console.log("Image successfully loaded. Creating viewer.");
+    console.log("Image loaded OK. Creating viewer.");
 
     new PhotoSphereViewer.Viewer({
         container: document.querySelector('#viewer'),
@@ -50,8 +50,9 @@ img.onload = function () {
 };
 
 img.onerror = function () {
-    console.error("Image failed to load. Check the path or GitHub Pages URL.");
-    document.body.innerHTML = "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Image failed to load. Check console.</div>";
+    console.error("Image FAILED to load. Check if URL works in browser.");
+    document.body.innerHTML =
+      "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Image failed to load.<br>Check console.</div>";
 };
 
 img.src = panoramaURL;
