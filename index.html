@@ -23,11 +23,12 @@ body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#
     backdrop-filter: blur(8px); background: rgba(40,40,40,0.45); color:#ccc;
     font-size:12px; display:flex; align-items:center; justify-content:center; pointer-events:none; user-select:none;
 }
+model-viewer { width:100vw; height:100vh; }
 </style>
 </head>
 <body>
 
-<div id="loadingOverlay">Loading image...</div>
+<div id="loadingOverlay">Loading model...</div>
 <div id="instructionOverlay">
     <div>
         <p>Controls:<br>- Drag with mouse/finger to rotate.<br>- Scroll/pinch to zoom.<br><br><b>Click to dismiss.</b></p>
@@ -35,65 +36,37 @@ body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#
 </div>
 <div id="footerBar">Loading...</div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+<model-viewer id="viewer"
+    src="HalfMoonBay360_sphere.glb"
+    camera-controls
+    auto-rotate
+    exposure="1"
+    environment-image="neutral"
+    ar
+    disable-zoom
+    onload="modelLoaded()">
+</model-viewer>
+
 <script>
 const loadingOverlay = document.getElementById('loadingOverlay');
 const overlay = document.getElementById('instructionOverlay');
 const footerBar = document.getElementById('footerBar');
 
-// Scene setup
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+function modelLoaded() {
+    loadingOverlay.style.display='none';
+    overlay.style.display='flex';
+    // Load LICENSE if present
+    fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(()=>footerBar.textContent='© 2025. Do not distribute.');
+}
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableZoom = true;
-controls.enablePan = false;
-controls.rotateSpeed = 0.3;
-camera.position.set(0,0,0.1);
-controls.target.set(0,0,0);
-controls.update();
-
-let sphereMesh;
-
-// Load Imgur image
-const imagePath = 'https://i.imgur.com/FYdmUI3.jpeg';
-const loader = new THREE.TextureLoader();
-loader.crossOrigin = ''; // Allow cross-origin loading
-
-loader.load(
-    imagePath,
-    function(texture){ // onLoad
-        const sphereGeo = new THREE.SphereGeometry(500, 60, 40);
-        sphereGeo.scale(-1,1,1);
-        sphereMesh = new THREE.Mesh(sphereGeo, new THREE.MeshBasicMaterial({map:texture}));
-        scene.add(sphereMesh);
-        loadingOverlay.style.display='none';
-        overlay.style.display='flex';
-        fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(()=>footerBar.textContent='© 2025. Do not distribute.');
-    },
-    undefined, // progress unreliable for Imgur
-    function(err){ // onError
-        console.error('Error loading image', err);
-        loadingOverlay.textContent='No images were found on server.';
-        setTimeout(()=>loadingOverlay.style.display='none',3000);
-    }
-);
-
-// Animation loop
-function animate(){ requestAnimationFrame(animate); renderer.render(scene,camera); }
-animate();
-
-function onWindowResize(){ camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
-window.addEventListener('resize', onWindowResize);
-
+// Hide overlay when clicked
 overlay.onclick = ()=>overlay.style.display='none';
 
 // Disable right-click
 document.addEventListener('contextmenu', e=>e.preventDefault());
 </script>
+
 </body>
 </html>
