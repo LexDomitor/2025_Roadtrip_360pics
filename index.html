@@ -31,7 +31,7 @@
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(0,0,0,0.4); /* lighter */
+    background: rgba(0,0,0,0.15); /* lighter */
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -76,6 +76,7 @@
     color: #fff;
     text-decoration: underline;
     position: relative;
+    cursor: pointer;
   }
 
   /* Tooltip preview */
@@ -101,7 +102,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.4); /* lighter */
+    background: rgba(0, 0, 0, 0.225); /* lighter */
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -119,9 +120,9 @@
   }
 
   @keyframes pulseWhite {
-    0%   { background: rgba(0,0,0,0.4); }
+    0%   { background: rgba(0,0,0,0.225); }
     50%  { background: rgba(255,255,255,0.9); } 
-    100% { background: rgba(0,0,0,0.4); }
+    100% { background: rgba(0,0,0,0.225); }
   }
 
   .pulse-white {
@@ -150,7 +151,7 @@
   }
 
   /* Video overlay */
-  #video-overlay {
+  .overlay-full {
     position: fixed;
     top:0;
     left:0;
@@ -164,7 +165,7 @@
     cursor: default;
   }
 
-  #video-container {
+  .overlay-container {
     background: rgba(255,255,255,0.4);
     backdrop-filter: blur(10px);
     width: 50%;
@@ -175,12 +176,15 @@
     flex-direction: column;
   }
 
-  #video-container iframe {
+  .overlay-container iframe, .overlay-container img {
     flex-grow: 1;
     border-radius: 15px 15px 0 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
-  #video-dismiss {
+  .overlay-dismiss {
     text-align: center;
     font-size: 0.9em;
     color: #ccc;
@@ -188,11 +192,32 @@
     cursor: pointer;
   }
 
+  /* QR Button */
+  #qr-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 25;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 12px;
+    font-family: 'Saira', sans-serif;
+    cursor: pointer;
+  }
+
+  #qr-button:hover {
+    background: rgba(255,255,255,0.5);
+  }
 </style>
 </head>
 <body>
 
 <div id="panorama"></div>
+
+<!-- QR Button -->
+<div id="qr-button">QR</div>
 
 <!-- Intro overlay -->
 <div id="overlay">
@@ -207,9 +232,6 @@
     <br><br>
 
     <div id="instructions-line">Instructions</div>
-
-    <br><br>
-
     <div id="instructions-list">
       <p>• Click and drag to look around.</p>
       <p>• Scroll to zoom in/out.</p>
@@ -235,12 +257,20 @@
 </div>
 
 <!-- Video overlay -->
-<div id="video-overlay" style="display:none;">
-  <div id="video-container">
-    <iframe id="video-frame" width="100%" height="100%" src="https://www.youtube.com/embed/sfYM1-_WbWk" 
+<div id="video-overlay" class="overlay-full" style="display:none;">
+  <div class="overlay-container">
+    <iframe id="video-frame" src="https://www.youtube.com/embed/sfYM1-_WbWk" 
             frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen></iframe>
-    <p id="video-dismiss">Click Here to Dismiss</p>
+    <p class="overlay-dismiss">Click Here to Dismiss</p>
+  </div>
+</div>
+
+<!-- QR overlay -->
+<div id="qr-overlay" class="overlay-full" style="display:none;">
+  <div class="overlay-container">
+    <img src="VRQR.png" alt="VR QR Code">
+    <p class="overlay-dismiss">Click Here to Dismiss</p>
   </div>
 </div>
 
@@ -287,8 +317,8 @@
   // Video overlay logic
   const watchVideoLink = document.getElementById('watch-video-link');
   const videoOverlay = document.getElementById('video-overlay');
-  const videoDismiss = document.getElementById('video-dismiss');
-  const videoContainer = document.getElementById('video-container');
+  const videoDismiss = videoOverlay.querySelector('.overlay-dismiss');
+  const videoContainer = videoOverlay.querySelector('.overlay-container');
 
   watchVideoLink.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -298,15 +328,37 @@
   videoDismiss.addEventListener('click', (e) => {
     e.stopPropagation();
     videoOverlay.style.display = 'none';
-    document.getElementById('video-frame').src = document.getElementById('video-frame').src;
+    videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
   });
 
   videoOverlay.addEventListener('click', () => {
     videoOverlay.style.display = 'none';
-    document.getElementById('video-frame').src = document.getElementById('video-frame').src;
+    videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
   });
 
   videoContainer.addEventListener('click', (e) => e.stopPropagation());
+
+  // QR overlay logic
+  const qrButton = document.getElementById('qr-button');
+  const qrOverlay = document.getElementById('qr-overlay');
+  const qrDismiss = qrOverlay.querySelector('.overlay-dismiss');
+  const qrContainer = qrOverlay.querySelector('.overlay-container');
+
+  qrButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    qrOverlay.style.display = 'flex';
+  });
+
+  qrDismiss.addEventListener('click', (e) => {
+    e.stopPropagation();
+    qrOverlay.style.display = 'none';
+  });
+
+  qrOverlay.addEventListener('click', () => {
+    qrOverlay.style.display = 'none';
+  });
+
+  qrContainer.addEventListener('click', (e) => e.stopPropagation());
 
   // Tooltip hover
   const previewLink = document.getElementById('preview-link');
@@ -321,6 +373,11 @@
 
   previewLink.addEventListener('mouseleave', () => {
       tooltip.style.display = 'none';
+  });
+
+  previewLink.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.open("https://linktr.ee/lexofdystopia", "_blank");
   });
 </script>
 
