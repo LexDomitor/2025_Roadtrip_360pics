@@ -31,7 +31,7 @@
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(0,0,0,0.15); /* lighter */
+    background: rgba(0,0,0,0.225);
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -102,7 +102,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.225); /* lighter */
+    background: rgba(0, 0, 0, 0.225);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -150,7 +150,7 @@
     text-align: center;
   }
 
-  /* Video overlay */
+  /* Video & QR overlays */
   .overlay-full {
     position: fixed;
     top:0;
@@ -210,13 +210,38 @@
   #qr-button:hover {
     background: rgba(255,255,255,0.5);
   }
+
+  @keyframes pulseQR {
+    0% { background: rgba(255,255,255,0.3); }
+    50% { background: rgba(255,255,255,0.6); }
+    100% { background: rgba(255,255,255,0.3); }
+  }
+
+  .pulse-qr {
+    animation: pulseQR 2s ease-in-out;
+  }
+
+  /* Pannellum fullscreen button frosted */
+  .psv-button.psv-fullscreen {
+    background: rgba(255,255,255,0.3) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 12px !important;
+    padding: 8px !important;
+    color: #fff !important;
+    font-size: 1em !important;
+    transition: background 0.3s;
+  }
+
+  .psv-button.psv-fullscreen:hover {
+    background: rgba(255,255,255,0.5) !important;
+  }
+
 </style>
 </head>
 <body>
 
 <div id="panorama"></div>
 
-<!-- QR Button -->
 <div id="qr-button">QR</div>
 
 <!-- Intro overlay -->
@@ -274,111 +299,105 @@
   </div>
 </div>
 
-<!-- License bar -->
 <div id="license-bar">Loading license...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-  const viewer = pannellum.viewer('panorama', {
-    "type": "equirectangular",
-    "panorama": "https://i.imgur.com/FYdmUI3.jpeg",
-    "autoLoad": true,
-    "compass": false,
-    "showZoomCtrl": false,
-    "showFullscreenCtrl": true,
-    "hfov": 100
+const viewer = pannellum.viewer('panorama', {
+  "type": "equirectangular",
+  "panorama": "https://i.imgur.com/FYdmUI3.jpeg",
+  "autoLoad": true,
+  "compass": false,
+  "showZoomCtrl": false,
+  "showFullscreenCtrl": true,
+  "hfov": 100
+});
+
+const overlay = document.getElementById('overlay');
+const hotspotPanel = document.getElementById('hotspot-panel');
+
+overlay.addEventListener('click', () => {
+  overlay.style.display = 'none';
+  hotspotPanel.style.display = 'block';
+  hotspotPanel.classList.add('pulse-white');
+  setTimeout(() => hotspotPanel.classList.remove('pulse-white'), 2000);
+});
+
+fetch('LICENSE')
+  .then(response => {
+    if (!response.ok) throw new Error('Could not load LICENSE file');
+    return response.text();
+  })
+  .then(text => document.getElementById('license-bar').textContent = text)
+  .catch(err => {
+    document.getElementById('license-bar').textContent = 'LICENSE file not found.';
+    console.error(err);
   });
 
-  const overlay = document.getElementById('overlay');
-  const hotspotPanel = document.getElementById('hotspot-panel');
+// Video overlay
+const watchVideoLink = document.getElementById('watch-video-link');
+const videoOverlay = document.getElementById('video-overlay');
+const videoDismiss = videoOverlay.querySelector('.overlay-dismiss');
+const videoContainer = videoOverlay.querySelector('.overlay-container');
 
-  overlay.addEventListener('click', () => {
-    overlay.style.display = 'none';
-    hotspotPanel.style.display = 'block';
-    hotspotPanel.classList.add('pulse-white');
-    setTimeout(() => {
-      hotspotPanel.classList.remove('pulse-white');
-    }, 2000);
-  });
+watchVideoLink.addEventListener('click', (e) => {
+  e.stopPropagation();
+  videoOverlay.style.display = 'flex';
+});
 
-  fetch('LICENSE')
-    .then(response => {
-      if (!response.ok) throw new Error('Could not load LICENSE file');
-      return response.text();
-    })
-    .then(text => {
-      document.getElementById('license-bar').textContent = text;
-    })
-    .catch(err => {
-      document.getElementById('license-bar').textContent = 'LICENSE file not found.';
-      console.error(err);
-    });
+videoDismiss.addEventListener('click', (e) => {
+  e.stopPropagation();
+  videoOverlay.style.display = 'none';
+  videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
+});
 
-  // Video overlay logic
-  const watchVideoLink = document.getElementById('watch-video-link');
-  const videoOverlay = document.getElementById('video-overlay');
-  const videoDismiss = videoOverlay.querySelector('.overlay-dismiss');
-  const videoContainer = videoOverlay.querySelector('.overlay-container');
+videoOverlay.addEventListener('click', () => {
+  videoOverlay.style.display = 'none';
+  videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
+});
 
-  watchVideoLink.addEventListener('click', (e) => {
-    e.stopPropagation();
-    videoOverlay.style.display = 'flex';
-  });
+videoContainer.addEventListener('click', (e) => e.stopPropagation());
 
-  videoDismiss.addEventListener('click', (e) => {
-    e.stopPropagation();
-    videoOverlay.style.display = 'none';
-    videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
-  });
+// QR overlay
+const qrButton = document.getElementById('qr-button');
+const qrOverlay = document.getElementById('qr-overlay');
+const qrDismiss = qrOverlay.querySelector('.overlay-dismiss');
+const qrContainer = qrOverlay.querySelector('.overlay-container');
 
-  videoOverlay.addEventListener('click', () => {
-    videoOverlay.style.display = 'none';
-    videoOverlay.querySelector('iframe').src = videoOverlay.querySelector('iframe').src;
-  });
+qrButton.addEventListener('click', (e) => {
+  e.stopPropagation();
+  qrOverlay.style.display = 'flex';
+});
 
-  videoContainer.addEventListener('click', (e) => e.stopPropagation());
+qrDismiss.addEventListener('click', (e) => {
+  e.stopPropagation();
+  qrOverlay.style.display = 'none';
+});
 
-  // QR overlay logic
-  const qrButton = document.getElementById('qr-button');
-  const qrOverlay = document.getElementById('qr-overlay');
-  const qrDismiss = qrOverlay.querySelector('.overlay-dismiss');
-  const qrContainer = qrOverlay.querySelector('.overlay-container');
+qrOverlay.addEventListener('click', () => qrOverlay.style.display = 'none');
+qrContainer.addEventListener('click', (e) => e.stopPropagation());
 
-  qrButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    qrOverlay.style.display = 'flex';
-  });
+// Pulse QR button
+qrButton.classList.add('pulse-qr');
+setTimeout(() => qrButton.classList.remove('pulse-qr'), 2000);
 
-  qrDismiss.addEventListener('click', (e) => {
-    e.stopPropagation();
-    qrOverlay.style.display = 'none';
-  });
+// Tooltip hover
+const previewLink = document.getElementById('preview-link');
+const tooltip = document.getElementById('tooltip-preview');
 
-  qrOverlay.addEventListener('click', () => {
-    qrOverlay.style.display = 'none';
-  });
+previewLink.addEventListener('mouseenter', (e) => {
+    const rect = e.target.getBoundingClientRect();
+    tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+    tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
+    tooltip.style.display = 'block';
+});
 
-  qrContainer.addEventListener('click', (e) => e.stopPropagation());
+previewLink.addEventListener('mouseleave', () => tooltip.style.display = 'none');
 
-  // Tooltip hover
-  const previewLink = document.getElementById('preview-link');
-  const tooltip = document.getElementById('tooltip-preview');
-
-  previewLink.addEventListener('mouseenter', (e) => {
-      const rect = e.target.getBoundingClientRect();
-      tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
-      tooltip.style.left = (rect.left + rect.width/2 - tooltip.offsetWidth/2) + 'px';
-      tooltip.style.display = 'block';
-  });
-
-  previewLink.addEventListener('mouseleave', () => {
-      tooltip.style.display = 'none';
-  });
-
-  previewLink.addEventListener('click', (e) => {
-    e.stopPropagation();
-    window.open("https://linktr.ee/lexofdystopia", "_blank");
-  });
+previewLink.addEventListener('click', (e) => {
+  e.stopPropagation();
+  window.open("https://linktr.ee/lexofdystopia", "_blank");
+});
 </script>
 
 </body>
