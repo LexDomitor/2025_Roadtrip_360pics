@@ -316,14 +316,7 @@ let viewer = pannellum.viewer('panorama', {
   compass: false
 });
 
-// Automatically enter VR if on Quest
-if(isQuestBrowser()){
-  viewer.on('load', () => {
-    viewer.setVR(true);
-    viewer.enterFullscreen();
-  });
-}
-
+// Intro overlay dismissal triggers VR/Fullscreen if Quest
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
 
@@ -332,6 +325,15 @@ overlay.addEventListener('click', () => {
   hotspotPanel.style.display = 'block';
   hotspotPanel.classList.add('pulse-white');
   setTimeout(() => hotspotPanel.classList.remove('pulse-white'), 2000);
+
+  if(isQuestBrowser()){
+    try {
+      viewer.setVR(true);
+      viewer.enterFullscreen();
+    } catch(err) {
+      console.warn("VR/fullscreen blocked until user gesture", err);
+    }
+  }
 });
 
 fetch('LICENSE')
