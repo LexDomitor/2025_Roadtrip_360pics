@@ -122,6 +122,12 @@
     z-index: 15;
   }
 
+  #hotspot-panel a {
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   @keyframes pulseWhite {
     0%   { background: rgba(0,0,0,0.6); }
     50%  { background: rgba(255,255,255,0.9); } 
@@ -152,6 +158,46 @@
     color: #ccc;
     text-align: center;
   }
+
+  /* Video overlay */
+  #video-overlay {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    cursor: default;
+  }
+
+  #video-container {
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(10px);
+    width: 50%;
+    height: 50%;
+    border-radius: 15px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #video-container iframe {
+    flex-grow: 1;
+    border-radius: 15px 15px 0 0;
+  }
+
+  #video-dismiss {
+    text-align: center;
+    font-size: 0.9em;
+    color: #ccc;
+    padding: 5px;
+    cursor: pointer;
+  }
+
 </style>
 </head>
 <body>
@@ -198,7 +244,18 @@
 <div id="hotspot-panel">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
-  The coastal shores are lined with miles of golf courses.
+  The coastal shores are lined with miles of golf courses.<br>
+  <a href="#" id="watch-video-link">Click Here to Watch 360 Video</a>
+</div>
+
+<!-- Video overlay -->
+<div id="video-overlay" style="display:none;">
+  <div id="video-container">
+    <iframe id="video-frame" width="100%" height="100%" src="https://www.youtube.com/embed/sfYM1-_WbWk" 
+            frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen></iframe>
+    <p id="video-dismiss">Click Here to Dismiss</p>
+  </div>
 </div>
 
 <!-- License bar -->
@@ -240,6 +297,31 @@
       document.getElementById('license-bar').textContent = 'LICENSE file not found.';
       console.error(err);
     });
+
+  // Video overlay logic
+  const watchVideoLink = document.getElementById('watch-video-link');
+  const videoOverlay = document.getElementById('video-overlay');
+  const videoDismiss = document.getElementById('video-dismiss');
+  const videoContainer = document.getElementById('video-container');
+
+  watchVideoLink.addEventListener('click', (e) => {
+    e.stopPropagation();
+    videoOverlay.style.display = 'flex';
+  });
+
+  videoDismiss.addEventListener('click', (e) => {
+    e.stopPropagation();
+    videoOverlay.style.display = 'none';
+    document.getElementById('video-frame').src = document.getElementById('video-frame').src;
+  });
+
+  videoOverlay.addEventListener('click', () => {
+    videoOverlay.style.display = 'none';
+    document.getElementById('video-frame').src = document.getElementById('video-frame').src;
+  });
+
+  videoContainer.addEventListener('click', (e) => e.stopPropagation());
+
 </script>
 
 </body>
