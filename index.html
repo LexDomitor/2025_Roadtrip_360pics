@@ -31,7 +31,7 @@
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(0,0,0,0.225);
+    background: rgba(0,0,0,0.175);
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -102,7 +102,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.225);
+    background: rgba(0, 0, 0, 0.175);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -120,9 +120,9 @@
   }
 
   @keyframes pulseWhite {
-    0%   { background: rgba(0,0,0,0.225); }
+    0%   { background: rgba(0,0,0,0.175); }
     50%  { background: rgba(255,255,255,0.9); } 
-    100% { background: rgba(0,0,0,0.225); }
+    100% { background: rgba(0,0,0,0.175); }
   }
 
   .pulse-white {
@@ -142,7 +142,6 @@
     line-height: 1.6em;
   }
 
-  /* Dismiss message below panel */
   #dismiss-message {
     margin-top: 15px;
     font-size: 0.9em;
@@ -241,7 +240,6 @@
 <body>
 
 <div id="panorama"></div>
-
 <div id="qr-button">QR</div>
 
 <!-- Intro overlay -->
@@ -303,15 +301,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-const viewer = pannellum.viewer('panorama', {
-  "type": "equirectangular",
-  "panorama": "https://i.imgur.com/FYdmUI3.jpeg",
-  "autoLoad": true,
-  "compass": false,
-  "showZoomCtrl": false,
-  "showFullscreenCtrl": true,
-  "hfov": 100
+function isQuestBrowser() {
+  const ua = navigator.userAgent;
+  return ua.includes("OculusBrowser") || ua.includes("Quest");
+}
+
+let viewer = pannellum.viewer('panorama', {
+  type: 'equirectangular',
+  panorama: 'https://i.imgur.com/FYdmUI3.jpeg',
+  autoLoad: true,
+  hfov: 100,
+  showFullscreenCtrl: true,
+  showZoomCtrl: false,
+  compass: false
 });
+
+// Automatically enter VR if on Quest
+if(isQuestBrowser()){
+  viewer.on('load', () => {
+    viewer.setVR(true);
+    viewer.enterFullscreen();
+  });
+}
 
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
@@ -399,6 +410,5 @@ previewLink.addEventListener('click', (e) => {
   window.open("https://linktr.ee/lexofdystopia", "_blank");
 });
 </script>
-
 </body>
 </html>
