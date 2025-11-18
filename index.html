@@ -27,7 +27,7 @@ body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#
 </head>
 <body>
 
-<div id="loadingOverlay">Loading image... (0%)</div>
+<div id="loadingOverlay">Loading image...</div>
 <div id="instructionOverlay">
     <div>
         <p>Controls:<br>- Drag with mouse/finger to rotate.<br>- Scroll/pinch to zoom.<br><br><b>Click to dismiss.</b></p>
@@ -59,9 +59,10 @@ controls.update();
 
 let sphereMesh;
 
-// Load the new image
-const imagePath = 'halfmoonbay4k360.jpg';
+// Load Imgur image
+const imagePath = 'https://i.imgur.com/FYdmUI3.jpeg';
 const loader = new THREE.TextureLoader();
+loader.crossOrigin = ''; // Allow cross-origin loading
 
 loader.load(
     imagePath,
@@ -74,15 +75,7 @@ loader.load(
         overlay.style.display='flex';
         fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(()=>footerBar.textContent='© 2025. Do not distribute.');
     },
-    function(xhr){ // onProgress
-        if(xhr.lengthComputable){
-            const percent = Math.round((xhr.loaded / xhr.total) * 100);
-            loadingOverlay.textContent = `Loading image... (${percent}%)`;
-            console.log(`Image load: ${percent}%`);
-        } else {
-            loadingOverlay.textContent = `Loading image...`;
-        }
-    },
+    undefined, // progress unreliable for Imgur
     function(err){ // onError
         console.error('Error loading image', err);
         loadingOverlay.textContent='No images were found on server.';
