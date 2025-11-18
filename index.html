@@ -6,17 +6,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 body { margin:0; overflow:hidden; font-family: 'Saira', sans-serif; background:#000; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; }
-#loadingOverlay {
-    position:fixed; top:0; left:0; width:100vw; height:100vh;
-    display:flex; justify-content:center; align-items:center; flex-direction:column;
-    font-size:20px; color:#ccc; z-index:20; user-select:none;
-    animation: pulse 1.5s infinite alternate;
-}
-@keyframes pulse { 0%{opacity:0.4;} 100%{opacity:1;} }
 #instructionOverlay {
     position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.65);
     color:#ccc; display:flex; justify-content:center; align-items:center; text-align:center;
-    font-size:16px; padding:20px; cursor:pointer; z-index:10; display:none; user-select: none;
+    font-size:16px; padding:20px; cursor:pointer; z-index:10; display:flex; user-select: none;
 }
 #footerBar {
     position: fixed; bottom:0; left:0; width:100%; height:18px;
@@ -28,7 +21,6 @@ model-viewer { width:100vw; height:100vh; }
 </head>
 <body>
 
-<div id="loadingOverlay">Loading model...</div>
 <div id="instructionOverlay">
     <div>
         <p>Controls:<br>- Drag with mouse/finger to rotate.<br>- Scroll/pinch to zoom.<br><br><b>Click to dismiss.</b></p>
@@ -50,13 +42,10 @@ model-viewer { width:100vw; height:100vh; }
 </model-viewer>
 
 <script>
-const loadingOverlay = document.getElementById('loadingOverlay');
 const overlay = document.getElementById('instructionOverlay');
 const footerBar = document.getElementById('footerBar');
 
 function modelLoaded() {
-    loadingOverlay.style.display='none';
-    overlay.style.display='flex';
     // Load LICENSE if present
     fetch('LICENSE').then(r=>r.text()).then(txt=>footerBar.textContent=txt).catch(()=>footerBar.textContent='© 2025. Do not distribute.');
 }
