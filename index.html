@@ -1,70 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>360 Viewer</title>
-
-<!-- Photo Sphere Viewer v3 (script-tag compatible) -->
-<link rel="stylesheet" href="https://unpkg.com/photo-sphere-viewer@3.6.0/dist/photo-sphere-viewer.min.css">
-<script src="https://unpkg.com/three@0.121.1/build/three.min.js"></script>
-<script src="https://unpkg.com/uevent@2.1.0/browser.min.js"></script>
-<script src="https://unpkg.com/dot/doT.min.js"></script>
-<script src="https://unpkg.com/photo-sphere-viewer@3.6.0/dist/photo-sphere-viewer.min.js"></script>
-
+<link rel="stylesheet" href="photo-sphere-viewer.min.css">
 <style>
     html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        background: #000;
-        user-select: none;
+        margin:0;
+        padding:0;
+        width:100%;
+        height:100%;
+        background:black;
+        overflow:hidden;
+        user-select:none;
     }
-    #viewer {
-        width: 100vw;
-        height: 100vh;
-    }
+    #viewer { width:100%; height:100%; }
 </style>
-
 </head>
 <body>
 
 <div id="viewer"></div>
 
+<script src="photo-sphere-viewer.min.js"></script>
+
 <script>
-// ✔ Load your panorama directly from GitHub Pages
-const pano = "https://lexdomitor.github.io/2025_Roadtrip_360pics/halfmoonbay4k360.jpg";
+const pano = "halfmoonbay4k360.jpg";
 
-// Test if image loads
-const testImg = new Image();
-testImg.crossOrigin = "anonymous";
-
-testImg.onload = function () {
-    console.log("Image OK — launching PSV v3");
-
-    const viewer = new PhotoSphereViewer({
-        panorama: pano,
+const img = new Image();
+img.onload = function() {
+    new PhotoSphereViewer({
         container: document.getElementById("viewer"),
-        caption: "360 Viewer",
-        loadingImg: null,
+        panorama: pano,
+        navbar: ['zoom','fullscreen'],
         defaultFov: 70,
-        mousewheel: true,
-        navbar: [
-            'autorotate',
-            'zoom',
-            'fullscreen'
-        ]
+        mousewheel: true
     });
 };
-
-testImg.onerror = function () {
-    console.error("ERROR — The image cannot load.");
+img.onerror = function() {
     document.body.innerHTML =
-      "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Failed to load the panorama image.<br>Check the filename and path.</div>";
+      "<div style='color:white;text-align:center;margin-top:40px;font-size:20px;'>Failed to load panorama.<br>Check filename.</div>";
 };
-
-testImg.src = pano;
+img.src = pano;
 </script>
 
 </body>
