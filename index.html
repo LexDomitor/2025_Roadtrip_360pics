@@ -24,13 +24,14 @@
     z-index: 0;
   }
 
+  /* Frosted glass bottom bar */
   #license-bar {
     position: fixed;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(0,0,0,0.6); /* matched top panel */
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -42,6 +43,7 @@
     border-radius: 10px;
   }
 
+  /* Overlay instructions */
   #overlay {
     position: fixed;
     top: 0;
@@ -85,7 +87,7 @@
     padding: 10px;
     border-radius: 8px;
     position: absolute;
-    bottom: 125%; 
+    bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 30;
@@ -97,13 +99,14 @@
     visibility: visible;
   }
 
+  /* Small frosted glass hotspot panel */
   #hotspot-panel {
     display: none;
     position: fixed;
     top: 20px; 
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.6); /* matches bottom bar */
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
