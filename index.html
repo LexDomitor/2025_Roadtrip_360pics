@@ -32,7 +32,7 @@
     left: 50%;
     transform: translateX(-50%);
     max-width: 90%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
     color: #fff;
     padding: 10px 20px;
@@ -102,11 +102,12 @@
 
   /* Small frosted glass hotspot panel */
   #hotspot-panel {
+    display: none; /* hidden initially */
     position: fixed;
     top: 20px; 
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
     border-radius: 15px;
@@ -117,15 +118,15 @@
     z-index: 15;
   }
 
-  /* Pulse animation */
-  .pulse {
-    animation: pulseHighlight 2s ease-in-out;
+  /* Pulse to white animation */
+  @keyframes pulseWhite {
+    0%   { background: rgba(0,0,0,0.45); }
+    50%  { background: rgba(255,255,255,0.9); } 
+    100% { background: rgba(0,0,0,0.45); }
   }
 
-  @keyframes pulseHighlight {
-    0%   { background: rgba(0,0,0,0.7); }
-    50%  { background: rgba(0,0,0,0.9); } 
-    100% { background: rgba(0,0,0,0.7); }
+  .pulse-white {
+    animation: pulseWhite 2s ease-in-out;
   }
 
   /* Instructions bullets */
@@ -154,8 +155,12 @@
       Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.
     </p>
     <p>
-      If you would like to see my other work click <a href="https://linktr.ee/lexofdystopia" target="_blank" onclick="event.stopPropagation()">here
-        <span class="tooltip">Preview of my work: images, projects, and links to my creative portfolio.</span>
+      If you would like to see my other work click <a href="https://linktr.ee/lexofdystopia" target="_blank" onclick="event.stopPropagation()">
+        here
+        <span class="tooltip">
+          <img src="https://i.imgur.com/eKxOrcZ.jpeg" width="250" style="border-radius:8px;"><br>
+          https://linktr.ee/lexofdystopia
+        </span>
       </a>.
     </p>
     <div id="instructions-line">Instructions</div>
@@ -196,9 +201,10 @@
   overlay.addEventListener('click', () => {
     overlay.style.display = 'none';
 
-    hotspotPanel.classList.add('pulse');
+    hotspotPanel.style.display = 'block';
+    hotspotPanel.classList.add('pulse-white');
     setTimeout(() => {
-      hotspotPanel.classList.remove('pulse');
+      hotspotPanel.classList.remove('pulse-white');
     }, 2000);
   });
 
