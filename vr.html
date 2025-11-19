@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VR 360 View</title>
+<style>
+body, html { margin:0; padding:0; overflow:hidden; height:100%; }
+#enter-vr {
+  position: absolute;
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding:20px 30px;
+  border-radius:15px;
+  color:#fff;
+  font-size:1.5em;
+  cursor:pointer;
+  text-align:center;
+  z-index:10;
+}
+#dismiss-msg {
+  position:absolute;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#ccc;
+  font-size:1em;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+<div id="enter-vr">ENTER IMMERSIVE</div>
+<div id="dismiss-msg">Click Anywhere to Dismiss this Video</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js';
+import { VRButton } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/webxr/VRButton.js';
+
+let camera, scene, renderer;
+let enterButton = document.getElementById('enter-vr');
+
+function init() {
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+  renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  // Sphere
+  const geometry = new THREE.SphereGeometry(500, 60, 40);
+  geometry.scale(-1,1,1);
+  const texture = new THREE.TextureLoader().load('https://i.imgur.com/FYdmUI3.jpeg');
+  const material = new THREE.MeshBasicMaterial({map: texture});
+  const sphere = new THREE.Mesh(geometry, material);
+  scene.add(sphere);
+
+  document.body.appendChild(VRButton.createButton(renderer));
+}
+
+function animate() {
+  renderer.setAnimationLoop(()=>renderer.render(scene,camera));
+}
+
+init();
+animate();
+
+enterButton.addEventListener('click', () => {
+  document.body.querySelector('button').click(); // triggers VRButton
+});
+</script>
+</body>
+</html>
