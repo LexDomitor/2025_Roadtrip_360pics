@@ -20,12 +20,31 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* Intro overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
-#overlay-content { width:40vw; max-width:90vw; height:auto; max-height:70vh; background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); border-radius:18px; padding:24px; color:#fff; text-align:center; display:flex; flex-direction:column; justify-content:space-between; gap:12px; margin:0 auto; }
-#overlay-content p { margin:0; }
-#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
-#instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
-#instructions-list p { margin:6px 0; text-align:center; }
-#dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+#overlay-content {
+  width: 40vw;
+  max-width: 90vw;
+  height: auto;
+  max-height: 70vh;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 24px;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+#overlay-content p { margin:0; text-align:center; }
+#instructions-line { font-weight:700; text-decoration:underline; margin-top:12px; color:#fff; }
+#instructions-list { margin:6px 0 0 0; line-height:1.6em; text-align:center; overflow-wrap: break-word; }
+#instructions-list p { margin:4px 0; text-align:center; }
+#dismiss-message { margin-top:12px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
 /* tooltip preview */
 #tooltip-preview { display:none; position:fixed; width:70px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
