@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <style>
 * { box-sizing:border-box; }
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
@@ -15,6 +14,15 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* Panorama container */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
+/* Black overlay for fade-in */
+#black-overlay {
+    position: fixed; inset:0;
+    background: #000;
+    z-index:5;
+    opacity: 1;
+    transition: opacity 2s ease;
+}
+
 /* License bar */
 #license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
@@ -22,10 +30,8 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%;          /* max width 45% */
-    max-width:90vw;
-    height:auto;         /* auto-adjust height */
-    background: rgba(255,255,255,0.12);  /* less frosted */
+    width:45%; max-width:90vw; height:auto;
+    background: rgba(255,255,255,0.12);  /* frostedness lowered */
     backdrop-filter: blur(8px);
     border-radius:18px;
     padding:24px;
@@ -40,29 +46,25 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 }
 #overlay-content p { margin:0; }
 
-/* icon spinning container */
-#icon-container { 
-    perspective:600px; 
-    display:flex; 
-    justify-content:center; 
-}
-#intro-icon { 
-    width:80px; 
-    height:80px; 
-    display:block; 
-    transform-style: preserve-3d; 
+/* Coin icon */
+#intro-icon {
+    width:80px; height:80px;
+    margin:0 auto 12px auto;
+    display:block;
+    transform-style: preserve-3d;
+    transition: transform 1s ease-in-out;
 }
 
-/* Instructions */
-#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
+/* instructions */
+#instructions-line { font-weight:700; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
 
 /* divider line */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
 
-/* dismiss message pulse */
-#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; opacity:0.7; }
+/* dismiss message */
+#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; transition: opacity 0.5s; }
 
 /* tooltip preview (independent) */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
@@ -72,8 +74,16 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
 
 /* 360 video panel */
-#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#333; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
-#video-link-panel span { display:inline-block; padding:4px 8px; border-radius:8px; }
+#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.28); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
+
+/* hyperlink box for "here" */
+#preview-link-box {
+    display:inline-block;
+    padding:2px 6px;
+    border-radius:6px;
+    background: rgba(255,255,255,0.15);
+    cursor:pointer;
+}
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
@@ -116,14 +126,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <body>
 
 <div id="panorama"></div>
+<div id="black-overlay"></div>
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <div id="icon-container">
-      <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
-    </div>
+    <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link" style="display:inline-block; padding:2px 6px; border-radius:6px; background:rgba(255,255,255,0.12); cursor:pointer;">here</span>.</p>
+    <p>If you would like to see my other work click <span id="preview-link-box">here</span>.</p>
 
     <hr>
 
@@ -180,40 +189,47 @@ const panoURL="https://i.imgur.com/FYdmUI3.jpeg";
 const viewer=pannellum.viewer('panorama',{
     type:'equirectangular', panorama:panoURL, autoLoad:true,
     hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
-    autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
+    autoRotate:0
 });
 
-const overlay=document.getElementById('overlay');
-const overlayContent=document.getElementById('overlay-content');
-const hotspotPanel=document.getElementById('hotspot-panel');
-const videoLinkPanel=document.getElementById('video-link-panel');
-const previewLink=document.getElementById('preview-link');
-const tooltip=document.getElementById('tooltip-preview');
-const tooltipLink=document.getElementById('tooltip-link');
-const qrBtn=document.getElementById('top-qr-button');
-const vrBtn=document.getElementById('vr-button');
-const qrOverlay=document.getElementById('qr-overlay');
-const qrContent=document.getElementById('qr-content');
-const youtubeOverlay=document.getElementById('youtube-overlay');
-const youtubeFrame=document.getElementById('youtube-frame');
-const licenseBar=document.getElementById('license-bar');
+/* black fade overlay */
+window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+        const blackOverlay = document.getElementById('black-overlay');
+        blackOverlay.style.opacity = 0;
+        setTimeout(()=>{ blackOverlay.style.display='none'; },2000);
+    },1000);
+});
+
+/* spinning coin logic */
 const introIcon=document.getElementById('intro-icon');
-const dismissMsg=document.getElementById('dismiss-message');
-
-/* LICENSE load */
-fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
-
-/* overlay dismissal */
-function dismissOverlay(e){
-  if(e.target.closest('#overlay-content a')) return;
-  overlay.setAttribute('aria-hidden','true');
-  overlay.style.display='none';
-  hotspotPanel.style.display='block';
-  videoLinkPanel.style.display='block';
+let toggle=true;
+function spinCoin(){
+    introIcon.style.transform='rotateY(90deg)';
+    setTimeout(()=>{
+        introIcon.src = toggle ? 'LexIconWhite,png.png' : 'LexIcon.png';
+        toggle = !toggle;
+        introIcon.style.transform='rotateY(0deg)';
+    },500);
 }
-overlay.addEventListener('click', dismissOverlay);
+setInterval(spinCoin, 3000);
+
+/* overlay dismissal pulse */
+const dismissMsg = document.getElementById('dismiss-message');
+overlay.addEventListener('click', ()=>{
+    overlay.setAttribute('aria-hidden','true');
+    overlay.style.display='none';
+    hotspotPanel.style.display='block';
+    videoLinkPanel.style.display='block';
+
+    // pulse effect
+    dismissMsg.style.opacity = 0.2;
+    setTimeout(()=>{ dismissMsg.style.opacity = 1; }, 500);
+});
 
 /* tooltip hover tracking cursor independently */
+const previewLink = document.getElementById('preview-link-box');
+const tooltip = document.getElementById('tooltip-preview');
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
   const ttWidth=tooltip.offsetWidth;
@@ -229,10 +245,11 @@ previewLink.addEventListener('mousemove', e=>{
 previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
 tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
-previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
-tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-/* 360 video panel */
+/* video panel click */
+const videoLinkPanel = document.getElementById('video-link-panel');
+const youtubeOverlay = document.getElementById('youtube-overlay');
+const youtubeFrame = document.getElementById('youtube-frame');
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src="https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
@@ -241,6 +258,9 @@ videoLinkPanel.addEventListener('click', e=>{
 youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); });
 
 /* QR overlay */
+const qrBtn=document.getElementById('top-qr-button');
+const qrOverlay=document.getElementById('qr-overlay');
+const qrContent=document.getElementById('qr-content');
 qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=>qrOverlay.style.opacity=1); });
 qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
 qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
@@ -252,25 +272,6 @@ document.addEventListener('keydown', e=>{
     if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280); }
   }
 });
-
-/* pulsating dismiss message */
-gsap.to(dismissMsg,{opacity:0.3,duration:1.2,yoyo:true,repeat:-1,ease:"power1.inOut"});
-
-/* spinning coin icon */
-let iconToggle = true;
-function spinIcon() {
-    gsap.to(introIcon,{
-        duration:2,
-        rotateY:"+=360",
-        ease:"power2.inOut",
-        onComplete:()=>{
-            iconToggle = !iconToggle;
-            introIcon.src = iconToggle ? "LexIcon.png" : "LexIconWhite,png.png";
-            setTimeout(spinIcon,500); // linger 0.5s
-        }
-    });
-}
-spinIcon();
 </script>
 </body>
 </html>
