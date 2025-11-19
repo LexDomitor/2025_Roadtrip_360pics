@@ -19,7 +19,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   left:50%;
   transform:translateX(-50%);
   max-width:90%;
-  background: rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.2);
   backdrop-filter: blur(10px);
   color:#fff;
   padding:10px 20px;
@@ -52,13 +52,13 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 
 /* Manhattan Beach hotspot panel */
 #hotspot-panel { position: fixed; top:20px; left:50%; transform: translateX(-50%);
-  background: rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);
   padding:15px 20px; border-radius:15px; color:#fff; font-size:1em;
   text-align:center; max-width:80%; z-index:15; display:none; transition:opacity 0.5s ease; }
 
 /* 360 Video link panel */
-#video-link-panel { position: fixed; top: calc(20px + 140px); left:50%; transform:translateX(-50%);
-  background: rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+#video-link-panel { position: fixed; top: calc(20px + 160px); left:50%; transform:translateX(-50%);
+  background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);
   padding:10px 15px; border-radius:12px; color:#fff; font-size:1em;
   text-align:center; max-width:60%; z-index:15; cursor:pointer; display:none; transition:opacity 0.5s ease; }
 
@@ -93,7 +93,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 
 /* Pulse effect */
 .pulse-white { animation:pulseWhite 2s ease-in-out; }
-@keyframes pulseWhite { 0% { background: rgba(0,0,0,0.1); } 50% { background: rgba(255,255,255,0.9); } 100% { background: rgba(0,0,0,0.1); } }
+@keyframes pulseWhite { 0% { background: rgba(0,0,0,0.2); } 50% { background: rgba(255,255,255,0.9); } 100% { background: rgba(0,0,0,0.2); } }
 
 /* Responsive adjustments */
 @media (max-width:768px){
@@ -180,7 +180,7 @@ const viewer = pannellum.viewer('panorama', {
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
 const videoLinkPanel = document.getElementById('video-link-panel');
-overlay.addEventListener('click', ()=>{
+overlay.addEventListener('click', ()=> {
   overlay.style.display='none';
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
@@ -188,7 +188,10 @@ overlay.addEventListener('click', ()=>{
   setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
   detectVRHeadset().then(info=>{
     if(!info) return;
-    document.getElementById('vr-button').style.display='block';
+    const vrBtn = document.getElementById('vr-button');
+    vrBtn.style.display='block';
+    // optional: show message to press VR button
+    hotspotPanel.innerHTML += "<br><em>Press the VR button under the QR button to launch immersive VR.</em>";
   });
 });
 
@@ -254,9 +257,12 @@ async function detectVRHeadset(){
   } else return null;
 }
 
-// VR immersive button
+// VR immersive button opens a separate page
 const vrBtn = document.getElementById('vr-button');
-vrBtn.addEventListener('click', e=>{ e.stopPropagation(); viewer.enterVR(); });
+vrBtn.addEventListener('click', e=>{
+  e.stopPropagation();
+  window.open('vr.html','_blank');
+});
 </script>
 </body>
 </html>
