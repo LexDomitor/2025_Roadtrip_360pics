@@ -20,17 +20,20 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* Intro overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
-#overlay-content { width:40vw; max-width:90vw; height:auto; max-height:70vh; background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); border-radius:18px; padding:24px; color:#fff; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; gap:12px; margin:0 auto; }
-#overlay-content img { width:80px; height:auto; margin-bottom:12px; }
-#overlay-content p { margin:0; text-align:center; }
+#overlay-content { width:50%; max-width:90vw; height:auto; max-height:70vh; background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); border-radius:18px; padding:24px; color:#fff; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; gap:12px; margin:0 auto; }
+#overlay-content img { display:block; margin:0 auto 12px auto; max-width:100px; height:auto; }
+#overlay-content p { margin:0; text-align:center; font-size:1.5rem; }
 #instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
-#instructions-list p { margin:6px 0; text-align:center; }
-#dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; line-height:1.4; }
-hr.divider { border:0; border-top:1px solid #fff; margin:16px 0; }
+#instructions-list p { margin:0; text-align:center; }
+#dismiss-message { margin-top:12px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+
+/* horizontal separator */
+#overlay hr { border:none; border-top:1px solid #fff; margin:8px 0; }
 
 /* tooltip preview */
-#tooltip-preview { display:none; position:fixed; width:70px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+#tooltip-preview { display:none; position:fixed; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 0 0 rgba(0,0,0,0); max-width:220px; overflow:hidden; }
+#tooltip-preview img { max-width:100%; height:auto; display:block; margin:0 auto; }
 
 /* hotspot panel */
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
@@ -45,14 +48,15 @@ hr.divider { border:0; border-top:1px solid #fff; margin:16px 0; }
 
 /* qr overlay */
 #qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
-#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; }
+#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
 #qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
 #qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
 
 /* QR and VR buttons */
-#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; }
+#top-qr-button, #vr-button, .pannellum-fullscreen-control { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; }
 #top-qr-button { top:12px; }
 #vr-button { top:64px; display:none; }
+.pannellum-fullscreen-control { top:110px; }
 
 /* responsive adjustments */
 @media(max-width:900px){ #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;} #video-link-panel{top:calc(18px+72px+10px);max-width:86%;} }
@@ -65,20 +69,21 @@ hr.divider { border:0; border-top:1px solid #fff; margin:16px 0; }
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <img src="LexIcon.png" alt="Lex Icon" style="width:80px; height:auto; margin-bottom:12px;">
+    <img src="LexIcon.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
+    
     <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
-
-    <hr class="divider">
-
+    
+    <hr style="border-top:1px solid #fff;">
+    
     <div id="instructions-line">Instructions</div>
     <div id="instructions-list">
       <p>• Click and drag to look around.</p>
       <p>• Scroll to zoom in/out.</p>
       <p>• Use fullscreen button for best experience.</p>
     </div>
-
-    <div id="dismiss-message"><br><br>Click Anywhere to Dismiss this Message</div>
+    
+    <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
 
@@ -146,30 +151,12 @@ function dismissOverlay(e){
   overlay.style.display='none';
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
-  hotspotPanel.classList.add('pulse-white');
-  setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
-  detectVRHeadset().then(info=>{
-    if(info){
-      vrBtn.style.display='block';
-      vrBtn.setAttribute('aria-hidden','false');
-      if(!hotspotPanel.dataset.vrmsg){
-        hotspotPanel.dataset.vrmsg='1';
-        const em=document.createElement('div');
-        em.style.marginTop='8px';
-        em.style.fontSize='0.9rem';
-        em.style.color='#dcdcdc';
-        em.innerHTML='<em>Press the VR button under the QR button to launch immersive VR.</em>';
-        hotspotPanel.appendChild(em);
-      }
-    }
-  });
 }
 overlay.addEventListener('click', dismissOverlay);
 
 /* tooltip hover tracking cursor */
 function showTooltip(){
   tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false');
-  tooltip.offsetHeight;
 }
 previewLink.addEventListener('mouseenter', showTooltip);
 previewLink.addEventListener('mousemove', e=>{
