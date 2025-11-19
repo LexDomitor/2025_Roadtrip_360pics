@@ -21,10 +21,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%;          /* fixed width */
-    max-width:90vw;
-    height:auto;        /* auto-adjust height */
-    max-height:90vh;
+    width:45%;           /* Max width 45% */
+    max-width:45%;
+    height:auto;         /* auto-adjust height */
     background: rgba(255,255,255,0.18);
     backdrop-filter: blur(10px);
     border-radius:18px;
@@ -37,21 +36,15 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
     gap:12px;
     margin:0 auto;
 }
-#overlay-content p {
-    margin:0 auto;
-    max-width:42ch;  /* ~7 words per line */
-    text-align:center;
-    line-height:1.5em;
-}
-#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; } /* center icon */
+#overlay-content p { margin:0; word-wrap: break-word; max-width: 100%; line-height:1.4em; }
+#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; } /* centered */
 #instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
 #instructions-list p { margin:6px 0; text-align:center; }
-hr { border:1px solid #fff; width:60%; margin:12px auto; }
-#dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; line-height:1.6em; }
+#dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
 /* tooltip preview */
-#tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; }
+#tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 
 /* hotspot panel */
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
@@ -107,7 +100,7 @@ hr { border:1px solid #fff; width:60%; margin:12px auto; }
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
 
-    <hr>
+    <hr style="border:1px solid #fff; margin:12px auto; width:50%;">
 
     <div id="instructions-line">Instructions</div>
     <div id="instructions-list">
@@ -116,7 +109,8 @@ hr { border:1px solid #fff; width:60%; margin:12px auto; }
       <p>• Use fullscreen button for best experience.</p>
     </div>
 
-    <div style="height:24px;"></div> <!-- extra spacing -->
+    <div style="height:12px;"></div>
+
     <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
@@ -230,17 +224,39 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-/* Disable right-click */
-document.addEventListener('contextmenu', e => e.preventDefault());
+/* ----- Slow Auto-Pan ----- */
+let autoPanSpeed = 0.05; // degrees/frame
+let autoPanActive = true;
+let inactivityTimeout;
 
-/* PrintScreen flash */
-document.addEventListener('keyup', e=>{
+function startAutoPan() { autoPanActive = true; requestAnimationFrame(autoPanStep); }
+function stopAutoPan() { autoPanActive = false; }
+
+function autoPanStep() {
+    if(!autoPanActive) return;
+    viewer.setYaw(viewer.getYaw() + autoPanSpeed);
+    requestAnimationFrame(autoPanStep);
+}
+
+function resetInactivity() {
+    stopAutoPan();
+    clearTimeout(inactivityTimeout);
+    inactivityTimeout = setTimeout(() => startAutoPan(), 10000);
+}
+
+['mousedown','mousemove','touchstart','wheel','keydown'].forEach(evt => document.addEventListener(evt, resetInactivity));
+
+startAutoPan();
+
+/* ----- Right Click + Printscreen flash ----- */
+document.addEventListener('contextmenu', e=>e.preventDefault());
+document.addEventListener('keydown', e=>{
     if(e.key==='PrintScreen'){
-        const flash = document.createElement('div');
+        const flash=document.createElement('div');
         flash.style.position='fixed';
         flash.style.inset='0';
         flash.style.background='#fff';
-        flash.style.zIndex='99999';
+        flash.style.zIndex=99999;
         document.body.appendChild(flash);
         setTimeout(()=>document.body.removeChild(flash),500);
     }
