@@ -52,38 +52,35 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* divider line */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
 
-/* dismiss message with pulsing */
+/* pulsing dismiss */
 #dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation:pulseDismiss 2s infinite; }
-@keyframes pulseDismiss {
-    0%, 100% { opacity:1; }
-    50% { opacity:0.4; }
-}
+@keyframes pulseDismiss { 0%,100%{opacity:1;}50%{opacity:0.4;} }
 
 /* tooltip preview (independent) */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 #tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
 
-/* hotspot panel */
-#hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:block; }
+/* hotspot panel - hidden until dismiss */
+#hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
 
-/* 360 video panel */
-#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:block; }
+/* 360 video panel - hidden until dismiss */
+#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* qr overlay */
+/* qr overlay - QR button hidden initially */
 #qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
 #qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
 #qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
 
-/* QR and VR buttons */
-#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; }
+/* QR and VR buttons - hidden until dismiss */
+#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
 #top-qr-button { top:12px; }
-#vr-button { top:64px; display:none; }
+#vr-button { top:64px; }
 
 /* Fullscreen button match QR style */
 .pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
@@ -108,7 +105,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
     <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
-    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>
+    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br><br>
     These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer;">here</span>.</p>
 
@@ -188,11 +185,27 @@ const introIcon=document.getElementById('intro-icon');
 /* LICENSE load */
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
 
-/* overlay dismissal */
+/* Dark intro fade - fades after 1s over 2s */
+setTimeout(()=>{
+  introBlack.style.transition='opacity 2s';
+  introBlack.style.opacity=0;
+  setTimeout(()=>introBlack.style.display='none',2000);
+},1000);
+
+/* overlay dismissal: reveal hotspot, video panel, QR + VR buttons */
 function dismissOverlay(e){
-  if(e.target.closest('#overlay-content a')) return;
+  // clicking the rounded 'here' box should not dismiss (it's inside overlay-content but not an <a>)
+  if(e.target.closest && e.target.closest('#preview-link')) {
+    return;
+  }
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
+
+  // show the top panels and buttons
+  hotspotPanel.style.display='block';
+  videoLinkPanel.style.display='block';
+  qrBtn.style.display='block';
+  vrBtn.style.display='block';
 }
 overlay.addEventListener('click', dismissOverlay);
 
@@ -213,7 +226,7 @@ previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.ma
 tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
-tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
+if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
 /* 360 video panel */
 videoLinkPanel.addEventListener('click', e=>{
@@ -236,26 +249,26 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-/* Intro fade in */
-setTimeout(()=>{
-  introBlack.style.transition='opacity 2s';
-  introBlack.style.opacity=0;
-  setTimeout(()=>introBlack.style.display='none',2000);
-},1000);
-
-/* Coin spin animation */
+/* Intro icon flip (smoother) */
 let flipState=true;
 function flipIcon(){
-  introIcon.style.transition='transform 1s ease-in-out';
-  introIcon.style.transform='rotateY(180deg)';
+  introIcon.style.transition='transform 1s cubic-bezier(.22,.9,.36,1)'; // smoother ease
+  introIcon.style.transform='rotateY(90deg)'; // go to edge
   setTimeout(()=>{
+    // swap image when edge-on
     introIcon.src = flipState ? 'LexIconWhite,png.png' : 'LexIcon.png';
     flipState = !flipState;
-    introIcon.style.transition='transform 1s ease-in-out';
-    introIcon.style.transform='rotateY(0deg)';
+    // rotate to flat (180 deg total from start)
+    introIcon.style.transform='rotateY(180deg)';
+    setTimeout(()=>{
+      // reset instantly back to 0deg to prepare for next flip without visible jump
+      introIcon.style.transition='none';
+      introIcon.style.transform='rotateY(0deg)';
+    },600);
   },500);
 }
 setInterval(flipIcon,3000);
+
 </script>
 </body>
 </html>
