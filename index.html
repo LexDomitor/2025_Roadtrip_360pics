@@ -9,58 +9,37 @@
 body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button {
   user-select: none;
 }
-body {
-  margin: 0;
-  font-family: 'Saira', sans-serif;
-  overflow: hidden;
-  position: relative;
-}
-#panorama {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  z-index: 0;
-}
+body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; }
+#panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
 /* LICENSE bar */
 #license-bar {
   position: fixed;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 90%;
-  background: rgba(0,0,0,0.15);
+  left:50%;
+  transform:translateX(-50%);
+  max-width:90%;
+  background: rgba(0,0,0,0.1);
   backdrop-filter: blur(10px);
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 14px;
-  z-index: 10;
-  overflow-y: auto;
-  text-align: center;
-  white-space: pre-wrap;
-  border-radius: 10px;
+  color:#fff;
+  padding:10px 20px;
+  font-size:14px;
+  z-index:10;
+  overflow-y:auto;
+  text-align:center;
+  white-space:pre-wrap;
+  border-radius:10px;
 }
 
 /* Intro overlay */
-#overlay {
-  position: fixed;
-  top:0; left:0;
-  width: 100vw; height:100vh;
+#overlay { position: fixed; top:0; left:0; width:100vw; height:100vh;
   background: rgba(0,0,0,0.35);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   z-index:20; cursor:pointer;
 }
-#overlay-content {
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(10px);
-  padding: 40px 50px;
-  border-radius: 20px;
-  color: #fff;
-  max-width: 600px;
-  text-align: center;
-  font-size: 1.5em;
-  pointer-events: auto;
-  line-height:1.4em;
+#overlay-content { background: rgba(255,255,255,0.3); backdrop-filter: blur(10px);
+  padding:40px 50px; border-radius:20px; color:#fff; max-width:600px; text-align:center;
+  font-size:1.5em; pointer-events:auto; line-height:1.4em;
 }
 #overlay-content a { color:#fff; text-decoration:underline; cursor:pointer; position:relative; }
 #instructions-line { text-decoration:underline; margin-bottom:10px; font-weight:bold; }
@@ -68,82 +47,39 @@ body {
 #dismiss-message { margin-top:15px; font-size:0.9em; color:#ccc; text-align:center; }
 
 /* Tooltip preview */
-#tooltip-preview {
-  display:none; position:absolute; width:270px; background: rgba(0,0,0,0.85);
-  color:#fff; text-align:center; padding:10px; border-radius:8px; z-index:30; pointer-events:none; font-size:0.8em; line-height:1.2em;
-}
+#tooltip-preview { display:none; position:absolute; width:270px; background: rgba(0,0,0,0.85);
+  color:#fff; text-align:center; padding:10px; border-radius:8px; z-index:30; pointer-events:none; font-size:0.8em; line-height:1.2em; }
 
 /* Manhattan Beach hotspot panel */
-#hotspot-panel {
-  position: fixed; top:20px; left:50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.15);
-  backdrop-filter: blur(10px);
-  padding: 15px 20px;
-  border-radius:15px;
-  color:#fff;
-  font-size:1em;
-  text-align:center;
-  max-width:80%;
-  z-index:15;
-  display:none;
-  transition:opacity 0.5s ease;
-}
+#hotspot-panel { position: fixed; top:20px; left:50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+  padding:15px 20px; border-radius:15px; color:#fff; font-size:1em;
+  text-align:center; max-width:80%; z-index:15; display:none; transition:opacity 0.5s ease; }
 
 /* 360 Video link panel */
-#video-link-panel {
-  position: fixed; top: calc(20px + 70px); /* top of Manhattan Beach + approx height */
-  left:50%; transform: translateX(-50%);
-  background: rgba(0,0,0,0.15);
-  backdrop-filter: blur(10px);
-  padding:10px 15px;
-  border-radius:12px;
-  color:#fff;
-  font-size:1em;
-  text-align:center;
-  max-width:60%;
-  z-index:15;
-  cursor:pointer;
-  display:none;
-  transition:opacity 0.5s ease;
-}
+#video-link-panel { position: fixed; top: calc(20px + 90px); left:50%; transform:translateX(-50%);
+  background: rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+  padding:10px 15px; border-radius:12px; color:#fff; font-size:1em;
+  text-align:center; max-width:60%; z-index:15; cursor:pointer; display:none; transition:opacity 0.5s ease; }
 
 /* YouTube modal overlay */
-#youtube-overlay {
-  display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
-  background: rgba(0,0,0,0.5); z-index:30; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.4s;
-}
-#youtube-content {
-  background: rgba(255,255,255,0.3); backdrop-filter:blur(10px);
-  border-radius:20px; padding:20px; max-width:80%; width:800px; height:450px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
+#youtube-overlay { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
+  background: rgba(0,0,0,0.5); z-index:30; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.4s; }
+#youtube-content { background: rgba(255,255,255,0.3); backdrop-filter:blur(10px); border-radius:20px;
+  padding:20px; max-width:80%; width:800px; height:450px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; }
 #youtube-content iframe { width:100%; height:100%; border:none; border-radius:12px; }
 #youtube-content p { color:#ccc; margin-top:10px; font-size:0.9em; text-align:center; }
 
 /* QR modal overlay */
-#qr-overlay {
-  display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
-  background: rgba(0,0,0,0.5);
-  z-index:30;
-  display:flex; align-items:center; justify-content:center;
-  opacity:0;
-  transition:opacity 0.4s;
-}
-#qr-content {
-  background: rgba(255,255,255,0.3); backdrop-filter:blur(10px);
-  border-radius:20px; padding:20px;
-  max-width:80%; max-height:80%;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-}
-#qr-content img {
-  max-width:100%; max-height:100%;
-  object-fit:contain;
-  border-radius:12px;
-}
-#qr-content p {
-  color:#ccc; margin-top:10px; font-size:0.9em; text-align:center;
-}
+#qr-overlay { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
+  background: rgba(0,0,0,0.5); z-index:30; display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity 0.4s; }
+#qr-content { background: rgba(255,255,255,0.3); backdrop-filter:blur(10px);
+  border-radius:20px; padding:20px; max-width:50vw; max-height:50vh; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; }
+#qr-content img { max-width:100%; max-height:100%; object-fit:contain; border-radius:12px; }
+#qr-content p { color:#ccc; margin-top:10px; font-size:0.9em; text-align:center; }
 
 /* QR and VR buttons */
 #top-qr-button, #vr-button {
@@ -152,14 +88,16 @@ body {
   color:#fff; padding:8px 15px; border-radius:12px; font-family:'Saira',sans-serif; cursor:pointer; z-index:25;
 }
 #top-qr-button { right:10px; }
-#vr-button { right:80px; display:none; }
+#vr-button { right:10px; top:60px; display:none; } /* under QR button */
 
 /* Pulse effect */
 .pulse-white { animation:pulseWhite 2s ease-in-out; }
-@keyframes pulseWhite {
-  0%   { background: rgba(0,0,0,0.15); }
-  50%  { background: rgba(255,255,255,0.9); } 
-  100% { background: rgba(0,0,0,0.15); }
+@keyframes pulseWhite { 0% { background: rgba(0,0,0,0.1); } 50% { background: rgba(255,255,255,0.9); } 100% { background: rgba(0,0,0,0.1); } }
+
+/* Responsive adjustments */
+@media (max-width:768px){
+  #hotspot-panel, #video-link-panel, #qr-content, #license-bar { max-width:90vw; font-size:0.9em; padding:8px 12px; }
+  #overlay-content { max-width:90vw; padding:20px 25px; font-size:1.2em; }
 }
 </style>
 </head>
@@ -247,11 +185,9 @@ overlay.addEventListener('click', ()=>{
   videoLinkPanel.style.display='block';
   hotspotPanel.classList.add('pulse-white');
   setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
-
   detectVRHeadset().then(info=>{
     if(!info) return;
-    const vrButton = document.getElementById('vr-button');
-    vrButton.style.display='block';
+    document.getElementById('vr-button').style.display='block';
   });
 });
 
@@ -309,11 +245,11 @@ async function detectVRHeadset(){
   if(navigator.xr){
     try{
       const supported = await navigator.xr.isSessionSupported('immersive-vr');
-      if(!supported) return null;
-      return { manufacturer:'Oculus', model:'Quest 3' };
+      if(supported) return {manufacturer:'Oculus', model:'Quest 3'};
+      else return null;
     }catch(e){ return null; }
   } else if(navigator.userAgent.includes("Oculus") || navigator.userAgent.includes("Quest")){
-    return { manufacturer:'Oculus', model:'Quest 3' };
+    return {manufacturer:'Oculus', model:'Quest 3'};
   } else return null;
 }
 
