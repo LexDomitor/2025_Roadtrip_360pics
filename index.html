@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>360° Panorama - Half Moon Bay</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
@@ -11,59 +11,61 @@
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
 body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
-/* Panorama container */
+/* Panorama */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
-/* Black intro fade overlay */
+/* intro black fade */
 #intro-black { position:fixed; inset:0; background:#000; z-index:50; }
 
-/* License bar */
+/* license bar */
 #license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
-/* Intro overlay */
+/* overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%;
-    max-width:90vw;
-    height:auto;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(8px);
-    border-radius:18px;
-    padding:24px;
-    color:#fff;
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    gap:12px;
-    margin:0 auto;
-    line-height:1.3;
+  width:45%;
+  max-width:90vw;
+  height:auto;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  border-radius:18px;
+  padding:24px;
+  color:#fff;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:12px;
+  margin:0 auto;
+  line-height:1.3;
 }
 #overlay-content p { margin:0; }
 #intro-icon {
-    width:80px; height:80px; margin:0 auto 12px auto; display:block;
-    transform-style: preserve-3d; perspective:800px;
+  width:80px; height:80px; margin:0 auto 12px auto; display:block;
+  transform-style: preserve-3d; backface-visibility:hidden;
 }
-#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
+
+/* instructions header - uppercase & bold, no underline */
+#instructions-line { font-weight:700; margin-top:8px; color:#fff; text-transform:uppercase; text-decoration:none; }
+
+/* list */
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
 
-/* divider line */
+/* divider */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
 
-/* pulsing dismiss */
+/* dismiss pulse */
 #dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation:pulseDismiss 2s infinite; }
 @keyframes pulseDismiss { 0%,100%{opacity:1;}50%{opacity:0.4;} }
 
-/* tooltip preview (independent) */
+/* tooltip preview */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 #tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
 
-/* hotspot panel - hidden until dismiss */
+/* hotspot & video panels (hidden until dismiss) */
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
-
-/* 360 video panel - hidden until dismiss */
 #video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
 
 /* youtube modal */
@@ -71,29 +73,28 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* qr overlay - QR button hidden initially */
+/* qr overlay & content - qr button hidden initially */
 #qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
 #qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
 #qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
 
-/* QR and VR buttons - hidden until dismiss */
+/* QR & VR buttons hidden until dismiss */
 #top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
-#top-qr-button { top:12px; }
-#vr-button { top:64px; }
+#top-qr-button { top:12px; } #vr-button { top:64px; }
 
-/* Fullscreen button match QR style */
+/* fullscreen control style */
 .pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
 
-/* responsive adjustments */
+/* responsive */
 @media(max-width:900px){
-    #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;}
-    #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
+  #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
 }
 @media(max-width:480px){
-    #overlay-content{width:92vw;height:auto;padding:14px;font-size:0.95rem;}
-    #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
-    #hotspot-panel{font-size:0.9rem; padding:10px;}
+  #overlay-content{width:92vw;height:auto;padding:14px;font-size:0.95rem;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
+  #hotspot-panel{font-size:0.9rem; padding:10px;}
 }
 </style>
 </head>
@@ -105,13 +106,15 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
     <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
-    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br><br>
-    These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer;">here</span>.</p>
+    <!-- single newline between sentences; 'DJI' starts on its own line -->
+    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>
+    These images are from my recent travels in Northern California taken with a<br>DJI OSMO 360 camera at 120 MP.</p>
+
+    <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer; display:inline-block;">here</span>.</p>
 
     <hr>
 
-    <div id="instructions-line">Instructions</div>
+    <div id="instructions-line">INSTRUCTIONS</div>
     <div id="instructions-list">
       <p>• Click and drag to look around.</p>
       <p>• Scroll to zoom in/out.</p>
@@ -122,11 +125,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   </div>
 </div>
 
+<!-- tooltip preview -->
 <div id="tooltip-preview" role="tooltip" aria-hidden="true">
   <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
   <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
+<!-- top panels (initially hidden until overlay dismiss) -->
 <div id="hotspot-panel" aria-hidden="true">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
@@ -158,50 +163,49 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-const panoURL="https://i.imgur.com/FYdmUI3.jpeg";
-const viewer=pannellum.viewer('panorama',{
-    type:'equirectangular', panorama:panoURL, autoLoad:true,
-    hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
-    autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
+/* Pannellum */
+const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
+const viewer = pannellum.viewer('panorama', {
+  type:'equirectangular', panorama:panoURL, autoLoad:true,
+  hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
+  autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
 
-const overlay=document.getElementById('overlay');
-const overlayContent=document.getElementById('overlay-content');
-const hotspotPanel=document.getElementById('hotspot-panel');
-const videoLinkPanel=document.getElementById('video-link-panel');
-const previewLink=document.getElementById('preview-link');
-const tooltip=document.getElementById('tooltip-preview');
-const tooltipLink=document.getElementById('tooltip-link');
-const qrBtn=document.getElementById('top-qr-button');
-const vrBtn=document.getElementById('vr-button');
-const qrOverlay=document.getElementById('qr-overlay');
-const qrContent=document.getElementById('qr-content');
-const youtubeOverlay=document.getElementById('youtube-overlay');
-const youtubeFrame=document.getElementById('youtube-frame');
-const licenseBar=document.getElementById('license-bar');
-const introBlack=document.getElementById('intro-black');
-const introIcon=document.getElementById('intro-icon');
+/* dom refs */
+const overlay = document.getElementById('overlay');
+const overlayContent = document.getElementById('overlay-content');
+const hotspotPanel = document.getElementById('hotspot-panel');
+const videoLinkPanel = document.getElementById('video-link-panel');
+const previewLink = document.getElementById('preview-link');
+const tooltip = document.getElementById('tooltip-preview');
+const tooltipLink = document.getElementById('tooltip-link');
+const qrBtn = document.getElementById('top-qr-button');
+const vrBtn = document.getElementById('vr-button');
+const qrOverlay = document.getElementById('qr-overlay');
+const qrContent = document.getElementById('qr-content');
+const youtubeOverlay = document.getElementById('youtube-overlay');
+const youtubeFrame = document.getElementById('youtube-frame');
+const licenseBar = document.getElementById('license-bar');
+const introBlack = document.getElementById('intro-black');
+const introIcon = document.getElementById('intro-icon');
 
-/* LICENSE load */
+/* load license */
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
 
-/* Dark intro fade - fades after 1s over 2s */
+/* initial black fade: start opaque, fade after 1s over 2s */
 setTimeout(()=>{
-  introBlack.style.transition='opacity 2s';
-  introBlack.style.opacity=0;
-  setTimeout(()=>introBlack.style.display='none',2000);
-},1000);
+  introBlack.style.transition = 'opacity 2s ease';
+  introBlack.style.opacity = '0';
+  setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
+}, 1000);
 
-/* overlay dismissal: reveal hotspot, video panel, QR + VR buttons */
+/* overlay dismissal: clicking anywhere dismisses except the rounded 'here' */
 function dismissOverlay(e){
-  // clicking the rounded 'here' box should not dismiss (it's inside overlay-content but not an <a>)
-  if(e.target.closest && e.target.closest('#preview-link')) {
-    return;
-  }
+  // if clicked on the preview-link box itself, don't dismiss
+  if (e.target.closest && e.target.closest('#preview-link')) return;
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
-
-  // show the top panels and buttons
+  // reveal top panels & buttons
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
   qrBtn.style.display='block';
@@ -209,66 +213,90 @@ function dismissOverlay(e){
 }
 overlay.addEventListener('click', dismissOverlay);
 
-/* tooltip hover tracking cursor independently */
+/* tooltip hover: track cursor and keep independent layer */
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
-  const ttWidth=tooltip.offsetWidth;
-  const ttHeight=tooltip.offsetHeight;
-  let left=e.clientX-ttWidth/2;
-  let top=e.clientY-ttHeight-10;
-  if(top<8) top=e.clientY+10;
-  if(left<8) left=8;
-  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
-  tooltip.style.left=Math.round(left)+'px';
-  tooltip.style.top=Math.round(top)+'px';
+  const ttW = tooltip.offsetWidth, ttH = tooltip.offsetHeight;
+  let left = e.clientX - ttW/2;
+  let top = e.clientY - ttH - 12;
+  if (top < 8) top = e.clientY + 12;
+  if (left < 8) left = 8;
+  if (left + ttW > window.innerWidth - 8) left = window.innerWidth - ttW - 8;
+  tooltip.style.left = Math.round(left) + 'px';
+  tooltip.style.top = Math.round(top) + 'px';
 });
-previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
+previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover') && !previewLink.matches(':hover')) { tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } }, 80); });
 tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
-previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
+previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
 if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-/* 360 video panel */
+/* 360 video modal */
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
-  youtubeFrame.src="https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
-  youtubeOverlay.style.display='flex'; requestAnimationFrame(()=>youtubeOverlay.style.opacity=1);
+  youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
+  youtubeOverlay.style.display='flex';
+  requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); });
+youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); });
 
 /* QR overlay */
-qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=>qrOverlay.style.opacity=1); });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
-qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
+qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=> qrOverlay.style.opacity = 1); });
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
 
-/* ESC closes overlays */
+/* ESC closes modals */
 document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    if(youtubeOverlay.style.display==='flex'){ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); }
-    if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280); }
+  if (e.key === 'Escape') {
+    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); }
+    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 280); }
   }
 });
 
-/* Intro icon flip (smoother) */
-let flipState=true;
-function flipIcon(){
-  introIcon.style.transition='transform 1s cubic-bezier(.22,.9,.36,1)'; // smoother ease
-  introIcon.style.transform='rotateY(90deg)'; // go to edge
-  setTimeout(()=>{
-    // swap image when edge-on
-    introIcon.src = flipState ? 'LexIconWhite,png.png' : 'LexIcon.png';
-    flipState = !flipState;
-    // rotate to flat (180 deg total from start)
-    introIcon.style.transform='rotateY(180deg)';
-    setTimeout(()=>{
-      // reset instantly back to 0deg to prepare for next flip without visible jump
-      introIcon.style.transition='none';
-      introIcon.style.transform='rotateY(0deg)';
-    },600);
-  },500);
-}
-setInterval(flipIcon,3000);
+/* coin flip animation with mid-swap at 90deg using requestAnimationFrame and easing */
+function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
 
+let spinning = false;
+function flipIconOnce(duration = 1000, onCompleteDelay = 800){
+  if (spinning) return;
+  spinning = true;
+  const startSrc = introIcon.src;
+  const otherSrc = startSrc.includes('LexIcon.png') && !startSrc.includes('LexIconWhite,png.png') ? 'LexIconWhite,png.png' : 'LexIcon.png';
+  const start = performance.now();
+  let swapped = false;
+
+  function frame(now){
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed / duration);
+    const eased = easeInOutCubic(t);
+    const angle = eased * 180; // 0..180
+    introIcon.style.transform = `rotateY(${angle}deg)`;
+
+    // swap at ~90deg
+    if (!swapped && angle >= 90){
+      swapped = true;
+      introIcon.src = otherSrc;
+      // keep the element visually at 90deg briefly by setting transform without transition
+      // we continue animation to 180deg smoothly
+    }
+
+    if (t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      // finish: reset to 0 without visual jump by briefly disabling transition
+      introIcon.style.transition = 'none';
+      introIcon.style.transform = 'rotateY(0deg)';
+      // restore later the inline transition usage
+      setTimeout(()=>{ introIcon.style.transition = ''; spinning = false; }, onCompleteDelay);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// repeat flips every 2.8s (1s flip + linger)
+setInterval(() => flipIconOnce(900, 900), 2800);
+
+/* load license fallback already handled earlier */
 </script>
 </body>
 </html>
