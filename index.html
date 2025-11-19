@@ -74,7 +74,7 @@ body {
 }
 
 /* Manhattan Beach hotspot panel */
-#hotspot-panel, #video-link-panel {
+#hotspot-panel {
   position: fixed; top:20px; left:50%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.15);
@@ -89,7 +89,24 @@ body {
   display:none;
   transition:opacity 0.5s ease;
 }
-#video-link-panel { margin-top:10px; cursor:pointer; text-decoration:underline; }
+
+/* 360 Video link panel */
+#video-link-panel {
+  position: fixed; top: calc(20px + 70px); /* top of Manhattan Beach + approx height */
+  left:50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.15);
+  backdrop-filter: blur(10px);
+  padding:10px 15px;
+  border-radius:12px;
+  color:#fff;
+  font-size:1em;
+  text-align:center;
+  max-width:60%;
+  z-index:15;
+  cursor:pointer;
+  display:none;
+  transition:opacity 0.5s ease;
+}
 
 /* YouTube modal overlay */
 #youtube-overlay {
@@ -226,7 +243,6 @@ const hotspotPanel = document.getElementById('hotspot-panel');
 const videoLinkPanel = document.getElementById('video-link-panel');
 overlay.addEventListener('click', ()=>{
   overlay.style.display='none';
-  // Show Manhattan Beach and 360 video link panels together
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
   hotspotPanel.classList.add('pulse-white');
