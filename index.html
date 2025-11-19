@@ -20,7 +20,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* Intro overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
-#overlay-content { width:40vw; max-width:90vw; height:auto; max-height:70vh; background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); border-radius:18px; padding:24px; color:#fff; text-align:center; display:flex; flex-direction:column; justify-content:space-between; gap:12px; margin:0 auto; word-wrap:break-word; }
+#overlay-content { width:40vw; max-width:90vw; aspect-ratio:2/3; background: rgba(255,255,255,0.18); backdrop-filter: blur(10px); border-radius:18px; padding:24px; color:#fff; text-align:center; display:flex; flex-direction:column; justify-content:space-between; gap:12px; margin:0 auto; word-wrap:break-word; }
 #overlay-content p { margin:0; }
 #instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
@@ -28,43 +28,8 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
 /* tooltip preview */
-#tooltip-preview {
-  display:none;
-  position:fixed;
-  width:300px;
-  height:300px;
-  background: rgba(0,0,0,0.9);
-  color:#fff;
-  text-align:center;
-  padding:12px;
-  border-radius:12px;
-  z-index:9999;
-  pointer-events:auto;
-  font-size:1.7rem;
-  line-height:1.4;
-  box-shadow:0 6px 18px rgba(0,0,0,0.6);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-#tooltip-preview img {
-  max-width:100%;
-  max-height:60%;
-  object-fit:contain;
-  border-radius:6px;
-}
-
-#tooltip-preview div {
-  max-width:100%;
-  max-height:40%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  word-wrap:break-word;
-  font-size:1rem;
-}
+#tooltip-preview { display:none; position:fixed; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:8px 12px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; }
+#tooltip-preview img { width:140px; height:auto; max-width:90%; display:block; border-radius:6px; }
 
 /* hotspot panel */
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
@@ -119,7 +84,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <div id="tooltip-preview" role="tooltip" aria-hidden="true">
   <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
-  <div style="font-size:1rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
+  <div style="font-size:0.9rem; max-width:220px; text-align:center;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
 <div id="hotspot-panel" aria-hidden="true">
@@ -185,20 +150,17 @@ function dismissOverlay(e){
 overlay.addEventListener('click', dismissOverlay);
 
 /* tooltip hover tracking cursor */
-function showTooltip(){
-  tooltip.style.display='flex'; tooltip.setAttribute('aria-hidden','false');
-  tooltip.offsetHeight;
-}
+function showTooltip(){ tooltip.style.display='flex'; tooltip.setAttribute('aria-hidden','false'); }
 previewLink.addEventListener('mouseenter', showTooltip);
 previewLink.addEventListener('mousemove', e=>{
-  const rect=previewLink.getBoundingClientRect();
-  const ttWidth=tooltip.offsetWidth; const ttHeight=tooltip.offsetHeight;
-  let top=rect.top-ttHeight-10; let left=rect.left+rect.width/2-ttWidth/2;
-  if(top<8) top=rect.bottom+10;
-  if(left<8) left=8;
-  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
-  tooltip.style.left=Math.round(left)+'px';
-  tooltip.style.top=Math.round(top)+'px';
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+  let left = e.clientX + 12;
+  let top = e.clientY + 12;
+  if(left + tooltipWidth > window.innerWidth - 8) left = window.innerWidth - tooltipWidth - 8;
+  if(top + tooltipHeight > window.innerHeight - 8) top = window.innerHeight - tooltipHeight - 8;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
 });
 previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
 tooltip.addEventListener('mouseenter', showTooltip);
