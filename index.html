@@ -6,11 +6,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.14.0/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
 <style>
 * { box-sizing:border-box; }
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
-body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
 /* Panorama container */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
@@ -22,42 +21,25 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%;
-    max-width:90vw;
-    height:auto;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(6px);
-    border-radius:18px;
-    padding:24px;
-    color:#fff;
-    text-align:center;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    gap:12px;
-    margin:0 auto;
-    line-height:1.3;
+    width:45%; max-width:90vw; height:auto; background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(6px); border-radius:18px; padding:24px; color:#fff;
+    text-align:center; display:flex; flex-direction:column; justify-content:flex-start; gap:12px; margin:0 auto; line-height:1.3;
 }
 #overlay-content p { margin:0; }
-#intro-icon {
-    width:80px;
-    height:80px;
-    margin:0 auto 12px auto;
-    display:block;
-    cursor:pointer;
-    transform-style: preserve-3d;
-}
-#instructions-line { font-weight:700; margin-top:8px; color:#fff; }
+#icon-container { perspective:600px; margin-bottom:12px; display:flex; justify-content:center; }
+#intro-icon { width:80px; height:80px; transform-style: preserve-3d; transform-origin: center; display:block; }
+#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
-
-/* divider line */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
+#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation: pulse 1.2s infinite; }
 
-/* dismiss message pulse */
-#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; opacity:0.6; }
+@keyframes pulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.4; }
+}
 
-/* tooltip preview */
+/* tooltip preview (independent) */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 #tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
 
@@ -65,8 +47,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
 
 /* 360 video panel */
-#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#fff; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
-#manhattan-video-text { padding:4px 8px; border-radius:8px; background: rgba(255,255,255,0.12); color:#ccc; text-decoration:none; cursor:pointer; display:inline-block; }
+#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#333; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
@@ -85,25 +66,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #vr-button { top:64px; display:none; }
 
 /* Fullscreen button match QR style */
-.pannellum-fullscreen-button {
-    padding:8px 12px;
-    border-radius:12px;
-    background: rgba(0,0,0,0.18);
-    backdrop-filter: blur(8px);
-    color:#fff;
-    box-shadow:none;
-}
-
-/* responsive adjustments */
-@media(max-width:900px){
-    #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;}
-    #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
-}
-@media(max-width:480px){
-    #overlay-content{width:92vw;height:auto;padding:14px;font-size:0.95rem;}
-    #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
-    #hotspot-panel{font-size:0.9rem; padding:10px;}
-}
+.pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
 </style>
 </head>
 <body>
@@ -112,9 +75,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
+    <div id="icon-container">
+      <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
+    </div>
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link" style="border-radius:6px;padding:2px 6px;background:rgba(255,255,255,0.12);cursor:pointer;">here</span>.</p>
+    <p>If you would like to see my other work click <span id="preview-link" style="display:inline-block; padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.1); cursor:pointer;">here</span>.</p>
 
     <hr>
 
@@ -126,7 +91,6 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
     </div>
 
     <div style="height:12px;"></div>
-
     <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
@@ -143,7 +107,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 </div>
 
 <div id="video-link-panel" aria-hidden="true">
-  <span id="manhattan-video-text">Click Here to Watch a 360 Video of this Location</span>
+  <span id="manhattan-video-text" style="color:#333;">Click Here to Watch a 360 Video of this Location</span>
 </div>
 
 <div id="license-bar">Loading license...</div>
@@ -175,49 +139,39 @@ const viewer=pannellum.viewer('panorama',{
 });
 
 const overlay=document.getElementById('overlay');
-const overlayContent=document.getElementById('overlay-content');
 const hotspotPanel=document.getElementById('hotspot-panel');
 const videoLinkPanel=document.getElementById('video-link-panel');
 const previewLink=document.getElementById('preview-link');
 const tooltip=document.getElementById('tooltip-preview');
 const tooltipLink=document.getElementById('tooltip-link');
 const qrBtn=document.getElementById('top-qr-button');
-const vrBtn=document.getElementById('vr-button');
 const qrOverlay=document.getElementById('qr-overlay');
 const qrContent=document.getElementById('qr-content');
 const youtubeOverlay=document.getElementById('youtube-overlay');
 const youtubeFrame=document.getElementById('youtube-frame');
+const dismissMsg=document.getElementById('dismiss-message');
+const introIcon=document.getElementById('intro-icon');
 const licenseBar=document.getElementById('license-bar');
-const dismissMessage=document.getElementById('dismiss-message');
-const manhattanVideoText=document.getElementById('manhattan-video-text');
 
 /* LICENSE load */
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
 
 /* overlay dismissal */
-function dismissOverlay(e){
+overlay.addEventListener('click', e=>{
   if(e.target.closest('#overlay-content a')) return;
-  overlay.setAttribute('aria-hidden','true');
-  overlay.style.display='none';
-  hotspotPanel.style.display='block';
-  videoLinkPanel.style.display='block';
-  // pulse dismiss message
-  gsap.fromTo(dismissMessage,{opacity:0.3},{opacity:0.6,duration:0.4,yoyo:true,repeat:1});
-}
-overlay.addEventListener('click', dismissOverlay);
+  overlay.setAttribute('aria-hidden','true'); overlay.style.display='none';
+  hotspotPanel.style.display='block'; videoLinkPanel.style.display='block';
+});
 
-/* tooltip hover */
+/* tooltip hover tracking independently */
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
-  const ttWidth=tooltip.offsetWidth;
-  const ttHeight=tooltip.offsetHeight;
-  let left=e.clientX-ttWidth/2;
-  let top=e.clientY-ttHeight-10;
+  const ttWidth=tooltip.offsetWidth, ttHeight=tooltip.offsetHeight;
+  let left=e.clientX-ttWidth/2, top=e.clientY-ttHeight-10;
   if(top<8) top=e.clientY+10;
   if(left<8) left=8;
   if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
-  tooltip.style.left=Math.round(left)+'px';
-  tooltip.style.top=Math.round(top)+'px';
+  tooltip.style.left=Math.round(left)+'px'; tooltip.style.top=Math.round(top)+'px';
 });
 previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
 tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
@@ -227,8 +181,7 @@ tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
 /* 360 video panel */
 videoLinkPanel.addEventListener('click', e=>{
-  e.stopPropagation();
-  youtubeFrame.src="https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
+  e.stopPropagation(); youtubeFrame.src="https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
   youtubeOverlay.style.display='flex'; requestAnimationFrame(()=>youtubeOverlay.style.opacity=1);
 });
 youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); });
@@ -246,25 +199,19 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-/* spinning 3D coin icon */
-const introIcon=document.getElementById('intro-icon');
-const iconImages=['LexIcon.png','LexIconWhite,png.png'];
-let flipIndex=0;
+/* Pulse animation for dismiss already in CSS */
 
+/* 3D spinning icon with alternating images */
+let iconToggle=true;
 function spinIcon(){
-    introIcon.src=iconImages[flipIndex%2];
-    flipIndex++;
-    gsap.fromTo(introIcon,
-        {rotationY:0},
-        {rotationY:360,
-         duration:2,
-         ease:"power2.inOut",
-         onComplete:()=>{
-            gsap.to(introIcon,{rotationY:0,duration:0.8,ease:"power2.inOut", onComplete:spinIcon});
-         }
-    });
+  gsap.to(introIcon,{rotationY:360, duration:2, ease:"power2.inOut", onComplete:()=>{
+      iconToggle=!iconToggle;
+      introIcon.src=iconToggle ? "LexIcon.png" : "LexIconWhite,png.png";
+      introIcon.style.transform="rotateY(0deg)";
+      setTimeout(spinIcon,500); // linger 0.5s
+  }});
 }
-setTimeout(spinIcon,400);
+spinIcon();
 </script>
 </body>
 </html>
