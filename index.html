@@ -3,349 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <title>360° Panorama - Half Moon Bay</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar,
-#tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button {
-  user-select:none;
-}
-body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; }
-#panorama { width:100vw; height:100vh; position:relative; }
+/* global */
+* { box-sizing:border-box; }
+html,body { height:100%; margin:0; }
+body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel,
+#license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay,
+#vr-button, #top-qr-button { user-select: none; }
+body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; background:#000; }
 
-/* ---------------- INTRO PANEL ---------------- */
+/* panorama container */
+#panorama { width:100vw; height:100vh; position:relative; z-index:0; }
+
+/* License bar */
+#license-bar {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 92%;
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 13px;
+  z-index: 12;
+  overflow-y: auto;
+  text-align: center;
+  white-space: pre-wrap;
+  border-radius: 12px;
+}
+
+/* Intro overlay - center panel */
 #overlay {
-  position:fixed; top:0; left:0; width:100vw; height:100vh;
-  background:rgba(0,0,0,0.35);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:20; cursor:pointer;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.40);
+  display:flex; align-items:center; justify-content:center;
+  z-index:40;
 }
+#overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  background:rgba(255,255,255,0.3);
-  backdrop-filter:blur(10px);
-  padding:40px;
-  border-radius:25px;
-  width:50vw;
-  height:50vh;
-  max-width:500px;
-  max-height:500px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  text-align:center;
+  width:50vw; height:50vh;
+  max-width:90vw; max-height:90vh;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  padding:28px;
+  border-radius:18px;
   color:#fff;
-  font-size:1.4em;
-  line-height:1.4em;
+  text-align:left;
+  font-size:1.05rem;
+  line-height:1.4;
+  pointer-events:auto;
+  display:flex; flex-direction:column; justify-content:space-between;
 }
-#overlay-content p { margin:10px 0; }
+#overlay-content p { margin:0 0 10px 0; color:#fff; }
 
-#overlay-content a {
-  color:#fff;
-  text-decoration:underline;
-  cursor:pointer;
-}
+/* Instructions */
+#instructions-line { text-decoration:underline; font-weight:700; margin-top:6px; color:#fff; }
+#instructions-list { text-align:left; margin-top:8px; max-width:480px; line-height:1.6em; color:#fff; }
+#instructions-list p { margin:6px 0 0 0; }
 
-#dismiss-message {
-  margin-top:20px;
-  color:#ccc;
-  font-size:0.9em;
-}
+/* Dismiss message line (small, off-gray) */
+#dismiss-message { margin-top:10px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
-/* ---------------- PREVIEW TOOLTIP ---------------- */
+/* tooltip preview */
 #tooltip-preview {
   display:none;
-  position:absolute;
-  width:260px;
+  position: fixed;
+  width: 280px;
+  background: rgba(0,0,0,0.9);
+  color:#fff;
+  text-align:center;
   padding:10px;
-  background:rgba(0,0,0,0.85);
   border-radius:10px;
-  color:#fff;
-  z-index:50;
-  pointer-events:none;
-  text-align:center;
-}
-#tooltip-preview img {
-  width:240px;
-  border-radius:8px;
-}
-#tooltip-preview a {
-  color:#fff;
-  text-decoration:underline;
-  font-size:0.8em;
+  z-index:9999;
+  pointer-events:auto; /* allow clicks inside preview */
+  font-size:0.85rem;
+  line-height:1.2;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
-/* ---------------- INFO PANELS ---------------- */
+/* hotspot panel */
 #hotspot-panel {
-  position:fixed; top:20px; left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.2);
-  backdrop-filter:blur(10px);
-  padding:15px 20px;
-  border-radius:15px;
+  position: fixed;
+  top: 18px;
+  left:50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.20);
+  backdrop-filter: blur(10px);
+  padding:12px 18px;
+  border-radius:14px;
   color:#fff;
-  font-size:1em;
+  font-size:0.98rem;
   text-align:center;
-  max-width:80%;
+  max-width:82%;
+  z-index:20;
   display:none;
-  z-index:15;
 }
 
+/* 360 video panel */
 #video-link-panel {
-  position:fixed;
-  top:190px;  /* LOWERED SLIGHTLY */
+  position: fixed;
+  top: calc(18px + 72px + 6px); /* just under hotspot */
   left:50%;
   transform:translateX(-50%);
-  background:rgba(0,0,0,0.2);
-  backdrop-filter:blur(10px);
-  padding:12px 15px;
+  background: rgba(0,0,0,0.20);
+  backdrop-filter: blur(10px);
+  padding:10px 14px;
   border-radius:12px;
   color:#fff;
-  font-size:1em;
+  font-size:0.96rem;
+  text-align:center;
+  max-width:66%;
+  z-index:20;
   cursor:pointer;
   display:none;
-  z-index:15;
 }
 
-/* ---------------- QR PANEL ---------------- */
+/* youtube modal */
+#youtube-overlay {
+  display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55);
+  z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s;
+}
+#youtube-content {
+  background: rgba(255,255,255,0.14); backdrop-filter: blur(10px);
+  border-radius:16px; padding:12px;
+  max-width:90%; width:880px; max-height:80%; height:480px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+#youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
+
+/* QR overlay - made taller (2x) */
 #qr-overlay {
-  display:none; opacity:0;
-  position:fixed; top:0; left:0; width:100vw; height:100vh;
-  background:rgba(0,0,0,0.55);
-  z-index:30;
-  display:flex; align-items:center; justify-content:center;
-  transition:opacity .4s;
+  display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55);
+  z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s;
 }
 #qr-content {
-  background:rgba(255,255,255,0.3);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
-  padding:20px;
-  width:200px;   /* HALF SIZE */
-  height:auto;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  background: rgba(255,255,255,0.14); backdrop-filter: blur(10px);
+  border-radius:16px; padding:16px;
+  max-width: 26vw; width:26vw;
+  /* HEIGHT DOUBLED: was 36vh earlier — now 72vh (approx 2x). Clamped for small screens */
+  max-height: 72vh; height:72vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
-#qr-content img {
-  width:100%;
-  border-radius:10px;
-}
-#qr-content p {
-  margin-top:12px;
-  color:#ccc;
-  font-size:0.9em;
-  text-align:center;
-}
+#qr-content img { height: 15vh; max-height:15vh; object-fit:contain; border-radius:8px; }
+#qr-content p { color:#d0d0d0; margin-top:12px; font-size:0.95rem; text-align:center; }
 
-/* ---------------- YOUTUBE MODAL ---------------- */
-#youtube-overlay {
-  display:none; opacity:0;
-  position:fixed; top:0; left:0; width:100vw; height:100vh;
-  background:rgba(0,0,0,0.55);
-  z-index:30;
-  display:flex; align-items:center; justify-content:center;
-  transition:opacity .4s;
-}
-
-#youtube-content {
-  background:rgba(255,255,255,0.25);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
-  width:800px; height:450px;
-  padding:20px;
-  display:flex; flex-direction:column;
-}
-#youtube-content iframe {
-  width:100%; height:100%; border:none; border-radius:12px;
-}
-#youtube-content p {
-  margin-top:10px;
-  color:#ddd;
-  font-size:0.9em;
-  text-align:center;
-}
-
-/* ---------------- TOP BUTTONS ---------------- */
+/* QR and VR buttons */
 #top-qr-button, #vr-button {
-  position:fixed; top:10px;
-  right:10px;
-  background:rgba(0,0,0,0.2);
-  backdrop-filter:blur(10px);
-  color:#fff;
-  padding:8px 15px;
-  border-radius:12px;
-  cursor:pointer;
-  z-index:25;
+  position:fixed; right: 12px; padding:8px 12px; border-radius:12px;
+  background: rgba(0,0,0,0.18); backdrop-filter: blur(8px);
+  color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem;
 }
-#vr-button { top:55px; display:none; }
+#top-qr-button { top:12px; }
+#vr-button { top:64px; display:none; }
 
-/* LICENSE */
-#license-bar {
-  position:fixed;
-  bottom:15px; left:50%; transform:translateX(-50%);
-  background:rgba(0,0,0,0.2);
-  backdrop-filter:blur(10px);
-  padding:10px 20px;
-  border-radius:10px;
-  max-width:90%;
-  text-align:center;
-  color:#fff;
-  font-size:14px;
+/* responsive adjustments */
+@media (max-width:900px) {
+  #overlay-content { width:86vw; height:58vh; padding:18px; font-size:0.98rem; }
+  #qr-content { width:48vw; height:56vh; max-height:56vh; }
+  #video-link-panel { max-width:86%; top: calc(18px + 88px + 8px); }
+}
+@media (max-width:480px) {
+  #overlay-content { width:92vw; height:62vh; padding:14px; font-size:0.95rem; }
+  #qr-content { width:64vw; height:50vh; }
+  #hotspot-panel { font-size:0.9rem; padding:10px; }
+  #video-link-panel { font-size:0.95rem; top: calc(18px + 86px + 8px); max-width:88%; }
 }
 </style>
 </head>
 <body>
 
+<!-- Panorama container -->
 <div id="panorama"></div>
 
 <!-- Intro overlay -->
-<div id="overlay">
-  <div id="overlay-content">
-    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images were shot in Northern California at 120MP.</p>
-    <p>If you would like to see my other work click <a id="preview-link">here</a>.</p>
+<div id="overlay" role="dialog" aria-modal="true">
+  <div id="overlay-content" role="document">
+    <div>
+      <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
+      <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
+
+      <div style="height:8px;"></div>
+
+      <div id="instructions-line">Instructions</div>
+      <div id="instructions-list">
+        <p>• Click and drag to look around.</p>
+        <p>• Scroll to zoom in/out.</p>
+        <p>• Use fullscreen button for best experience.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:10px; text-align:center;">
+      <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
+    </div>
   </div>
-  <p id="dismiss-message">Click Anywhere to Dismiss</p>
 </div>
 
-<!-- Hover tooltip preview -->
-<div id="tooltip-preview">
-  <img src="https://i.imgur.com/eKxOrcZ.jpeg">
-  <br>
-  <a href="https://linktr.ee/lexofdystopia" target="_blank">https://linktr.ee/lexofdystopia</a>
+<!-- Tooltip preview (hover) -->
+<div id="tooltip-preview" role="tooltip" aria-hidden="true">
+  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview" style="width:100%; height:auto; border-radius:8px; display:block; margin-bottom:8px;">
+  <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
-<!-- Info panels -->
-<div id="hotspot-panel">
-  Manhattan Beach at Half Moon Bay, California.<br>
-  The Ritz-Carlton sits on the distant cliffs.<br>
-  The coast is lined with miles of golf courses.
+<!-- Manhattan Beach panel -->
+<div id="hotspot-panel" aria-hidden="true">
+  Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
+  The Ritz-Carlton can be seen on the distant cliffs.<br>
+  The coastal shores are lined with miles of golf courses.
 </div>
 
-<div id="video-link-panel">Click Here to Watch a 360 Video of this Location</div>
+<!-- 360 video link panel -->
+<div id="video-link-panel" aria-hidden="true">
+  <span id="manhattan-video-text" style="text-decoration:underline; color:#9fd6ff;">Click Here to Watch a 360 Video of this Location</span>
+</div>
 
+<!-- license bar -->
 <div id="license-bar">Loading license...</div>
 
-<!-- Top buttons -->
-<div id="top-qr-button">QR</div>
-<div id="vr-button">VR</div>
+<!-- QR and VR buttons -->
+<button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
+<button id="vr-button" aria-hidden="true">VR</button>
 
-<!-- YouTube modal -->
-<div id="youtube-overlay">
+<!-- youtube overlay -->
+<div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
-    <iframe id="youtube-frame"></iframe>
-    <p>Click Anywhere to Dismiss</p>
+    <iframe id="youtube-frame" allowfullscreen referrerpolicy="no-referrer"></iframe>
+    <p style="color:#d0d0d0; margin-top:10px; font-size:0.95rem;">Click Anywhere to Dismiss this Video</p>
   </div>
 </div>
 
-<!-- QR modal -->
-<div id="qr-overlay">
+<!-- qr overlay -->
+<div id="qr-overlay" aria-hidden="true">
   <div id="qr-content">
-    <img src="VRQR.png">
+    <img src="VRQR.png" alt="QR code">
     <p>Click Anywhere to Dismiss</p>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
 <script>
-/* ---------------- Panorama ---------------- */
-const viewer = pannellum.viewer('panorama',{
-  type:'equirectangular',
-  panorama:"https://i.imgur.com/FYdmUI3.jpeg",
-  hfov:100,
-  autoLoad:true,
-  showFullscreenCtrl:true
+/* === configuration === */
+const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
+
+/* === init pannellum === */
+const viewer = pannellum.viewer('panorama', {
+  type: 'equirectangular',
+  panorama: panoURL,
+  autoLoad: true,
+  hfov: 100,
+  showFullscreenCtrl: true,
+  showZoomCtrl: false,
+  compass: false
 });
 
-/* ---------------- Intro dismiss ---------------- */
+/* === element refs === */
 const overlay = document.getElementById('overlay');
-overlay.addEventListener('click',()=>{
-  overlay.style.display='none';
-  document.getElementById('hotspot-panel').style.display='block';
-  document.getElementById('video-link-panel').style.display='block';
-});
-
-/* ---------------- Load LICENSE ---------------- */
-fetch('LICENSE')
-  .then(r=>r.text())
-  .then(t=>document.getElementById('license-bar').textContent=t)
-  .catch(()=>document.getElementById('license-bar').textContent='LICENSE not found.');
-
-/* ---------------- Hover Preview ---------------- */
+const overlayContent = document.getElementById('overlay-content');
+const hotspotPanel = document.getElementById('hotspot-panel');
+const videoLinkPanel = document.getElementById('video-link-panel');
 const previewLink = document.getElementById('preview-link');
 const tooltip = document.getElementById('tooltip-preview');
+const tooltipLink = document.getElementById('tooltip-link');
+const qrBtn = document.getElementById('top-qr-button');
+const vrBtn = document.getElementById('vr-button');
+const qrOverlay = document.getElementById('qr-overlay');
+const qrContent = document.getElementById('qr-content');
+const youtubeOverlay = document.getElementById('youtube-overlay');
+const youtubeFrame = document.getElementById('youtube-frame');
+const licenseBar = document.getElementById('license-bar');
 
-previewLink.addEventListener('mouseenter',e=>{
-  const r = e.target.getBoundingClientRect();
-  tooltip.style.left = (r.left + r.width/2 - tooltip.offsetWidth/2) + "px";
-  tooltip.style.top = (r.top - tooltip.offsetHeight - 10) + "px";
-  tooltip.style.display="block";
-});
+/* === overlay dismissal logic ===
+   Only dismiss when user clicks outside the overlay-content.
+   Clicking interactive elements inside overlay-content (links/tooltip) won't dismiss.
+*/
+overlay.addEventListener('click', (ev) => {
+  // if click is inside the overlay content, do nothing
+  if (ev.target.closest && ev.target.closest('#overlay-content')) {
+    return;
+  }
+  // otherwise dismiss overlay
+  overlay.setAttribute('aria-hidden','true');
+  overlay.style.display = 'none';
+  hotspotPanel.style.display = 'block';
+  videoLinkPanel.style.display = 'block';
+  hotspotPanel.classList.add('pulse-white');
+  setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
 
-previewLink.addEventListener('mouseleave',()=> tooltip.style.display="none");
-
-previewLink.addEventListener('click', e=>{
-  e.stopPropagation();                // DO NOT close intro panel  
-  window.open("https://linktr.ee/lexofdystopia","_blank");
-});
-
-/* ---------------- 360 Video modal ---------------- */
-const videoPanel = document.getElementById('video-link-panel');
-const ytOverlay = document.getElementById('youtube-overlay');
-const ytFrame = document.getElementById('youtube-frame');
-
-videoPanel.addEventListener('click', e=>{
-  e.stopPropagation();
-  ytOverlay.style.display='flex';
-  requestAnimationFrame(()=>{
-    ytOverlay.style.opacity=1;
-    setTimeout(()=> {
-      ytFrame.src="https://www.youtube.com/embed/sfYM1-_WbWk";
-    },200);  // FIXES Error 153
+  // detect VR and show VR button
+  detectVRHeadset().then(info=>{
+    if(info){
+      vrBtn.style.display = 'block';
+      vrBtn.setAttribute('aria-hidden','false');
+      // add instruction to hotspot if not already present
+      if (!hotspotPanel.dataset.vrmsg) {
+        hotspotPanel.dataset.vrmsg = '1';
+        const em = document.createElement('div');
+        em.style.marginTop = '8px';
+        em.style.fontSize = '0.9rem';
+        em.style.color = '#dcdcdc';
+        em.innerHTML = '<em>Press the VR button under the QR button to launch immersive VR.</em>';
+        hotspotPanel.appendChild(em);
+      }
+    }
   });
 });
 
-ytOverlay.addEventListener('click',()=>{
-  ytOverlay.style.opacity=0;
-  setTimeout(()=>{
-    ytOverlay.style.display='none';
-    ytFrame.src="";
-  },300);
-});
+/* === load LICENSE === */
+fetch('LICENSE').then(r => r.ok ? r.text() : Promise.reject('no')).then(text => {
+  licenseBar.textContent = text;
+}).catch(()=>{ licenseBar.textContent = 'LICENSE file not found.'; });
 
-/* ---------------- QR modal ---------------- */
-const qrBtn = document.getElementById('top-qr-button');
-const qrOverlay = document.getElementById('qr-overlay');
-
-qrBtn.addEventListener('click', e=>{
-  e.stopPropagation();
-  qrOverlay.style.display='flex';
-  requestAnimationFrame(()=> qrOverlay.style.opacity=1);
-});
-
-qrOverlay.addEventListener('click',()=>{
-  qrOverlay.style.opacity=0;
-  setTimeout(()=> qrOverlay.style.display='none',300);
-});
-
-/* ---------------- VR Detection ---------------- */
-async function detectVR(){
-  if(navigator.xr){
-    try{
-      return await navigator.xr.isSessionSupported("immersive-vr");
-    }catch(_){return false;}
-  }
-  return navigator.userAgent.includes("Quest");
+/* === tooltip hover behavior ===
+   - show on hover of previewLink
+   - position after showing (measure)
+   - allow clicks inside tooltip (link) without dismissing overlay
+*/
+function showTooltip() {
+  tooltip.style.display = 'block';
+  tooltip.setAttribute('aria-hidden','false');
+  // force reflow to ensure offsetHeight valid
+  tooltip.offsetHeight;
+  // compute position: above the link if possible, else below
+  const rect = previewLink.getBoundingClientRect();
+  const ttWidth = tooltip.offsetWidth;
+  const ttHeight = tooltip.offsetHeight;
+  // prefer above
+  let top = rect.top - ttHeight - 10;
+  let left = rect.left + rect.width/2 - ttWidth/2;
+  // clamp to viewport
+  if (top < 8) top = rect.bottom + 10; // place below if not enough room above
+  if (left < 8) left = 8;
+  if (left + ttWidth > window.innerWidth - 8) left = window.innerWidth - ttWidth - 8;
+  tooltip.style.left = Math.round(left) + 'px';
+  tooltip.style.top = Math.round(top) + 'px';
 }
 
-detectVR().then(supported=>{
-  if(supported) document.getElementById('vr-button').style.display='block';
+previewLink.addEventListener('mouseenter', (e) => {
+  showTooltip();
+});
+previewLink.addEventListener('mousemove', (e) => {
+  // gently follow minor movements (optional)
+  // but we only reposition when necessary to avoid jitter
+});
+previewLink.addEventListener('mouseleave', (e) => {
+  // hide only if mouse isn't over tooltip
+  // small timeout to allow moving from link to tooltip
+  setTimeout(()=> {
+    if (!tooltip.matches(':hover') && !previewLink.matches(':hover')) {
+      tooltip.style.display='none';
+      tooltip.setAttribute('aria-hidden','true');
+    }
+  }, 80);
 });
 
-/* VR button → open VR page */
-document.getElementById('vr-button').addEventListener('click',e=>{
+// allow interacting with tooltip: keep it visible on hover
+tooltip.addEventListener('mouseenter', ()=> {
+  showTooltip();
+});
+tooltip.addEventListener('mouseleave', ()=> {
+  tooltip.style.display='none';
+  tooltip.setAttribute('aria-hidden','true');
+});
+
+// clicking the "here" inside overlay-content should NOT dismiss overlay — open new tab
+previewLink.addEventListener('click', (e) => {
+  e.stopPropagation(); e.preventDefault();
+  window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener');
+});
+
+// clicking the link inside tooltip also should open new tab (and not dismiss overlay)
+tooltipLink.addEventListener('click', (e) => {
+  e.stopPropagation(); // don't bubble to overlay
+  // link has target blank already; no need to preventDefault, but ensure new tab:
+  // (the anchor already has href and target="_blank")
+});
+
+/* === 360 video panel -> YouTube modal === */
+videoLinkPanel.addEventListener('click', (e) => {
   e.stopPropagation();
-  window.open("vr.html","_blank");
+  youtubeFrame.src = "https://www.youtube.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
+  youtubeOverlay.style.display = 'flex';
+  // fade
+  requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
+});
+youtubeOverlay.addEventListener('click', ()=> {
+  youtubeOverlay.style.opacity = 0;
+  setTimeout(()=> { youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280);
+});
+
+/* === QR button and overlay === */
+qrBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  qrOverlay.style.display = 'flex';
+  requestAnimationFrame(()=> qrOverlay.style.opacity = 1);
+});
+qrOverlay.addEventListener('click', ()=> {
+  qrOverlay.style.opacity = 0;
+  setTimeout(()=> qrOverlay.style.display = 'none', 300);
+});
+qrContent.addEventListener('click', (e)=> e.stopPropagation()); // clicking inside the panel won't close it
+
+/* === detect VR headset (WebXR) === */
+async function detectVRHeadset(){
+  if (navigator.xr && navigator.xr.isSessionSupported) {
+    try {
+      const supported = await navigator.xr.isSessionSupported('immersive-vr');
+      if (supported) return { manufacturer: 'WebXR', model: 'immersive-vr' };
+    } catch (err) { /* ignore */ }
+  }
+  const ua = navigator.userAgent || '';
+  if (/OculusBrowser|Oculus|Quest|Meta Quest/i.test(ua)) {
+    return { manufacturer: 'Oculus', model: 'Quest' };
+  }
+  return null;
+}
+
+/* === VR button behavior: open vr.html in new tab (separate immersive viewer) === */
+vrBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  // open separate VR page (you already have vr.html in project or can be generated)
+  const w = window.open('vr.html', '_blank', 'noopener');
+  if (!w) alert('Popup blocked. Allow popups for immersive VR.');
+});
+
+/* === after overlay dismissed, ensure interactive elements inside overlay don't accidentally dismiss it === */
+/* (handled by the overlay click test above) */
+
+/* accessibility: keyboard ESC to close overlays (but not the intro) */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // close youtube or qr if open
+    if (youtubeOverlay.style.display === 'flex') {
+      youtubeOverlay.style.opacity = 0;
+      setTimeout(()=> { youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280);
+    }
+    if (qrOverlay.style.display === 'flex') {
+      qrOverlay.style.opacity = 0;
+      setTimeout(()=> qrOverlay.style.display='none', 280);
+    }
+  }
 });
 </script>
 </body>
