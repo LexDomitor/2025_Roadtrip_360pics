@@ -21,27 +21,27 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:50%;           /* half width */
-    max-width:90vw;
-    height:auto;         /* auto height */
+    width:45%;
+    max-width:45%;
+    height:auto;
     background: rgba(255,255,255,0.18);
     backdrop-filter: blur(10px);
     border-radius:18px;
-    padding:24px;
+    padding:36px 24px;
     color:#fff;
-    text-align:center;   /* center all text */
+    text-align:center;
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
-    gap:12px;
-    margin:0 auto;
+    gap:16px;
 }
 #overlay-content p { margin:0; }
-#intro-icon { display:block; margin:0 auto 12px auto; width:80px; height:80px; } /* center icon and scale */
+#intro-icon { width:80px; height:80px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto; }
 #instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
-#instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
+#instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
 #dismiss-message { margin-top:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+hr { border:1px solid #fff; margin:12px auto; width:50%; }
 
 /* tooltip preview */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:4px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
@@ -96,11 +96,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
+    <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
 
-    <hr style="border:1px solid #fff; margin:12px 0; width:80%;">
+    <hr style="border:1px solid #fff; margin:12px auto; width:50%;">
 
     <div id="instructions-line">Instructions</div>
     <div id="instructions-list">
@@ -183,25 +183,24 @@ function dismissOverlay(e){
 overlay.addEventListener('click', dismissOverlay);
 
 /* tooltip hover tracking cursor */
-previewLink.addEventListener('mouseenter', ()=>{
-    tooltip.style.display='block';
-    tooltip.setAttribute('aria-hidden','false');
-});
+function showTooltip(){
+  tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false');
+}
+previewLink.addEventListener('mouseenter', showTooltip);
 previewLink.addEventListener('mousemove', e=>{
-    const ttWidth = tooltip.offsetWidth;
-    const ttHeight = tooltip.offsetHeight;
-    let left = e.pageX - ttWidth / 2;
-    let top = e.pageY - ttHeight - 10;
-    if(top < 0) top = e.pageY + 10;
-    if(left < 0) left = 0;
-    if(left + ttWidth > window.innerWidth) left = window.innerWidth - ttWidth;
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = top + 'px';
+  const rect=previewLink.getBoundingClientRect();
+  const ttWidth=tooltip.offsetWidth; const ttHeight=tooltip.offsetHeight;
+  let top=rect.top-ttHeight-10; let left=rect.left+rect.width/2-ttWidth/2;
+  if(top<8) top=rect.bottom+10;
+  if(left<8) left=8;
+  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
+  tooltip.style.left=Math.round(left)+'px';
+  tooltip.style.top=Math.round(top)+'px';
 });
-previewLink.addEventListener('mouseleave', ()=>{
-    tooltip.style.display='none';
-    tooltip.setAttribute('aria-hidden','true');
-});
+previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
+tooltip.addEventListener('mouseenter', showTooltip);
+tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
+previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
 tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
 /* 360 video panel */
@@ -222,6 +221,22 @@ document.addEventListener('keydown', e=>{
   if(e.key==='Escape'){
     if(youtubeOverlay.style.display==='flex'){ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); }
     if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280); }
+  }
+});
+
+/* disable right click */
+document.addEventListener('contextmenu', e=>{ e.preventDefault(); });
+
+/* printscreen white flash */
+document.addEventListener('keyup', e=>{
+  if(e.key==='PrintScreen'){
+    const flash=document.createElement('div');
+    flash.style.position='fixed';
+    flash.style.inset='0';
+    flash.style.background='#fff';
+    flash.style.zIndex=99999;
+    document.body.appendChild(flash);
+    setTimeout(()=>document.body.removeChild(flash),500);
   }
 });
 </script>
