@@ -59,16 +59,7 @@ body {
   color: #fff;
   text-align: center;
   z-index: 15;
-  display: none; /* hidden until intro dismissed */
-}
-
-#manhattan-video {
-  display:block;
-  margin-top:5px;
-  font-size:1em;
-  color:#0af;
-  cursor:pointer;
-  text-decoration:underline;
+  display: none;
 }
 
 #license-bar {
@@ -101,6 +92,12 @@ body {
 .instructions li::before {
   content: '• ';
 }
+
+#here-link {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #0af;
+}
 </style>
 </head>
 <body>
@@ -125,8 +122,7 @@ If you would like to see my other work click <span id="here-link">here</span>.</
 </div>
 
 <div id="top-panel">
-  <div>Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area. The Ritz-Carlton can be seen on the distant cliffs. The coastal shores are lined with miles of golf courses.</div>
-  <div id="manhattan-video">Click Here to Watch a 360 Video of this Location</div>
+  Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area. The Ritz-Carlton can be seen on the distant cliffs. The coastal shores are lined with miles of golf courses.
 </div>
 
 <div id="license-bar">Loading license...</div>
@@ -143,7 +139,6 @@ const viewer = pannellum.viewer('panorama', {
   hfov: 100
 });
 
-// Intro overlay dismissal
 const overlay = document.getElementById('overlay');
 overlay.addEventListener('click', () => {
   overlay.style.display = 'none';
@@ -155,14 +150,9 @@ fetch('LICENSE').then(r => r.ok ? r.text() : 'LICENSE file not found.').then(tex
   document.getElementById('license-bar').textContent = text;
 });
 
-// Manhattan 360 video panel
-document.getElementById('manhattan-video').addEventListener('click', () => {
-  window.open('vr.html','_blank'); // opens VR page
-});
-
-// Hover preview link
+// "here" link preview
 document.getElementById('here-link').addEventListener('click', e => {
-  e.stopPropagation();
+  e.stopPropagation(); // don't dismiss overlay
   window.open('https://linktr.ee/lexofdystopia','_blank');
 });
 </script>
