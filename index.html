@@ -14,25 +14,21 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* Panorama container */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
-/* Black overlay for fade-in */
-#black-overlay {
-    position: fixed; inset:0;
-    background: #000;
-    z-index:5;
-    opacity: 1;
-    transition: opacity 2s ease;
-}
+/* Black fade overlay */
+#black-fade { position:fixed; inset:0; background:#000; z-index:50; opacity:1; transition:opacity 2s ease; pointer-events:none; }
 
 /* License bar */
 #license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
 /* Intro overlay */
-#overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:40; }
+#overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%; max-width:90vw; height:auto;
-    background: rgba(255,255,255,0.12);  /* frostedness lowered */
-    backdrop-filter: blur(8px);
+    width:45%;
+    max-width:90vw;
+    height:auto;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(5px);
     border-radius:18px;
     padding:24px;
     color:#fff;
@@ -45,26 +41,17 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
     line-height:1.3;
 }
 #overlay-content p { margin:0; }
-
-/* Coin icon */
-#intro-icon {
-    width:80px; height:80px;
-    margin:0 auto 12px auto;
-    display:block;
-    transform-style: preserve-3d;
-    transition: transform 1s ease-in-out;
-}
-
-/* instructions */
-#instructions-line { font-weight:700; margin-top:8px; color:#fff; }
+#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; transform-style: preserve-3d; perspective:800px; }
+#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
 
 /* divider line */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
 
-/* dismiss message */
-#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; transition: opacity 0.5s; }
+/* dismiss message pulsing */
+@keyframes pulseFade { 0%{opacity:0.3;} 50%{opacity:1;} 100%{opacity:0.3;} }
+#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation: pulseFade 1.5s infinite; }
 
 /* tooltip preview (independent) */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
@@ -75,15 +62,6 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 /* 360 video panel */
 #video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.28); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
-
-/* hyperlink box for "here" */
-#preview-link-box {
-    display:inline-block;
-    padding:2px 6px;
-    border-radius:6px;
-    background: rgba(255,255,255,0.15);
-    cursor:pointer;
-}
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
@@ -126,13 +104,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <body>
 
 <div id="panorama"></div>
-<div id="black-overlay"></div>
+<div id="black-fade"></div>
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
     <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link-box">here</span>.</p>
+    <p>If you would like to see my other work click <span id="preview-link" style="display:inline-block; padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.2); cursor:pointer;">here</span>.</p>
 
     <hr>
 
@@ -161,7 +139,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 </div>
 
 <div id="video-link-panel" aria-hidden="true">
-  <span id="manhattan-video-text">Click Here to Watch a 360 Video of this Location</span>
+  <span id="manhattan-video-text" style="color:#d0d0d0; cursor:pointer;">Click Here to Watch a 360 Video of this Location</span>
 </div>
 
 <div id="license-bar">Loading license...</div>
@@ -189,47 +167,44 @@ const panoURL="https://i.imgur.com/FYdmUI3.jpeg";
 const viewer=pannellum.viewer('panorama',{
     type:'equirectangular', panorama:panoURL, autoLoad:true,
     hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
-    autoRotate:0
+    autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
 
-/* black fade overlay */
-window.addEventListener('load', ()=>{
-    setTimeout(()=>{
-        const blackOverlay = document.getElementById('black-overlay');
-        blackOverlay.style.opacity = 0;
-        setTimeout(()=>{ blackOverlay.style.display='none'; },2000);
-    },1000);
-});
-
-/* spinning coin logic */
+const overlay=document.getElementById('overlay');
+const overlayContent=document.getElementById('overlay-content');
+const hotspotPanel=document.getElementById('hotspot-panel');
+const videoLinkPanel=document.getElementById('video-link-panel');
+const previewLink=document.getElementById('preview-link');
+const tooltip=document.getElementById('tooltip-preview');
+const tooltipLink=document.getElementById('tooltip-link');
+const qrBtn=document.getElementById('top-qr-button');
+const vrBtn=document.getElementById('vr-button');
+const qrOverlay=document.getElementById('qr-overlay');
+const qrContent=document.getElementById('qr-content');
+const youtubeOverlay=document.getElementById('youtube-overlay');
+const youtubeFrame=document.getElementById('youtube-frame');
+const licenseBar=document.getElementById('license-bar');
+const blackFade=document.getElementById('black-fade');
 const introIcon=document.getElementById('intro-icon');
-let toggle=true;
-function spinCoin(){
-    introIcon.style.transform='rotateY(90deg)';
-    setTimeout(()=>{
-        introIcon.src = toggle ? 'LexIconWhite,png.png' : 'LexIcon.png';
-        toggle = !toggle;
-        introIcon.style.transform='rotateY(0deg)';
-    },500);
+let coinSide=true;
+
+/* LICENSE load */
+fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
+
+/* black fade animation */
+setTimeout(()=>{ blackFade.style.opacity=0; },1000);
+
+/* overlay dismissal */
+function dismissOverlay(e){
+  if(e.target.closest('#overlay-content a')) return;
+  overlay.setAttribute('aria-hidden','true');
+  overlay.style.display='none';
+  hotspotPanel.style.display='block';
+  videoLinkPanel.style.display='block';
 }
-setInterval(spinCoin, 3000);
-
-/* overlay dismissal pulse */
-const dismissMsg = document.getElementById('dismiss-message');
-overlay.addEventListener('click', ()=>{
-    overlay.setAttribute('aria-hidden','true');
-    overlay.style.display='none';
-    hotspotPanel.style.display='block';
-    videoLinkPanel.style.display='block';
-
-    // pulse effect
-    dismissMsg.style.opacity = 0.2;
-    setTimeout(()=>{ dismissMsg.style.opacity = 1; }, 500);
-});
+overlay.addEventListener('click', dismissOverlay);
 
 /* tooltip hover tracking cursor independently */
-const previewLink = document.getElementById('preview-link-box');
-const tooltip = document.getElementById('tooltip-preview');
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
   const ttWidth=tooltip.offsetWidth;
@@ -245,11 +220,10 @@ previewLink.addEventListener('mousemove', e=>{
 previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
 tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
+previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
+tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-/* video panel click */
-const videoLinkPanel = document.getElementById('video-link-panel');
-const youtubeOverlay = document.getElementById('youtube-overlay');
-const youtubeFrame = document.getElementById('youtube-frame');
+/* 360 video panel */
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src="https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
@@ -258,9 +232,6 @@ videoLinkPanel.addEventListener('click', e=>{
 youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); });
 
 /* QR overlay */
-const qrBtn=document.getElementById('top-qr-button');
-const qrOverlay=document.getElementById('qr-overlay');
-const qrContent=document.getElementById('qr-content');
 qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=>qrOverlay.style.opacity=1); });
 qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
 qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
@@ -272,6 +243,26 @@ document.addEventListener('keydown', e=>{
     if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280); }
   }
 });
+
+/* spinning coin icon logic */
+function spinIcon(){
+    let deg=0;
+    let duration=1500; // 1.5s per flip
+    const step=()=> {
+        deg+=4;
+        introIcon.style.transform=`rotateY(${deg}deg)`;
+        if(deg<180){
+            requestAnimationFrame(step);
+        } else {
+            coinSide=!coinSide;
+            introIcon.src=coinSide?"LexIcon.png":"LexIconWhite,png.png";
+            introIcon.style.transform=`rotateY(0deg)`; // reset for next spin
+            setTimeout(spinIcon,2000); // spin every 2s
+        }
+    };
+    requestAnimationFrame(step);
+}
+spinIcon();
 </script>
 </body>
 </html>
