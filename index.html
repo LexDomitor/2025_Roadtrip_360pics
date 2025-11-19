@@ -13,7 +13,7 @@ html,body { height:100%; margin:0; }
 body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel,
 #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay,
 #vr-button, #top-qr-button { user-select: none; }
-body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; background:#000; display:flex; justify-content:center; align-items:center; text-align:center; }
+body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; background:#000; text-align:center; }
 
 /* panorama container */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
@@ -47,24 +47,27 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width:35vw; max-width:90vw;
+  width:40vw; max-width:90vw;
+  height:auto; max-height:90vh;
   background: rgba(255,255,255,0.18);
   backdrop-filter: blur(10px);
-  padding:20px 24px;
+  padding:24px;
   border-radius:18px;
   color:#fff;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
   text-align:center;
   font-size:1.05rem;
   line-height:1.4;
-  pointer-events:auto;
-  display:flex; flex-direction:column; justify-content:center;
 }
 #overlay-content p { margin:0 0 10px 0; color:#fff; }
 
 /* Instructions */
 #instructions-line { text-decoration:underline; font-weight:700; margin-top:6px; color:#fff; }
-#instructions-list { text-align:center; margin-top:8px; max-width:420px; line-height:1.6em; color:#fff; }
+#instructions-list { text-align:center; margin-top:8px; max-width:480px; line-height:1.6em; color:#fff; }
 #instructions-list p { margin:6px 0 0 0; }
+
+/* Dismiss message line */
+#dismiss-message { margin-top:14px; font-size:0.95rem; color:#d0d0d0; }
 
 /* tooltip preview */
 #tooltip-preview {
@@ -77,7 +80,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   padding:10px;
   border-radius:10px;
   z-index:9999;
-  pointer-events:auto; 
+  pointer-events:auto;
   font-size:0.85rem;
   line-height:1.2;
   box-shadow: 0 6px 18px rgba(0,0,0,0.6);
@@ -104,7 +107,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 /* 360 video panel */
 #video-link-panel {
   position: fixed;
-  top: calc(18px + 72px + 12px); 
+  top: calc(18px + 72px + 6px);
   left:50%;
   transform:translateX(-50%);
   background: rgba(0,0,0,0.20);
@@ -133,7 +136,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* QR overlay */
+/* qr overlay */
 #qr-overlay {
   display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55);
   z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s;
@@ -142,10 +145,10 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   background: rgba(255,255,255,0.14); backdrop-filter: blur(10px);
   border-radius:16px; padding:16px;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  max-width: fit-content; max-height: fit-content;
+  text-align:center;
 }
-#qr-content img { height: 15vh; max-height:15vh; object-fit:contain; border-radius:8px; margin-bottom:8px; }
-#qr-content p { color:#d0d0d0; font-size:0.95rem; text-align:center; }
+#qr-content img { height: 15vh; max-height:15vh; object-fit:contain; border-radius:8px; }
+#qr-content p { color:#d0d0d0; margin-top:12px; font-size:0.95rem; }
 
 /* QR and VR buttons */
 #top-qr-button, #vr-button {
@@ -158,11 +161,13 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 
 /* responsive adjustments */
 @media (max-width:900px) {
-  #overlay-content { width:70vw; padding:18px; font-size:0.98rem; }
+  #overlay-content { width:86vw; font-size:0.98rem; }
+  #qr-content { width:48vw; height:auto; }
   #video-link-panel { max-width:86%; top: calc(18px + 88px + 8px); }
 }
 @media (max-width:480px) {
-  #overlay-content { width:88vw; padding:14px; font-size:0.95rem; }
+  #overlay-content { width:92vw; font-size:0.95rem; }
+  #qr-content { width:64vw; height:auto; }
   #hotspot-panel { font-size:0.9rem; padding:10px; }
   #video-link-panel { font-size:0.95rem; top: calc(18px + 86px + 8px); max-width:88%; }
 }
@@ -189,6 +194,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
       </div>
 
       <div style="height:16px;"></div>
+      <div style="height:16px;"></div>
 
       <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
     </div>
@@ -201,26 +207,21 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
-<!-- Manhattan Beach panel -->
 <div id="hotspot-panel" aria-hidden="true">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
   The coastal shores are lined with miles of golf courses.
 </div>
 
-<!-- 360 video link panel -->
 <div id="video-link-panel" aria-hidden="true">
   <span id="manhattan-video-text" style="text-decoration:underline; color:#9fd6ff;">Click Here to Watch a 360 Video of this Location</span>
 </div>
 
-<!-- license bar -->
 <div id="license-bar">Loading license...</div>
 
-<!-- QR and VR buttons -->
 <button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
 <button id="vr-button" aria-hidden="true">VR</button>
 
-<!-- youtube overlay -->
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
     <iframe id="youtube-frame" allowfullscreen allow="autoplay; fullscreen; encrypted-media" referrerpolicy="no-referrer"></iframe>
@@ -228,7 +229,6 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   </div>
 </div>
 
-<!-- qr overlay -->
 <div id="qr-overlay" aria-hidden="true">
   <div id="qr-content">
     <img src="VRQR.png" alt="QR code">
@@ -239,15 +239,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
 const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
-const viewer = pannellum.viewer('panorama', {
-  type:'equirectangular',
-  panorama: panoURL,
-  autoLoad:true,
-  hfov:100,
-  showFullscreenCtrl:true,
-  showZoomCtrl:false,
-  compass:false
-});
+const viewer = pannellum.viewer('panorama', {type:'equirectangular', panorama:panoURL, autoLoad:true, hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false});
 
 const overlay = document.getElementById('overlay');
 const overlayContent = document.getElementById('overlay-content');
@@ -264,24 +256,17 @@ const youtubeOverlay = document.getElementById('youtube-overlay');
 const youtubeFrame = document.getElementById('youtube-frame');
 const licenseBar = document.getElementById('license-bar');
 
-overlay.addEventListener('click', ev => {
-  if(ev.target.closest('#overlay-content')) return;
-  overlay.setAttribute('aria-hidden','true');
-  overlay.style.display='none';
+overlay.addEventListener('click', (ev)=>{
+  if(ev.target.closest && ev.target.closest('#preview-link')) return;
+  overlay.setAttribute('aria-hidden','true'); overlay.style.display='none';
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
   hotspotPanel.classList.add('pulse-white');
   setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
-
   detectVRHeadset().then(info=>{
-    if(info){
-      vrBtn.style.display='block';
-      vrBtn.setAttribute('aria-hidden','false');
-      if(!hotspotPanel.dataset.vrmsg){
-        hotspotPanel.dataset.vrmsg='1';
-        const em=document.createElement('div');
-        em.style.marginTop='8px';
-        em.style.fontSize='0.9rem';
+    if(info){ vrBtn.style.display='block'; vrBtn.setAttribute('aria-hidden','false');
+      if(!hotspotPanel.dataset.vrmsg){ hotspotPanel.dataset.vrmsg='1';
+        const em=document.createElement('div'); em.style.marginTop='8px'; em.style.fontSize='0.9rem';
         em.style.color='#dcdcdc';
         em.innerHTML='<em>Press the VR button under the QR button to launch immersive VR.</em>';
         hotspotPanel.appendChild(em);
@@ -290,57 +275,51 @@ overlay.addEventListener('click', ev => {
   });
 });
 
-fetch('LICENSE').then(r => r.ok ? r.text() : Promise.reject('no')).then(text => {
-  licenseBar.textContent = text;
-}).catch(()=>{ licenseBar.textContent = 'LICENSE file not found.'; });
+fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(t=>licenseBar.textContent=t).catch(()=>licenseBar.textContent='LICENSE file not found.');
 
 function showTooltip(){
-  tooltip.style.display='block';
-  tooltip.setAttribute('aria-hidden','false');
+  tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false');
   tooltip.offsetHeight;
   const rect = previewLink.getBoundingClientRect();
-  const ttWidth = tooltip.offsetWidth;
-  const ttHeight = tooltip.offsetHeight;
-  let top = rect.top - ttHeight - 10;
-  let left = rect.left + rect.width/2 - ttWidth/2;
-  if(top < 8) top = rect.bottom + 10;
-  if(left<8) left=8;
-  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
-  tooltip.style.left = Math.round(left)+'px';
-  tooltip.style.top = Math.round(top)+'px';
+  let ttWidth = tooltip.offsetWidth, ttHeight = tooltip.offsetHeight;
+  let top = rect.top - ttHeight - 10; let left = rect.left + rect.width/2 - ttWidth/2;
+  if(top<8) top = rect.bottom + 10;
+  if(left<8) left=8; if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
+  tooltip.style.left=Math.round(left)+'px'; tooltip.style.top=Math.round(top)+'px';
 }
-
 previewLink.addEventListener('mouseenter', showTooltip);
-previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover') && !previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); }},80); });
+previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{if(!tooltip.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); }},80);});
 tooltip.addEventListener('mouseenter', showTooltip);
 tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
-tooltipLink.addEventListener('click', e=> e.stopPropagation());
 
-videoLinkPanel.addEventListener('click', e=>{ e.stopPropagation(); youtubeFrame.src="https://www.youtube.com/embed/sfYM1-_WbWk?rel=0&autoplay=1&enablejsapi=1"; youtubeOverlay.style.display='flex'; requestAnimationFrame(()=>youtubeOverlay.style.opacity=1); });
-youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); });
+videoLinkPanel.addEventListener('click', e=>{
+  e.stopPropagation();
+  const url="https://www.youtube.com/embed/sfYM1-_WbWk?rel=0&autoplay=1&enablejsapi=1&origin="+encodeURIComponent(window.location.origin);
+  youtubeFrame.src=url;
+  youtubeOverlay.style.display='flex';
+  requestAnimationFrame(()=>youtubeOverlay.style.opacity=1);
+});
+youtubeOverlay.addEventListener('click', ()=>{
+  youtubeOverlay.style.opacity=0;
+  setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280);
+});
 
 qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=>qrOverlay.style.opacity=1); });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); });
-qrContent.addEventListener('click', e=> e.stopPropagation());
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity=0; setTimeout(()=>qrOverlay.style.display='none',300); });
+qrContent.addEventListener('click', e=>e.stopPropagation());
 
 async function detectVRHeadset(){
-  if(navigator.xr && navigator.xr.isSessionSupported){
-    try{ if(await navigator.xr.isSessionSupported('immersive-vr')) return {manufacturer:'WebXR', model:'immersive-vr'}; }catch{}
+  if(navigator.xr&&navigator.xr.isSessionSupported){
+    try{ const sup=await navigator.xr.isSessionSupported('immersive-vr'); if(sup) return {manufacturer:'WebXR', model:'immersive-vr'}; }catch{}
   }
-  const ua = navigator.userAgent||'';
+  const ua=navigator.userAgent||'';
   if(/OculusBrowser|Oculus|Quest|Meta Quest/i.test(ua)) return {manufacturer:'Oculus', model:'Quest'};
   return null;
 }
-
 vrBtn.addEventListener('click', e=>{ e.stopPropagation(); const w=window.open('vr.html','_blank','noopener'); if(!w) alert('Popup blocked. Allow popups for immersive VR.'); });
 
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    if(youtubeOverlay.style.display==='flex'){ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); }
-    if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280); }
-  }
-});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if(youtubeOverlay.style.display==='flex'){ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280); } if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=>qrOverlay.style.display='none',280); } } });
 </script>
 </body>
 </html>
