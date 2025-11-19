@@ -1,342 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Lex 360 Viewer</title>
-
+<meta charset="UTF-8" />
+<title>360° Panorama - Half Moon Bay</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <style>
+* { box-sizing:border-box; }
+html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
+body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
-/* ----------------------------------------------------
-   GLOBAL
----------------------------------------------------- */
+/* Panorama */
+#panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #000;
-  font-family: Arial, sans-serif;
-}
+/* intro black fade */
+#intro-black { position:fixed; inset:0; background:#000; z-index:50; }
 
-/* ----------------------------------------------------
-   BLACK FADE-IN LAYER
----------------------------------------------------- */
+/* license bar */
+#license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
-#intro-blackout {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 3000;
-  opacity: 1;
-  pointer-events: none;
-  transition: opacity 2s ease;
-}
-
-/* ----------------------------------------------------
-   INTRO PANEL
----------------------------------------------------- */
-
-#intro-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
+/* overlay */
+#overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
+#overlay[aria-hidden="true"] { display:none; }
+#overlay-content {
+  width:45%;
+  max-width:90vw;
+  height:auto;
+  background: rgba(255,255,255,0.12);
   backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  border-radius:18px;
+  padding:24px;
+  color:#fff;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:12px;
+  margin:0 auto;
+  line-height:1.3;
 }
-
-#intro-panel {
-  width: 45%;
-  max-width: 480px;
-  background: rgba(30,30,30,0.55);
-  border-radius: 16px;
-  padding: 22px;
-  text-align: center;
-  color: #e0e0e0;
-}
-
-/* ICON WOBBLE ANIMATION */
-@keyframes lex3DWobble {
-  0%, 100% {
-    transform: rotateY(-8deg) rotateX(3deg);
-  }
-  50% {
-    transform: rotateY(8deg) rotateX(-3deg);
-  }
-}
-
+#overlay-content p { margin:0; }
 #intro-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 12px;
-  object-fit: contain;
-  animation: lex3DWobble 3s ease-in-out infinite;
+  width:80px; height:80px; margin:0 auto 12px auto; display:block;
+  transform-origin:center bottom;
 }
 
-/* Divider */
-#intro-divider {
-  width: 60%;
-  margin: 12px auto 18px auto;
-  border: none;
-  border-top: 1px solid #ffffffaa;
+/* instructions header - uppercase & bold, no underline */
+#instructions-line { font-weight:700; margin-top:8px; color:#fff; text-transform:uppercase; text-decoration:none; }
+
+/* list */
+#instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
+#instructions-list p { margin:6px 0; text-align:center; }
+
+/* divider */
+#overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
+
+/* dismiss pulse */
+#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation:pulseDismiss 2s infinite; }
+@keyframes pulseDismiss { 0%,100%{opacity:1;}50%{opacity:0.4;} }
+
+/* tooltip preview */
+#tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+#tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
+
+/* hotspot & video panels (hidden until dismiss) */
+#hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
+#video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
+
+/* youtube modal */
+#youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
+#youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+#youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
+
+/* qr overlay & content - qr button hidden initially */
+#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
+#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
+#qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
+#qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
+
+/* QR & VR buttons hidden until dismiss */
+#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
+#top-qr-button { top:12px; } #vr-button { top:64px; }
+
+/* fullscreen control style */
+.pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
+
+/* responsive */
+@media(max-width:900px){
+  #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
 }
-
-/* Instructions header */
-#intro-panel b {
-  font-size: 1.05rem;
-  letter-spacing: 0.5px;
+@media(max-width:480px){
+  #overlay-content{width:92vw;height:auto;padding:14px;font-size:0.95rem;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
+  #hotspot-panel{font-size:0.9rem; padding:10px;}
 }
-
-/* Pulsing dismiss text */
-@keyframes pulseDismiss {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
-}
-
-#dismiss-text {
-  margin-top: 18px;
-  animation: pulseDismiss 2s infinite;
-}
-
-/* ----------------------------------------------------
-   TOP PANELS (HIDDEN UNTIL DISMISS)
----------------------------------------------------- */
-
-.top-panel {
-  position: fixed;
-  top: 14px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  color: #ddd;
-  z-index: 1500;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s;
-}
-
-#panel-left {
-  left: 14px;
-}
-#panel-right {
-  right: 14px;
-}
-
-/* ----------------------------------------------------
-   QR BUTTON + FULLSCREEN BUTTON
----------------------------------------------------- */
-
-.action-btn {
-  position: fixed;
-  bottom: 18px;
-  right: 18px;
-  background: rgba(255,255,255,0.14);
-  backdrop-filter: blur(10px);
-  padding: 10px 16px;
-  border-radius: 14px;
-  font-size: 0.9rem;
-  color: #eee;
-  cursor: pointer;
-  z-index: 1500;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .25s;
-}
-
-/* ----------------------------------------------------
-   QR OVERLAY
----------------------------------------------------- */
-
-#qr-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  z-index: 2500;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-#qr-content {
-  padding: 14px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-}
-
-#qr-content img {
-  width: 120px;
-  height: 120px;
-  object-fit: contain;
-}
-
-/* ----------------------------------------------------
-   HOVER PREVIEW PANEL (separate layer)
----------------------------------------------------- */
-
-#hover-preview {
-  position: fixed;
-  padding: 10px;
-  background: rgba(255,255,255,0.14);
-  backdrop-filter: blur(8px);
-  border-radius: 12px;
-  z-index: 2600;
-  pointer-events: none;
-  display: none;
-}
-
-#hover-preview img {
-  width: 220px;
-  height: auto;
-  display: block;
-}
-
-/* Capsule hyperlink */
-.link-capsule {
-  background: rgba(255,255,255,0.15);
-  padding: 4px 10px;
-  border-radius: 10px;
-  color: #ccc;
-  cursor: pointer;
-  display: inline-block;
-  margin-top: 6px;
-}
-
 </style>
 </head>
 <body>
 
-<!-- BLACK FADE-IN -->
-<div id="intro-blackout"></div>
+<div id="panorama"></div>
+<div id="intro-black"></div>
 
-<!-- INTRO OVERLAY -->
-<div id="intro-overlay">
-  <div id="intro-panel">
+<div id="overlay" role="dialog" aria-modal="true">
+  <div id="overlay-content" role="document">
+    <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
+    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>DJI OSMO 360 camera at 120 MP.</p>
+    <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer; display:inline-block;">here</span>.</p>
 
-    <img id="intro-icon" src="LexIconWhite,png.png">
+    <hr>
 
-    <p>
-      Hi, I’m Lex. I build tools, visuals, and experiments that explore<br>
-      light, perception, space, and technical research.
-    </p>
+    <div id="instructions-line">INSTRUCTIONS</div>
+    <div id="instructions-list">
+      <p>• Click and drag to look around.</p>
+      <p>• Scroll to zoom in/out.</p>
+      <p>• Use fullscreen button for best experience.</p>
+    </div>
 
-    <hr id="intro-divider">
-
-    <b>INSTRUCTIONS</b><br><br>
-
-    • Pan around with mouse or touch.<br>
-    • Scroll to zoom in/out.<br>
-    • Hover over links for preview.<br><br>
-
-    Here is my 360° drone video:  
-    <span id="yt-link" class="link-capsule">here</span>
-
-    <br><br><br>
-
-    If you’d like to see my other work, tap the QR button.
-
-    <p id="dismiss-text">(click anywhere to dismiss)</p>
+    <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
 
-<!-- TOP PANELS -->
-<div id="panel-left" class="top-panel">Lighting: Natural</div>
-<div id="panel-right" class="top-panel">Location: California</div>
+<div id="tooltip-preview" role="tooltip" aria-hidden="true">
+  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
+  <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
+</div>
 
-<!-- QR BUTTON -->
-<div id="qr-btn" class="action-btn">QR</div>
+<div id="hotspot-panel" aria-hidden="true">
+  Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
+  The Ritz-Carlton can be seen on the distant cliffs.<br>
+  The coastal shores are lined with miles of golf courses.
+</div>
 
-<!-- FULLSCREEN BUTTON -->
-<div id="fs-btn" class="action-btn" style="bottom: 70px;">Fullscreen</div>
+<div id="video-link-panel" aria-hidden="true">
+  <span id="manhattan-video-text">Click Here to Watch a 360 Video of this Location</span>
+</div>
 
-<!-- QR OVERLAY -->
-<div id="qr-overlay">
+<div id="license-bar">Loading license...</div>
+
+<button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
+<button id="vr-button" aria-hidden="true">VR</button>
+
+<div id="youtube-overlay" aria-hidden="true">
+  <div id="youtube-content">
+    <iframe id="youtube-frame" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <p style="color:#d0d0d0; margin-top:10px; font-size:0.95rem;">Click Anywhere to Dismiss this Video</p>
+  </div>
+</div>
+
+<div id="qr-overlay" aria-hidden="true">
   <div id="qr-content">
-    <img src="qr.png">
+    <img src="VRQR.png" alt="QR code">
+    <p>Click Anywhere to Dismiss</p>
   </div>
 </div>
 
-<!-- HOVER PREVIEW -->
-<div id="hover-preview">
-  <img src="preview.jpg">
-</div>
-
-<!-- 360 VIEWER -->
-<div id="viewer" style="width:100vw; height:100vh;"></div>
-
-<script src="pannellum.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-/* ----------------------------------------------------
-   INIT 360 VIEWER (with autoRotate)
----------------------------------------------------- */
-pannellum.viewer('viewer', {
-  type: 'equirectangular',
-  panorama: 'your360.jpg',
-  autoLoad: true,
-  autoRotate: -1.2
+const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
+const viewer = pannellum.viewer('panorama', {
+  type:'equirectangular', panorama:panoURL, autoLoad:true,
+  hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
+  autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
 
-/* ----------------------------------------------------
-   FADE-IN OF BLACK LAYER
----------------------------------------------------- */
-setTimeout(() => {
-  document.getElementById("intro-blackout").style.opacity = "0";
+/* dom refs */
+const overlay = document.getElementById('overlay');
+const overlayContent = document.getElementById('overlay-content');
+const hotspotPanel = document.getElementById('hotspot-panel');
+const videoLinkPanel = document.getElementById('video-link-panel');
+const previewLink = document.getElementById('preview-link');
+const tooltip = document.getElementById('tooltip-preview');
+const tooltipLink = document.getElementById('tooltip-link');
+const qrBtn = document.getElementById('top-qr-button');
+const vrBtn = document.getElementById('vr-button');
+const qrOverlay = document.getElementById('qr-overlay');
+const qrContent = document.getElementById('qr-content');
+const youtubeOverlay = document.getElementById('youtube-overlay');
+const youtubeFrame = document.getElementById('youtube-frame');
+const licenseBar = document.getElementById('license-bar');
+const introBlack = document.getElementById('intro-black');
+const introIcon = document.getElementById('intro-icon');
+
+/* load license */
+fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
+
+/* initial black fade */
+setTimeout(()=>{
+  introBlack.style.transition = 'opacity 2s ease';
+  introBlack.style.opacity = '0';
+  setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
 }, 1000);
 
-/* ----------------------------------------------------
-   DISMISS INTRO
----------------------------------------------------- */
-document.getElementById("intro-overlay").addEventListener("click", () => {
+/* overlay dismissal */
+function dismissOverlay(e){
+  if (e.target.closest && e.target.closest('#preview-link')) return;
+  overlay.setAttribute('aria-hidden','true');
+  overlay.style.display='none';
+  hotspotPanel.style.display='block';
+  videoLinkPanel.style.display='block';
+  qrBtn.style.display='block';
+  vrBtn.style.display='block';
+}
+overlay.addEventListener('click', dismissOverlay);
 
-  document.getElementById("intro-overlay").style.display = "none";
+/* tooltip hover */
+previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
+previewLink.addEventListener('mousemove', e=>{
+  const ttW = tooltip.offsetWidth, ttH = tooltip.offsetHeight;
+  let left = e.clientX - ttW/2;
+  let top = e.clientY - ttH - 12;
+  if (top < 8) top = e.clientY + 12;
+  if (left < 8) left = 8;
+  if (left + ttW > window.innerWidth - 8) left = window.innerWidth - ttW - 8;
+  tooltip.style.left = Math.round(left) + 'px';
+  tooltip.style.top = Math.round(top) + 'px';
+});
+previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover') && !previewLink.matches(':hover')) { tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } }, 80); });
+tooltip.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
+tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
+previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
+if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-  // reveal top panels + buttons
-  document.querySelectorAll(".top-panel, .action-btn").forEach(el => {
-    el.style.opacity = "1";
-    el.style.pointerEvents = "auto";
-  });
+/* 360 video modal */
+videoLinkPanel.addEventListener('click', e=>{
+  e.stopPropagation();
+  youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
+  youtubeOverlay.style.display='flex';
+  requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
+});
+youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); });
+
+/* QR overlay */
+qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=> qrOverlay.style.opacity = 1); });
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
+
+/* ESC closes modals */
+document.addEventListener('keydown', e=>{
+  if (e.key === 'Escape') {
+    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); }
+    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 280); }
+  }
 });
 
-/* ----------------------------------------------------
-   QR BUTTON
----------------------------------------------------- */
-document.getElementById("qr-btn").onclick = () => {
-  document.getElementById("qr-overlay").style.display = "flex";
-};
-
-document.getElementById("qr-overlay").onclick = () => {
-  document.getElementById("qr-overlay").style.display = "none";
-};
-
-/* ----------------------------------------------------
-   FULLSCREEN
----------------------------------------------------- */
-document.getElementById("fs-btn").onclick = () => {
-  document.documentElement.requestFullscreen();
-};
-
-/* ----------------------------------------------------
-   HOVER PREVIEW
----------------------------------------------------- */
-const preview = document.getElementById("hover-preview");
-const ytLink = document.getElementById("yt-link");
-
-ytLink.addEventListener("mouseenter", e => {
-  preview.style.display = "block";
-});
-ytLink.addEventListener("mouseleave", e => {
-  preview.style.display = "none";
-});
-ytLink.addEventListener("mousemove", e => {
-  preview.style.left = (e.clientX + 20) + "px";
-  preview.style.top = (e.clientY + 20) + "px";
-});
+/* wobble animation for icon */
+let wobbleAngle = 0;
+let wobbleDirection = 1;
+function wobble(){
+  wobbleAngle += wobbleDirection * 0.8;
+  if (wobbleAngle > 10) wobbleDirection=-1;
+  if (wobbleAngle < -10) wobbleDirection=1;
+  introIcon.style.transform = `rotateX(${wobbleAngle}deg)`;
+  requestAnimationFrame(wobble);
+}
+wobble();
 </script>
-
 </body>
 </html>
