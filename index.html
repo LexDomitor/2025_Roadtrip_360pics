@@ -21,15 +21,15 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:50%;           /* half of original */
+    width:50%;           /* half width */
     max-width:90vw;
-    height:auto;         /* auto-adjust height */
+    height:auto;         /* auto height */
     background: rgba(255,255,255,0.18);
     backdrop-filter: blur(10px);
     border-radius:18px;
     padding:24px;
     color:#fff;
-    text-align:center;
+    text-align:center;   /* center all text */
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
@@ -37,7 +37,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
     margin:0 auto;
 }
 #overlay-content p { margin:0; }
-#intro-icon { width:80px; height:80px; margin-bottom:12px; } /* scale as needed */
+#intro-icon { display:block; margin:0 auto 12px auto; width:80px; height:80px; } /* center icon and scale */
 #instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; }
 #instructions-list p { margin:6px 0; text-align:center; }
@@ -96,7 +96,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
+    <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
 
@@ -183,24 +183,25 @@ function dismissOverlay(e){
 overlay.addEventListener('click', dismissOverlay);
 
 /* tooltip hover tracking cursor */
-function showTooltip(){
-  tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false');
-}
-previewLink.addEventListener('mouseenter', showTooltip);
-previewLink.addEventListener('mousemove', e=>{
-  const rect=previewLink.getBoundingClientRect();
-  const ttWidth=tooltip.offsetWidth; const ttHeight=tooltip.offsetHeight;
-  let top=rect.top-ttHeight-10; let left=rect.left+rect.width/2-ttWidth/2;
-  if(top<8) top=rect.bottom+10;
-  if(left<8) left=8;
-  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
-  tooltip.style.left=Math.round(left)+'px';
-  tooltip.style.top=Math.round(top)+'px';
+previewLink.addEventListener('mouseenter', ()=>{
+    tooltip.style.display='block';
+    tooltip.setAttribute('aria-hidden','false');
 });
-previewLink.addEventListener('mouseleave', ()=>{ setTimeout(()=>{ if(!tooltip.matches(':hover')&&!previewLink.matches(':hover')){ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); } },80); });
-tooltip.addEventListener('mouseenter', showTooltip);
-tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
-previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener'); });
+previewLink.addEventListener('mousemove', e=>{
+    const ttWidth = tooltip.offsetWidth;
+    const ttHeight = tooltip.offsetHeight;
+    let left = e.pageX - ttWidth / 2;
+    let top = e.pageY - ttHeight - 10;
+    if(top < 0) top = e.pageY + 10;
+    if(left < 0) left = 0;
+    if(left + ttWidth > window.innerWidth) left = window.innerWidth - ttWidth;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+});
+previewLink.addEventListener('mouseleave', ()=>{
+    tooltip.style.display='none';
+    tooltip.setAttribute('aria-hidden','true');
+});
 tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
 /* 360 video panel */
