@@ -7,90 +7,91 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* global */
+/* Global */
 * { box-sizing:border-box; }
-html,body { height:100%; margin:0; }
-body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel,
-#license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay,
-#vr-button, #top-qr-button { user-select: none; }
-body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relative; background:#000; text-align:center; }
+html, body { height:100%; margin:0; }
+body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; background:#000; user-select:none; position:relative; }
+#overlay, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
-/* panorama container */
+/* Panorama container */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
 
 /* License bar */
 #license-bar {
   position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 92%;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:92%;
   background: rgba(0,0,0,0.18);
   backdrop-filter: blur(10px);
-  color: #fff;
-  padding: 10px 18px;
-  font-size: 13px;
-  z-index: 12;
-  overflow-y: auto;
-  text-align: center;
-  white-space: pre-wrap;
-  border-radius: 12px;
+  color:#fff;
+  padding:10px 18px;
+  font-size:13px;
+  z-index:12;
+  overflow-y:auto;
+  text-align:center;
+  white-space:pre-wrap;
+  border-radius:12px;
 }
 
-/* Intro overlay - center panel */
+/* Intro overlay */
 #overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.40);
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,0.4);
   display:flex; align-items:center; justify-content:center;
   z-index:40;
 }
 #overlay[aria-hidden="true"] { display:none; }
+
 #overlay-content {
-  width:35vw; max-width:90vw;
-  height:auto; max-height:80vh;
+  width:40vw;                /* narrower */
+  height:60vw;               /* 3:2 ratio */
+  max-width:90vw; max-height:90vh;
   background: rgba(255,255,255,0.18);
   backdrop-filter: blur(10px);
   padding:28px;
   border-radius:18px;
   color:#fff;
-  display:flex; flex-direction:column; justify-content:center; align-items:center;
-  font-size:1rem; line-height:1.4; text-align:center;
+  text-align:center;
+  display:flex; flex-direction:column;
+  justify-content:space-between;
+  align-items:center;
 }
-#overlay-content p { margin:0 0 10px 0; }
+
+#overlay-content p { margin:0 0 10px 0; color:#fff; }
 
 /* Instructions */
-#instructions-line { text-decoration:underline; font-weight:700; margin-top:12px; color:#fff; }
-#instructions-list { text-align:center; margin-top:12px; max-width:480px; line-height:1.6em; color:#fff; }
-#instructions-list p { margin:6px 0 0 0; }
+#instructions-line { text-decoration:underline; font-weight:700; margin-top:6px; color:#fff; }
+#instructions-list { text-align:center; margin-top:8px; max-width:480px; line-height:1.6em; color:#fff; }
+#instructions-list p { margin:6px 0; }
 
-/* Dismiss message line (small, off-gray) */
-#dismiss-message { margin-top:16px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+/* Dismiss message */
+#dismiss-message { margin-top:12px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
-/* tooltip preview */
+/* Tooltip preview */
 #tooltip-preview {
   display:none;
-  position: fixed;
-  width: 280px;
+  position:fixed;
+  width:280px;
   background: rgba(0,0,0,0.9);
   color:#fff;
   text-align:center;
   padding:10px;
   border-radius:10px;
   z-index:9999;
-  pointer-events:none;
+  pointer-events:auto;
   font-size:0.85rem;
   line-height:1.2;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  box-shadow:0 6px 18px rgba(0,0,0,0.6);
 }
-#tooltip-preview img { width:100%; height:auto; border-radius:8px; display:block; margin-bottom:8px; }
 
-/* hotspot panel */
-#hotspot-panel {
-  position: fixed;
-  top: 18px;
+/* Hotspot & Video panels */
+#hotspot-panel, #video-link-panel {
+  position:fixed;
   left:50%;
-  transform: translateX(-50%);
+  transform:translateX(-50%);
   background: rgba(0,0,0,0.20);
   backdrop-filter: blur(10px);
   padding:12px 18px;
@@ -98,31 +99,13 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   color:#fff;
   font-size:0.98rem;
   text-align:center;
-  max-width:82%;
   z-index:20;
   display:none;
 }
+#hotspot-panel { top:18px; }
+#video-link-panel { top: calc(18px + 72px + 12px); cursor:pointer; }
 
-/* 360 video panel */
-#video-link-panel {
-  position: fixed;
-  top: 128px; /* bigger gap */
-  left:50%;
-  transform:translateX(-50%);
-  background: rgba(0,0,0,0.20);
-  backdrop-filter: blur(10px);
-  padding:10px 14px;
-  border-radius:12px;
-  color:#fff;
-  font-size:0.96rem;
-  text-align:center;
-  max-width:66%;
-  z-index:20;
-  cursor:pointer;
-  display:none;
-}
-
-/* youtube modal */
+/* 360 video overlay */
 #youtube-overlay {
   display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55);
   z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s;
@@ -143,60 +126,65 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 #qr-content {
   background: rgba(255,255,255,0.14); backdrop-filter: blur(10px);
   border-radius:16px; padding:16px;
-  width:auto; max-width:40vw; height:auto; max-height:60vh;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
+  max-width:20vw;
 }
-#qr-content img { width:50%; height:auto; border-radius:8px; margin-bottom:12px; }
-#qr-content p { color:#d0d0d0; margin-top:0; font-size:0.95rem; text-align:center; }
+#qr-content img { max-width:100%; height:auto; object-fit:contain; border-radius:8px; }
+#qr-content p { color:#d0d0d0; margin-top:12px; font-size:0.95rem; text-align:center; }
 
 /* QR and VR buttons */
 #top-qr-button, #vr-button {
-  position:fixed; right: 12px; padding:8px 12px; border-radius:12px;
+  position:fixed; right:12px; padding:8px 12px; border-radius:12px;
   background: rgba(0,0,0,0.18); backdrop-filter: blur(8px);
   color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem;
 }
 #top-qr-button { top:12px; }
 #vr-button { top:64px; display:none; }
 
-/* responsive adjustments */
+/* Responsive */
 @media (max-width:900px) {
-  #overlay-content { width:60vw; font-size:0.98rem; padding:18px; }
-  #qr-content { max-width:48vw; max-height:56vh; }
-  #video-link-panel { top: 148px; max-width:86%; }
+  #overlay-content { width:60vw; height:90vw; font-size:0.98rem; }
+  #qr-content { max-width:40vw; }
 }
 @media (max-width:480px) {
-  #overlay-content { width:72vw; font-size:0.95rem; padding:14px; }
-  #qr-content { max-width:64vw; max-height:50vh; }
+  #overlay-content { width:80vw; height:120vw; font-size:0.95rem; }
+  #qr-content { max-width:60vw; }
   #hotspot-panel { font-size:0.9rem; padding:10px; }
-  #video-link-panel { font-size:0.95rem; top: 168px; max-width:88%; }
+  #video-link-panel { font-size:0.95rem; }
 }
 </style>
 </head>
 <body>
 
-<!-- Panorama container -->
+<!-- Panorama -->
 <div id="panorama"></div>
 
 <!-- Intro overlay -->
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
+    <div>
+      <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
+      <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
 
-    <div id="instructions-line">Instructions</div>
-    <div id="instructions-list">
-      <p>• Click and drag to look around.</p>
-      <p>• Scroll to zoom in/out.</p>
-      <p>• Use fullscreen button for best experience.</p>
+      <div style="height:12px;"></div>
+
+      <div id="instructions-line">Instructions</div>
+      <div id="instructions-list">
+        <p>• Click and drag to look around.</p>
+        <p>• Scroll to zoom in/out.</p>
+        <p>• Use fullscreen button for best experience.</p>
+      </div>
+
+      <div style="height:16px;"></div>
+
+      <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
     </div>
-
-    <div style="margin-top:16px;" id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
 
-<!-- Tooltip preview (hover over "here") -->
+<!-- Tooltip preview -->
 <div id="tooltip-preview" role="tooltip" aria-hidden="true">
-  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
+  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview" style="width:100%; height:auto; border-radius:8px; display:block; margin-bottom:8px;">
   <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
@@ -207,7 +195,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   The coastal shores are lined with miles of golf courses.
 </div>
 
-<!-- 360 video link panel -->
+<!-- 360 video panel -->
 <div id="video-link-panel" aria-hidden="true">
   <span id="manhattan-video-text" style="text-decoration:underline; color:#9fd6ff;">Click Here to Watch a 360 Video of this Location</span>
 </div>
@@ -219,7 +207,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 <button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
 <button id="vr-button" aria-hidden="true">VR</button>
 
-<!-- youtube overlay -->
+<!-- YouTube overlay -->
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
     <iframe id="youtube-frame" allowfullscreen referrerpolicy="no-referrer"></iframe>
@@ -227,7 +215,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
   </div>
 </div>
 
-<!-- qr overlay -->
+<!-- QR overlay -->
 <div id="qr-overlay" aria-hidden="true">
   <div id="qr-content">
     <img src="VRQR.png" alt="QR code">
@@ -237,6 +225,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
+// Initialize panorama
 const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
 const viewer = pannellum.viewer('panorama', {
   type: 'equirectangular',
@@ -248,6 +237,7 @@ const viewer = pannellum.viewer('panorama', {
   compass: false
 });
 
+// Element refs
 const overlay = document.getElementById('overlay');
 const overlayContent = document.getElementById('overlay-content');
 const hotspotPanel = document.getElementById('hotspot-panel');
@@ -263,40 +253,39 @@ const youtubeOverlay = document.getElementById('youtube-overlay');
 const youtubeFrame = document.getElementById('youtube-frame');
 const licenseBar = document.getElementById('license-bar');
 
-/* LICENSE loading */
-fetch('LICENSE').then(r => r.ok ? r.text() : Promise.reject('no')).then(text => {
-  licenseBar.textContent = text;
-}).catch(()=>{ licenseBar.textContent = 'LICENSE file not found.'; });
-
-/* --- Overlay dismissal --- */
-function dismissOverlay(e){
-  if(e.target.closest('#preview-link')) return;
+// Overlay dismiss (except "here" link)
+overlay.addEventListener('click', (ev)=>{
+  if(ev.target.closest && ev.target.closest('#preview-link')) return;
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
+});
+
+// Tooltip hover
+function showTooltip() {
+  tooltip.style.display = 'block';
+  tooltip.setAttribute('aria-hidden','false');
+  const rect = previewLink.getBoundingClientRect();
+  const ttWidth = tooltip.offsetWidth;
+  const ttHeight = tooltip.offsetHeight;
+  let top = rect.top - ttHeight - 10;
+  let left = rect.left + rect.width/2 - ttWidth/2;
+  if(top < 8) top = rect.bottom + 10;
+  if(left<8) left=8;
+  if(left+ttWidth>window.innerWidth-8) left=window.innerWidth-ttWidth-8;
+  tooltip.style.left = Math.round(left)+'px';
+  tooltip.style.top = Math.round(top)+'px';
 }
-document.addEventListener('click', dismissOverlay);
+previewLink.addEventListener('mouseenter', showTooltip);
+previewLink.addEventListener('mouseleave', ()=>{ if(!tooltip.matches(':hover')) {tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true');}});
+tooltip.addEventListener('mouseenter', showTooltip);
+tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; tooltip.setAttribute('aria-hidden','true'); });
+previewLink.addEventListener('click',(e)=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia','_blank','noopener');});
+tooltipLink.addEventListener('click',(e)=>{ e.stopPropagation(); });
 
-/* --- Tooltip follows cursor --- */
-previewLink.addEventListener('mouseenter', ()=> tooltip.style.display='block');
-previewLink.addEventListener('mousemove', e=>{
-  tooltip.style.left = (e.clientX + 12) + 'px';
-  tooltip.style.top = (e.clientY + 12) + 'px';
-});
-previewLink.addEventListener('mouseleave', ()=> tooltip.style.display='none');
-
-/* Clicking 'here' opens new tab without dismissing */
-previewLink.addEventListener('click', e=>{
-  e.stopPropagation(); e.preventDefault();
-  window.open('https://linktr.ee/lexofdystopia','_blank','noopener');
-});
-
-/* Tooltip link */
-tooltipLink.addEventListener('click', e=> e.stopPropagation());
-
-/* 360 video modal */
-videoLinkPanel.addEventListener('click', e=>{
+// 360 video panel
+videoLinkPanel.addEventListener('click',(e)=>{
   e.stopPropagation();
   youtubeFrame.src="https://www.youtube.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
   youtubeOverlay.style.display='flex';
@@ -304,46 +293,23 @@ videoLinkPanel.addEventListener('click', e=>{
 });
 youtubeOverlay.addEventListener('click', ()=>{
   youtubeOverlay.style.opacity=0;
-  setTimeout(()=> { youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280);
+  setTimeout(()=>{youtubeOverlay.style.display='none'; youtubeFrame.src='';},280);
 });
 
-/* QR overlay */
-qrBtn.addEventListener('click', e=>{
+// QR overlay
+qrBtn.addEventListener('click',(e)=>{
   e.stopPropagation();
   qrOverlay.style.display='flex';
   requestAnimationFrame(()=> qrOverlay.style.opacity=1);
 });
 qrOverlay.addEventListener('click', ()=>{
   qrOverlay.style.opacity=0;
-  setTimeout(()=> qrOverlay.style.display='none', 280);
+  setTimeout(()=> qrOverlay.style.display='none',300);
 });
-qrContent.addEventListener('click', e=> qrOverlay.style.display='none');
+qrContent.addEventListener('click',(e)=>{ e.stopPropagation(); qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300);});
 
-/* VR button */
-vrBtn.addEventListener('click', e=>{
-  e.stopPropagation();
-  const w = window.open('vr.html','_blank','noopener');
-  if(!w) alert('Popup blocked. Allow popups for immersive VR.');
-});
-
-/* WebXR detection */
-async function detectVRHeadset(){
-  if(navigator.xr && navigator.xr.isSessionSupported){
-    try{ const supported = await navigator.xr.isSessionSupported('immersive-vr'); if(supported) return true; }catch{}
-  }
-  return /OculusBrowser|Oculus|Quest|Meta Quest/i.test(navigator.userAgent);
-}
-detectVRHeadset().then(info=>{
-  if(info){ vrBtn.style.display='block'; vrBtn.setAttribute('aria-hidden','false'); }
-});
-
-/* ESC key closes youtube or QR */
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    if(youtubeOverlay.style.display==='flex'){ youtubeOverlay.style.opacity=0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; },280);}
-    if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',280);}
-  }
-});
+// LICENSE
+fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>{licenseBar.textContent=text;}).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
 </script>
 </body>
 </html>
