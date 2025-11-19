@@ -19,28 +19,45 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
 /* Intro overlay */
-#overlay { position: fixed; inset:0; background: rgba(0,0,0,0.40); display:flex; align-items:center; justify-content:center; z-index:40; }
+#overlay { position: fixed; inset:0; background: rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:40; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-    width:45%; max-width:90vw; height:auto;
-    background: rgba(255,255,255,0.18); backdrop-filter: blur(10px);
-    border-radius:18px; padding:24px; color:#fff; text-align:center;
-    display:flex; flex-direction:column; justify-content:flex-start; gap:12px; margin:0 auto;
+    width:45%;
+    max-width:90vw;
+    height:auto;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(6px);
+    border-radius:18px;
+    padding:24px;
+    color:#fff;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    gap:12px;
+    margin:0 auto;
     line-height:1.3;
 }
 #overlay-content p { margin:0; }
-#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; cursor:pointer; }
-#instructions-line { font-weight:700; text-decoration:underline; margin-top:8px; color:#fff; }
+#intro-icon {
+    width:80px;
+    height:80px;
+    margin:0 auto 12px auto;
+    display:block;
+    cursor:pointer;
+    transform-style: preserve-3d;
+}
+#instructions-line { font-weight:700; margin-top:8px; color:#fff; }
 #instructions-list { margin:6px 0 0 0; line-height:1.6em; color:#fff; text-align:center; }
 #instructions-list p { margin:6px 0; text-align:center; }
 
 /* divider line */
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
 
-/* dismiss message */
-#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; opacity:1; }
+/* dismiss message pulse */
+#dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; opacity:0.6; }
 
-/* tooltip preview (independent) */
+/* tooltip preview */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 #tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
 
@@ -49,7 +66,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 /* 360 video panel */
 #video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#fff; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
-#manhattan-video-text { display:inline-block; padding:4px 8px; border-radius:8px; background:rgba(50,50,50,0.2); color:#ccc; text-decoration:none; cursor:pointer; }
+#manhattan-video-text { padding:4px 8px; border-radius:8px; background: rgba(255,255,255,0.12); color:#ccc; text-decoration:none; cursor:pointer; display:inline-block; }
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
@@ -68,7 +85,14 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #vr-button { top:64px; display:none; }
 
 /* Fullscreen button match QR style */
-.pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
+.pannellum-fullscreen-button {
+    padding:8px 12px;
+    border-radius:12px;
+    background: rgba(0,0,0,0.18);
+    backdrop-filter: blur(8px);
+    color:#fff;
+    box-shadow:none;
+}
 
 /* responsive adjustments */
 @media(max-width:900px){
@@ -88,9 +112,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
+    <img id="intro-icon" src="LexIcon.png" alt="Lex Icon">
     <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-    <p>If you would like to see my other work click <span id="preview-link" style="cursor:pointer; display:inline-block; border-radius:6px; padding:2px 6px; background:rgba(255,255,255,0.18);">here</span>.</p>
+    <p>If you would like to see my other work click <span id="preview-link" style="border-radius:6px;padding:2px 6px;background:rgba(255,255,255,0.12);cursor:pointer;">here</span>.</p>
 
     <hr>
 
@@ -164,8 +188,8 @@ const qrContent=document.getElementById('qr-content');
 const youtubeOverlay=document.getElementById('youtube-overlay');
 const youtubeFrame=document.getElementById('youtube-frame');
 const licenseBar=document.getElementById('license-bar');
-const introIcon=document.getElementById('intro-icon');
-const dismissMsg=document.getElementById('dismiss-message');
+const dismissMessage=document.getElementById('dismiss-message');
+const manhattanVideoText=document.getElementById('manhattan-video-text');
 
 /* LICENSE load */
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
@@ -177,12 +201,12 @@ function dismissOverlay(e){
   overlay.style.display='none';
   hotspotPanel.style.display='block';
   videoLinkPanel.style.display='block';
-  // Pulse dismiss message
-  gsap.fromTo(dismissMsg,{opacity:0},{opacity:1, duration:0.5});
+  // pulse dismiss message
+  gsap.fromTo(dismissMessage,{opacity:0.3},{opacity:0.6,duration:0.4,yoyo:true,repeat:1});
 }
 overlay.addEventListener('click', dismissOverlay);
 
-/* tooltip hover tracking cursor independently */
+/* tooltip hover */
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
   const ttWidth=tooltip.offsetWidth;
@@ -222,70 +246,25 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-/* dissolve icon into dust */
-function dissolveIcon(icon) {
-    const img = icon;
-    const rect = img.getBoundingClientRect();
-    const canvas = document.createElement('canvas');
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    canvas.style.position = 'absolute';
-    canvas.style.left = rect.left + 'px';
-    canvas.style.top = rect.top + 'px';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = 1000;
-    document.body.appendChild(canvas);
+/* spinning 3D coin icon */
+const introIcon=document.getElementById('intro-icon');
+const iconImages=['LexIcon.png','LexIconWhite,png.png'];
+let flipIndex=0;
 
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img,0,0,rect.width,rect.height);
-    img.style.visibility='hidden';
-
-    const particleSize=4;
-    const particles=[];
-    const imageData=ctx.getImageData(0,0,rect.width,rect.height);
-
-    for(let y=0;y<rect.height;y+=particleSize){
-        for(let x=0;x<rect.width;x+=particleSize){
-            const i=(y*rect.width+x)*4;
-            const r=imageData.data[i], g=imageData.data[i+1], b=imageData.data[i+2], a=imageData.data[i+3];
-            if(a>0) particles.push({x:x,y:y,color:`rgba(${r},${g},${b},${a/255})`,ox:x,oy:y});
-        }
-    }
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    function drawParticles(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        particles.forEach(p=>ctx.fillRect(p.x,p.y,particleSize,particleSize));
-        particles.forEach(p=>{ ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,particleSize,particleSize); });
-    }
-
-    gsap.to(particles,{
-        duration:1.2,
-        x:p=>p.x+(Math.random()*200-100),
-        y:p=>p.y+(Math.random()*200-100),
-        onUpdate:drawParticles,
-        onComplete:()=>{
-            gsap.to(particles,{
-                duration:1.2,
-                x:p=>p.ox,
-                y:p=>p.oy,
-                onUpdate:drawParticles,
-                onComplete:()=>{
-                    document.body.removeChild(canvas);
-                    img.style.visibility='visible';
-                }
-            });
-        }
+function spinIcon(){
+    introIcon.src=iconImages[flipIndex%2];
+    flipIndex++;
+    gsap.fromTo(introIcon,
+        {rotationY:0},
+        {rotationY:360,
+         duration:2,
+         ease:"power2.inOut",
+         onComplete:()=>{
+            gsap.to(introIcon,{rotationY:0,duration:0.8,ease:"power2.inOut", onComplete:spinIcon});
+         }
     });
 }
-
-// auto-dissolve intro icon after 0.7s
-setTimeout(()=>dissolveIcon(introIcon),700);
-
-/* pulsing click anywhere message */
-gsap.to(dismissMsg,{opacity:0.1, duration:0.8, repeat:-1, yoyo:true});
+setTimeout(spinIcon,400);
 </script>
-
 </body>
 </html>
