@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body, #overlay, #overlay-content, #hotspot-panel, #license-bar, #tooltip-preview, #vr-detect-overlay, #youtube-overlay, #qr-overlay, #video-link-panel, #top-qr-button, #vr-button {
+body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button {
   user-select: none;
 }
 body {
@@ -21,7 +21,8 @@ body {
   position: relative;
   z-index: 0;
 }
-/* License bar at bottom */
+
+/* LICENSE bar */
 #license-bar {
   position: fixed;
   bottom: 0;
@@ -39,13 +40,14 @@ body {
   white-space: pre-wrap;
   border-radius: 10px;
 }
+
 /* Intro overlay */
 #overlay {
   position: fixed;
   top:0; left:0;
-  width: 100vw; height: 100vh;
+  width: 100vw; height:100vh;
   background: rgba(0,0,0,0.35);
-  display: flex; flex-direction: column; align-items:center; justify-content:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   z-index:20; cursor:pointer;
 }
 #overlay-content {
@@ -64,27 +66,31 @@ body {
 #instructions-line { text-decoration:underline; margin-bottom:10px; font-weight:bold; }
 #instructions-list { text-align:left; margin:0 auto; max-width:400px; line-height:1.6em; }
 #dismiss-message { margin-top:15px; font-size:0.9em; color:#ccc; text-align:center; }
+
 /* Tooltip preview */
 #tooltip-preview {
   display:none; position:absolute; width:270px; background: rgba(0,0,0,0.85);
   color:#fff; text-align:center; padding:10px; border-radius:8px; z-index:30; pointer-events:none; font-size:0.8em; line-height:1.2em;
 }
+
 /* Manhattan Beach hotspot panel */
-#hotspot-panel {
-  display:none; position: fixed; top: 20px; left:50%;
+#hotspot-panel, #video-link-panel {
+  position: fixed; top:20px; left:50%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.15);
   backdrop-filter: blur(10px);
-  padding: 15px 20px; border-radius:15px; color:#fff; font-size:1em; text-align:center;
-  max-width:80%; z-index:15;
+  padding: 15px 20px;
+  border-radius:15px;
+  color:#fff;
+  font-size:1em;
+  text-align:center;
+  max-width:80%;
+  z-index:15;
+  display:none;
+  transition:opacity 0.5s ease;
 }
-/* Video link panel under Manhattan Beach */
-#video-link-panel {
-  position: fixed; top: 200px; left:50%; transform: translateX(-50%);
-  background: rgba(0,0,0,0.15); backdrop-filter: blur(10px);
-  padding:10px 20px; border-radius:15px; color:#fff; font-size:1em;
-  z-index:15; text-align:center; cursor:pointer;
-}
+#video-link-panel { margin-top:10px; cursor:pointer; text-decoration:underline; }
+
 /* YouTube modal overlay */
 #youtube-overlay {
   display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
@@ -97,13 +103,40 @@ body {
 }
 #youtube-content iframe { width:100%; height:100%; border:none; border-radius:12px; }
 #youtube-content p { color:#ccc; margin-top:10px; font-size:0.9em; text-align:center; }
+
+/* QR modal overlay */
+#qr-overlay {
+  display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
+  background: rgba(0,0,0,0.5);
+  z-index:30;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0;
+  transition:opacity 0.4s;
+}
+#qr-content {
+  background: rgba(255,255,255,0.3); backdrop-filter:blur(10px);
+  border-radius:20px; padding:20px;
+  max-width:80%; max-height:80%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+#qr-content img {
+  max-width:100%; max-height:100%;
+  object-fit:contain;
+  border-radius:12px;
+}
+#qr-content p {
+  color:#ccc; margin-top:10px; font-size:0.9em; text-align:center;
+}
+
 /* QR and VR buttons */
 #top-qr-button, #vr-button {
-  position:fixed; top:10px; right:10px;
+  position:fixed; top:10px;
   background: rgba(0,0,0,0.15); backdrop-filter: blur(10px);
   color:#fff; padding:8px 15px; border-radius:12px; font-family:'Saira',sans-serif; cursor:pointer; z-index:25;
 }
+#top-qr-button { right:10px; }
 #vr-button { right:80px; display:none; }
+
 /* Pulse effect */
 .pulse-white { animation:pulseWhite 2s ease-in-out; }
 @keyframes pulseWhite {
@@ -139,7 +172,7 @@ body {
   <a href="https://linktr.ee/lexofdystopia" target="_blank" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a>
 </div>
 
-<!-- Manhattan Beach hotspot -->
+<!-- Manhattan Beach hotspot panel -->
 <div id="hotspot-panel">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
@@ -148,7 +181,7 @@ body {
 
 <!-- 360 Video link panel -->
 <div id="video-link-panel">
-  <span id="manhattan-video-link" style="color:#fff; text-decoration:underline;">Click Here to Watch a 360 Video of this Location</span>
+  Click Here to Watch a 360 Video of this Location
 </div>
 
 <!-- LICENSE bar -->
@@ -167,12 +200,10 @@ body {
 </div>
 
 <!-- QR overlay -->
-<div id="qr-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh;
-     background: rgba(0,0,0,0.5); z-index:30; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.4s;">
-  <div style="background: rgba(255,255,255,0.3); backdrop-filter:blur(10px); border-radius:20px; padding:20px;
-      max-width:80%; width:400px; height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-    <img src="VRQR.png" width="100%" height="100%" style="border-radius:12px;">
-    <p style="color:#ccc; margin-top:10px; font-size:0.9em; text-align:center;">Click Anywhere to Dismiss</p>
+<div id="qr-overlay">
+  <div id="qr-content">
+    <img src="VRQR.png" alt="QR Code">
+    <p>Click Anywhere to Dismiss</p>
   </div>
 </div>
 
@@ -192,9 +223,12 @@ const viewer = pannellum.viewer('panorama', {
 // Intro dismissal
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
+const videoLinkPanel = document.getElementById('video-link-panel');
 overlay.addEventListener('click', ()=>{
   overlay.style.display='none';
+  // Show Manhattan Beach and 360 video link panels together
   hotspotPanel.style.display='block';
+  videoLinkPanel.style.display='block';
   hotspotPanel.classList.add('pulse-white');
   setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
 
@@ -227,7 +261,7 @@ previewLink.addEventListener('click', e=>{
 });
 
 // 360 Video link
-const videoLink = document.getElementById('manhattan-video-link');
+const videoLink = document.getElementById('video-link-panel');
 const youtubeOverlay = document.getElementById('youtube-overlay');
 const youtubeFrame = document.getElementById('youtube-frame');
 videoLink.addEventListener('click', e=>{
