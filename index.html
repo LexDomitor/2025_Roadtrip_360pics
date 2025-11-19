@@ -45,18 +45,15 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width: 40vw;
-  height: 42vw; /* slightly taller than wide */
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 360px; /* tight wrap */
+  padding:20px;
   background: rgba(255,255,255,0.18);
   backdrop-filter: blur(10px);
-  padding:28px;
   border-radius:18px;
   color:#fff;
   display:flex; flex-direction:column; justify-content:center; align-items:center;
   text-align:center;
-  font-size:1rem;
+  font-size:0.95rem;
   line-height:1.4;
 }
 #overlay-content p { margin:0 0 10px 0; }
@@ -67,7 +64,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 #instructions-list p { margin:4px 0; }
 
 /* Dismiss message */
-#dismiss-message { margin-top:12px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+#dismiss-message { margin-top:20px; font-size:0.95rem; color:#d0d0d0; text-align:center; }
 
 /* tooltip preview */
 #tooltip-preview {
@@ -136,7 +133,7 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* QR overlay - wrap around content */
+/* QR overlay */
 #qr-overlay {
   display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55);
   z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s;
@@ -172,17 +169,6 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 }
 #top-qr-button { top:12px; }
 #vr-button { top:64px; display:none; }
-
-/* responsive adjustments */
-@media (max-width:900px) {
-  #overlay-content { width:86vw; height:88vw; padding:18px; font-size:0.98rem; }
-  #video-link-panel { max-width:86%; top: calc(18px + 88px + 8px); }
-}
-@media (max-width:480px) {
-  #overlay-content { width:92vw; height:96vw; padding:14px; font-size:0.95rem; }
-  #hotspot-panel { font-size:0.9rem; padding:10px; }
-  #video-link-panel { font-size:0.95rem; top: calc(18px + 86px + 8px); max-width:88%; }
-}
 </style>
 </head>
 <body>
@@ -192,34 +178,33 @@ body { margin:0; font-family:'Saira',sans-serif; overflow:hidden; position:relat
 <!-- Intro overlay -->
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
-    <div>
-      <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
-      <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
-      <div id="instructions-line">Instructions</div>
-      <div id="instructions-list">
-        <p>• Click and drag to look around.</p>
-        <p>• Scroll to zoom in/out.</p>
-        <p>• Use fullscreen button for best experience.</p>
-      </div>
-      <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
+    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research. These images are from my recent travels in Northern California taken with a DJI OSMO 360 camera at 120 MP.</p>
+    
+    <p>If you would like to see my other work click <span id="preview-link" style="text-decoration:underline; color:#bfe; cursor:pointer;">here</span>.</p>
+
+    <div id="instructions-line">Instructions</div>
+    <div id="instructions-list">
+      <p>• Click and drag to look around.</p>
+      <p>• Scroll to zoom in/out.</p>
+      <p>• Use fullscreen button for best experience.</p>
     </div>
+
+    <div style="height:16px;"></div> <!-- extra newline before link -->
+    <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
 
-<!-- Tooltip preview -->
 <div id="tooltip-preview" role="tooltip" aria-hidden="true">
   <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview" style="width:100%; height:auto; border-radius:8px; display:block; margin-bottom:8px;">
   <div><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
-<!-- Manhattan Beach hotspot -->
 <div id="hotspot-panel" aria-hidden="true">
   Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
   The Ritz-Carlton can be seen on the distant cliffs.<br>
   The coastal shores are lined with miles of golf courses.
 </div>
 
-<!-- 360 video panel -->
 <div id="video-link-panel" aria-hidden="true">
   <span id="manhattan-video-text" style="text-decoration:underline; color:#9fd6ff;">Click Here to Watch a 360 Video of this Location</span>
 </div>
@@ -274,20 +259,6 @@ document.addEventListener('click', (e)=>{
     videoLinkPanel.style.display='block';
     hotspotPanel.classList.add('pulse-white');
     setTimeout(()=>hotspotPanel.classList.remove('pulse-white'),2000);
-    detectVRHeadset().then(info=>{
-      if(info){
-        vrBtn.style.display='block';
-        if(!hotspotPanel.dataset.vrmsg){
-          hotspotPanel.dataset.vrmsg='1';
-          const em = document.createElement('div');
-          em.style.marginTop='8px';
-          em.style.fontSize='0.9rem';
-          em.style.color='#dcdcdc';
-          em.innerHTML='<em>Press the VR button under the QR button to launch immersive VR.</em>';
-          hotspotPanel.appendChild(em);
-        }
-      }
-    });
   }
 });
 
