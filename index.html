@@ -211,6 +211,18 @@ const introIcon = document.getElementById('intro-icon');
 const licenseBar = document.getElementById('license-bar');
 const videoLinkPanel = document.getElementById('video-link-panel');
 
+// load panorama helper
+function loadPanorama(index){
+  currentIndex = index;
+  viewer.loadScene({
+    type:'equirectangular',
+    panorama: images[index].url,
+    pitch:0, yaw:0, hfov:100
+  });
+  hotspotPanel.innerHTML = images[index].text;
+  videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
+}
+
 // overlay dismissal
 function dismissOverlay(e){
   if (e.target.closest && e.target.closest('#preview-link')) return;
@@ -221,21 +233,13 @@ function dismissOverlay(e){
   arrowRight.style.display='block';
   qrBtn.style.display='block';
   vrBtn.style.display='block';
-  updateHotspotAndVideo(currentIndex);
+  loadPanorama(currentIndex);
 }
 overlay.addEventListener('click', dismissOverlay);
 
-// load panorama & update hotspot/video
-function updateHotspotAndVideo(index){
-  currentIndex = index;
-  viewer.setPanorama(images[index].url, null, { yaw:0, pitch:0, hfov:100 });
-  hotspotPanel.innerHTML = images[index].text;
-  videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
-}
-
 // arrow cycling
-arrowLeft.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex - 1 + images.length) % images.length));
-arrowRight.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex + 1) % images.length));
+arrowLeft.addEventListener('click', ()=>loadPanorama((currentIndex - 1 + images.length) % images.length));
+arrowRight.addEventListener('click', ()=>loadPanorama((currentIndex + 1) % images.length));
 
 // tooltip hover
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
@@ -305,8 +309,15 @@ document.addEventListener('keydown', e=>{
   }
 });
 
-// fade intro
-setTimeout(()=>{ introBlack.style.transition='opacity 0.7s'; introBlack.style.opacity=0; setTimeout(()=>{ introBlack.style.display='none'; }, 700); }, 200);
+// load first panorama under black before fade
+loadPanorama(currentIndex);
+
+// fade intro black
+setTimeout(()=>{
+  introBlack.style.transition='opacity 0.7s';
+  introBlack.style.opacity=0;
+  setTimeout(()=>{ introBlack.style.display='none'; },700);
+},200);
 
 </script>
 </body>
