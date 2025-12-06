@@ -69,34 +69,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #vr-button { top:64px; }
 
 /* QR overlay */
-#qr-overlay {
-  display:none;
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:100%;
-  height:50vh;
-  z-index:95;
-  background: rgba(0,0,0,0.5); /* dim background behind glass */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-#qr-overlay-content {
-  background: rgba(255,255,255,0.14);
-  backdrop-filter: blur(10px);
-  border-radius:16px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  max-width:90vw;
-}
-#qr-overlay-content img { max-height:calc(50vh - 40px); width:auto; border-radius:12px; }
-#qr-overlay-content p { margin:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index:95; align-items:center; justify-content:center; }
+#qr-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; width:50%; max-width:50vw; height:50%; max-height:50vh; justify-content:center; }
+#qr-content img { max-width:90%; max-height:80%; }
 
 /* VR popup */
 #vr-popup { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:95; align-items:center; justify-content:center; opacity:0; transition:opacity 0.28s; }
@@ -115,11 +90,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 @media(max-width:900px){
   #overlay-content{width:50vw;height:auto;padding:18px;font-size:0.98rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
+  #qr-content { width:70%; height:50%; }
 }
 @media(max-width:480px){
   #overlay-content{width:70vw;height:auto;padding:14px;font-size:0.95rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
   #hotspot-panel{font-size:0.9rem; padding:10px;}
+  #qr-content { width:90%; height:50%; }
 }
 </style>
 </head>
@@ -156,17 +133,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button">QR</button>
 <button id="vr-button">VR</button>
 
-<!-- QR Overlay -->
 <div id="qr-overlay">
-  <div id="qr-overlay-content">
-    <img src="VRQR.png" alt="QR Code">
+  <div id="qr-content">
+    <img src="VRQR.png" alt="QR Code" id="qr-image">
     <p>Click Anywhere to Dismiss</p>
   </div>
-</div>
-
-<div id="tooltip-preview" role="tooltip" aria-hidden="true">
-  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
-  <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
 <div id="vr-popup">
@@ -225,6 +196,8 @@ function loadPanorama(index){
     panorama: images[index].url,
     autoLoad:true,
     hfov:120, // extra zoomed out
+    minHfov:50, 
+    maxHfov:120,
     showFullscreenCtrl:true,
     showZoomCtrl:false,
     compass:false
@@ -260,8 +233,8 @@ function handleArrowClick(dir){
   setTimeout(()=>{
     currentIndex = (currentIndex + dir + images.length) % images.length;
     loadPanorama(currentIndex);
-    setTimeout(()=>fadeBlack.style.opacity=0, 500); // stay black half sec longer
-  }, 800);
+    fadeBlack.style.opacity=0;
+  }, 1300); // hold black longer
 }
 arrowLeft.addEventListener('click', ()=>handleArrowClick(-1));
 arrowRight.addEventListener('click', ()=>handleArrowClick(1));
@@ -287,8 +260,12 @@ tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 qrBtn.addEventListener('click', e=>{
   e.stopPropagation();
   qrOverlay.style.display='flex';
+  setTimeout(()=> qrOverlay.style.opacity=1, 20);
 });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.display='none'; });
+qrOverlay.addEventListener('click', ()=>{
+  qrOverlay.style.opacity=0;
+  setTimeout(()=> qrOverlay.style.display='none', 280);
+});
 
 // VR button
 vrBtn.addEventListener('click', e=>{
@@ -318,17 +295,16 @@ videoLinkPanel.addEventListener('click', e=>{
 });
 youtubeOverlay.addEventListener('click', ()=>{
   youtubeOverlay.style.opacity=0;
-  youtubeFrame.src='';
   setTimeout(()=>{
     youtubeOverlay.style.display='none';
+    youtubeFrame.src='';
     arrowLeft.style.display='block';
     arrowRight.style.display='block';
   },280);
 });
 
-// Initialize first panorama but hidden behind fade
-fadeBlack.style.opacity=1;
-loadPanorama(currentIndex);
+// fade black initial 2s delay
+setTimeout(()=>{ fadeBlack.style.opacity=0; }, 2000);
 </script>
 </body>
 </html>
