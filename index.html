@@ -12,17 +12,29 @@ html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#0
 body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
-#intro-black { position:fixed; inset:0; background:#000; z-index:50; }
+
+#intro-black { position:fixed; inset:0; background:#000; z-index:50; opacity:1; transition:opacity 0.7s; }
 
 #license-bar { position: fixed; bottom:12px; left:50%; transform:translateX(-50%); max-width:92%; background: rgba(0,0,0,0.18); backdrop-filter:blur(10px); color:#fff; padding:10px 18px; font-size:13px; z-index:12; text-align:center; border-radius:12px; white-space:pre-wrap; overflow-y:auto; }
 
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width:11.25%; max-width:90vw; height:auto;
-  background: rgba(255,255,255,0.12); backdrop-filter: blur(8px);
-  border-radius:18px; padding:24px; color:#fff; text-align:center;
-  display:flex; flex-direction:column; justify-content:flex-start; gap:12px; margin:0 auto; line-height:1.3;
+  width:11.25%;
+  max-width:90vw;
+  height:auto;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  border-radius:18px;
+  padding:24px;
+  color:#fff;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:12px;
+  margin:0 auto;
+  line-height:1.3;
 }
 #overlay-content p { margin:0; }
 #intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; transform-origin:center bottom; }
@@ -32,6 +44,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #instructions-list p { margin:6px 0; text-align:center; }
 
 #overlay-content hr { border:1px solid #fff; margin:12px auto; width:60%; }
+
 #dismiss-message { margin-top:24px; font-size:0.95rem; color:#d0d0d0; text-align:center; white-space:pre-line; animation:pulseDismiss 2s infinite; }
 @keyframes pulseDismiss { 0%,100%{opacity:1;}50%{opacity:0.4;} }
 
@@ -57,6 +70,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 #top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
 #top-qr-button { top:12px; } #vr-button { top:64px; }
+
 .pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
 
 @media(max-width:900px){
@@ -80,16 +94,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
     <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
     <p>Lex here, nobody magician, travelling aerial photographer, techbro, eternal soul searcher.<br><br> The photos you are about to view were shot on my DJI OSMO 360 on its maiden journey, and perhaps my own.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer; display:inline-block;">here</span>.</p>
-
     <hr>
-
     <div id="instructions-line">INSTRUCTIONS</div>
     <div id="instructions-list">
       <p>• Click and drag to look around.</p>
       <p>• Scroll to zoom in/out.</p>
       <p>• Use fullscreen button for best experience.</p>
     </div>
-
     <div id="dismiss-message">Click Anywhere to Dismiss this Message</div>
   </div>
 </div>
@@ -128,24 +139,26 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
+// image data
 const images = [
   { 
     url:"https://i.imgur.com/FYdmUI3.jpeg",
     text:`Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
           The Ritz-Carlton can be seen on the distant cliffs.<br>
           The coastal shores are lined with miles of golf courses.`,
-    showVideo:true,
-    license:"© Lex"
+    showVideo:true
   },
-  { url:"https://i.imgur.com/fxvVdGH.jpeg", text:"", showVideo:false, license:"© Lex" },
-  { url:"https://i.imgur.com/5SG1SAF.jpeg", text:"", showVideo:false, license:"© Lex" },
-  { url:"https://i.imgur.com/aKtrmef.jpeg", text:"", showVideo:false, license:"© Lex" },
-  { url:"https://i.imgur.com/8Hzld0N.jpeg", text:"", showVideo:false, license:"© Lex" }
+  { url:"https://i.imgur.com/fxvVdGH.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/5SG1SAF.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/aKtrmef.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/8Hzld0N.jpeg", text:"", showVideo:false }
 ];
 
 let currentIndex = 0;
+
+// init pannellum
 const viewer = pannellum.viewer('panorama', {
-  type:'equirectangular', panorama:images[0].url, autoLoad:true,
+  type:'equirectangular', panorama:images[currentIndex].url, autoLoad:true,
   hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
   autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
@@ -153,6 +166,7 @@ const viewer = pannellum.viewer('panorama', {
 // DOM refs
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
+const videoLinkPanel = document.getElementById('video-link-panel');
 const previewLink = document.getElementById('preview-link');
 const tooltip = document.getElementById('tooltip-preview');
 const tooltipLink = document.getElementById('tooltip-link');
@@ -166,44 +180,37 @@ const arrowLeft = document.getElementById('arrow-left');
 const arrowRight = document.getElementById('arrow-right');
 const introBlack = document.getElementById('intro-black');
 const licenseBar = document.getElementById('license-bar');
-const videoLinkPanel = document.getElementById('video-link-panel');
 
 // dismiss overlay
-overlay.addEventListener('click', e=>{
+overlay.addEventListener('click', (e)=>{
   if (e.target.closest('#preview-link')) return;
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
+
+  // fade out black overlay
+  introBlack.style.opacity = 0;
+  setTimeout(()=>{ introBlack.style.display='none'; }, 700);
+
+  // show controls
   hotspotPanel.style.display='block';
   arrowLeft.style.display='block';
   arrowRight.style.display='block';
   qrBtn.style.display='block';
   vrBtn.style.display='block';
+
   updateHotspotAndVideo(currentIndex);
 });
 
-// update panorama, hotspots, video & license with fade
+// update panorama
 function updateHotspotAndVideo(index){
   currentIndex = index;
-
-  // show fade overlay
-  introBlack.style.display='block';
-  introBlack.style.opacity = 1;
-
-  // update panorama
-  viewer.setPanorama(images[index].url, null, { yaw:0, pitch:0, hfov:100 });
+  viewer.loadScene('scene' + index); // optional, we can use setPanorama instead
+  viewer.setPanorama(images[index].url);
   hotspotPanel.innerHTML = images[index].text;
   videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
-  licenseBar.innerText = images[index].license || '';
-
-  // fade out overlay
-  setTimeout(()=>{
-    introBlack.style.transition='opacity 0.7s';
-    introBlack.style.opacity=0;
-    setTimeout(()=>{ introBlack.style.display='none'; },700);
-  },50);
 }
 
-// arrow navigation
+// arrows
 arrowLeft.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex - 1 + images.length) % images.length));
 arrowRight.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex + 1) % images.length));
 
@@ -225,7 +232,7 @@ tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; toolt
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
 if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-// video modal
+// 360 video
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
@@ -234,46 +241,47 @@ videoLinkPanel.addEventListener('click', e=>{
   arrowRight.style.display='none';
   requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{ 
-  youtubeOverlay.style.opacity = 0; 
-  setTimeout(()=>{ 
-    youtubeOverlay.style.display='none'; 
-    youtubeFrame.src=''; 
-    arrowLeft.style.display='block'; 
-    arrowRight.style.display='block'; 
-  }, 280); 
+youtubeOverlay.addEventListener('click', ()=>{
+  youtubeOverlay.style.opacity=0;
+  setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280);
 });
 
 // QR overlay
-qrBtn.addEventListener('click', e=>{ 
-  e.stopPropagation(); 
-  qrOverlay.style.display='flex'; 
-  arrowLeft.style.display='none'; 
-  arrowRight.style.display='none'; 
-  requestAnimationFrame(()=> qrOverlay.style.opacity = 1); 
+qrBtn.addEventListener('click', e=>{
+  e.stopPropagation();
+  qrOverlay.style.display='flex';
+  arrowLeft.style.display='none';
+  arrowRight.style.display='none';
+  requestAnimationFrame(()=> qrOverlay.style.opacity=1);
 });
-qrOverlay.addEventListener('click', ()=>{ 
-  qrOverlay.style.opacity = 0; 
-  setTimeout(()=> qrOverlay.style.display='none', 300); 
-  arrowLeft.style.display='block'; 
+qrOverlay.addEventListener('click', ()=>{
+  qrOverlay.style.opacity=0;
+  setTimeout(()=> qrOverlay.style.display='none', 300);
+  arrowLeft.style.display='block';
   arrowRight.style.display='block';
 });
-qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
 
 // ESC closes modals
 document.addEventListener('keydown', e=>{
-  if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { 
-      youtubeOverlay.style.opacity = 0; 
-      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); 
+  if(e.key==='Escape'){
+    if(youtubeOverlay.style.display==='flex'){ 
+      youtubeOverlay.style.opacity=0; 
+      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280);
     }
-    if (qrOverlay.style.display === 'flex') { 
-      qrOverlay.style.opacity = 0; 
-      setTimeout(()=> qrOverlay.style.display='none', 300); 
-      arrowLeft.style.display='block'; arrowRight.style.display='block';
-    }
+    if(qrOverlay.style.display==='flex'){ qrOverlay.style.opacity=0; setTimeout(()=> qrOverlay.style.display='none',300); arrowLeft.style.display='block'; arrowRight.style.display='block'; }
   }
 });
+
+// license text
+licenseBar.textContent = "© Lex 2025. All rights reserved.";
+
+// preload all images
+images.forEach(img=>{
+  const i = new Image();
+  i.src = img.url;
+});
+
 </script>
 </body>
 </html>
