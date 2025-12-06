@@ -24,7 +24,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width:11.25%; /* halved from 22.5% */
+  width:11.25%;
   max-width:90vw;
   height:auto;
   background: rgba(255,255,255,0.12);
@@ -171,7 +171,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <script>
 // images and descriptions
 const images = [
-  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Half Moon Bay, California"},
+  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Half Moon Bay, California. Famous for its beaches and surfing spots, aerial photography captures the sprawling coastline and dunes, with fog rolling in from the ocean in the early morning light."},
   {url:"https://i.imgur.com/fxvVdGH.jpeg", text:"Pluto's Cave, Siskiyou County near Mt. Shasta, California"},
   {url:"https://i.imgur.com/5SG1SAF.jpeg", text:"Prairie Creek Redwoods State Park, Humboldt County, California"},
   {url:"https://i.imgur.com/aKtrmef.jpeg", text:"Golden Gate Beach, San Francisco, California"},
@@ -208,9 +208,6 @@ const videoLinkPanel = document.getElementById('video-link-panel');
 // show first hotspot description
 hotspotPanel.textContent = images[currentIndex].text;
 
-// show video link panel
-videoLinkPanel.style.display = 'block';
-
 // overlay dismissal
 function dismissOverlay(e){
   if (e.target.closest && e.target.closest('#preview-link')) return;
@@ -221,15 +218,25 @@ function dismissOverlay(e){
   arrowRight.style.display='block';
   qrBtn.style.display='block';
   vrBtn.style.display='block';
+  // show video panel only for Half Moon Bay
+  if(currentIndex === 0) videoLinkPanel.style.display='block';
 }
 overlay.addEventListener('click', dismissOverlay);
 
 // arrow cycling
 function loadImage(index){
   currentIndex = index;
-  viewer.loadScene(images[currentIndex].url);
+  viewer.setPanorama(images[currentIndex].url); // proper panorama swap
   hotspotPanel.textContent = images[currentIndex].text;
+
+  // Only show video panel for Half Moon Bay
+  if(currentIndex === 0){
+    videoLinkPanel.style.display = 'block';
+  } else {
+    videoLinkPanel.style.display = 'none';
+  }
 }
+
 arrowLeft.addEventListener('click', ()=> loadImage((currentIndex - 1 + images.length) % images.length));
 arrowRight.addEventListener('click', ()=> loadImage((currentIndex + 1) % images.length));
 
@@ -282,47 +289,23 @@ qrOverlay.addEventListener('click', ()=>{
   qrOverlay.style.opacity = 0; 
   setTimeout(()=> qrOverlay.style.display='none', 300); 
   arrowLeft.style.display='block'; 
-  arrowRight.style.display='block'; 
+  arrowRight.style.display='block';
 });
 qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
 
 // ESC closes modals
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { 
-      youtubeOverlay.style.opacity = 0; 
-      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); 
-    }
-    if (qrOverlay.style.display === 'flex') { 
-      qrOverlay.style.opacity = 0; 
-      setTimeout(()=> qrOverlay.style.display='none', 280); 
-      arrowLeft.style.display='block'; 
-      arrowRight.style.display='block';
-    }
+    if (youtubeOverlay.style.display==='flex') youtubeOverlay.click();
+    if (qrOverlay.style.display==='flex') qrOverlay.click();
   }
 });
 
-// wobble animation
-let wobbleAngle = 0;
-let wobbleDirection = 1;
-function wobble(){
-  wobbleAngle += wobbleDirection * 0.8;
-  if (wobbleAngle > 10) wobbleDirection=-1;
-  if (wobbleAngle < -10) wobbleDirection=1;
-  introIcon.style.transform = `rotateX(${wobbleAngle}deg)`;
-  requestAnimationFrame(wobble);
-}
-wobble();
+// license text
+licenseBar.textContent = "All images © Lex of Dystopia, used for educational and demo purposes.";
 
-// load license
-fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
-
-// initial black fade
-setTimeout(()=>{
-  introBlack.style.transition = 'opacity 2s ease';
-  introBlack.style.opacity = '0';
-  setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
-}, 1000);
+// fade out intro black
+setTimeout(()=>{ introBlack.style.transition='opacity 1s'; introBlack.style.opacity=0; setTimeout(()=>introBlack.style.display='none',1000); },1500);
 </script>
 
 </body>
