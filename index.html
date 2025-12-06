@@ -83,6 +83,29 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
 #top-qr-button { top:12px; } #vr-button { top:64px; }
 
+/* Arrow buttons */
+.arrow-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-size: 24px;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 90;
+  user-select: none;
+  transition: background 0.2s;
+}
+.arrow-btn:hover { background: rgba(255,255,255,0.28); }
+#arrow-left { left: 12px; }
+#arrow-right { right: 12px; }
+
 /* fullscreen control style */
 .pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
 
@@ -142,6 +165,10 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
 <button id="vr-button" aria-hidden="true">VR</button>
 
+<!-- Arrow buttons -->
+<div id="arrow-left" class="arrow-btn">&#8592;</div>
+<div id="arrow-right" class="arrow-btn">&#8594;</div>
+
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
     <iframe id="youtube-frame" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -182,6 +209,8 @@ const youtubeFrame = document.getElementById('youtube-frame');
 const licenseBar = document.getElementById('license-bar');
 const introBlack = document.getElementById('intro-black');
 const introIcon = document.getElementById('intro-icon');
+const arrowLeft = document.getElementById('arrow-left');
+const arrowRight = document.getElementById('arrow-right');
 
 /* load license */
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
@@ -256,6 +285,10 @@ function wobble(){
   requestAnimationFrame(wobble);
 }
 wobble();
+
+/* Arrow button functionality */
+arrowLeft.addEventListener('click', ()=>{ viewer.rotateLeft(15); });
+arrowRight.addEventListener('click', ()=>{ viewer.rotateRight(15); });
 </script>
 </body>
 </html>
