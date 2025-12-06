@@ -23,11 +23,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
-
-/* intro overlay width reduced */
 #overlay-content {
-  width:22%;
-  max-width:80vw;
+  width:22.5%;
+  max-width:90vw;
   height:auto;
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(8px);
@@ -71,31 +69,23 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
 
 /* arrow buttons */
-.arrow-button {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 24px;
-  background: rgba(255,255,255,0.18);
-  color: #fff;
-  font-size: 28px;
-  border: none;
-  cursor: pointer;
-  z-index: 85;
-  display: none; /* start inactive */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.35); /* soft drop shadow */
+.arrow-btn {
+  position:fixed; top:50%; transform:translateY(-50%);
+  font-size:2rem; color:#fff; background: rgba(0,0,0,0.4);
+  border:none; border-radius:50%; padding:12px; cursor:pointer;
+  z-index:90; display:none; box-shadow:0 4px 12px rgba(0,0,0,0.6);
+  opacity:0.7; transition:opacity 0.2s;
 }
-.arrow-left { left:12px; }
-.arrow-right { right:12px; }
+.arrow-btn:hover { opacity:1; }
+#arrow-left { left:12px; }
+#arrow-right { right:12px; }
 
 /* youtube modal */
 #youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* qr overlay & content */
+/* qr overlay & content - qr button hidden initially */
 #qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
 #qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
@@ -110,12 +100,13 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 /* responsive */
 @media(max-width:900px){
-  #overlay-content{width:70vw;height:auto;padding:18px;font-size:0.98rem;}
+  #overlay-content{width:50vw;height:auto;padding:18px;font-size:0.98rem;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
 }
 @media(max-width:480px){
-  #overlay-content{width:75vw;height:auto;padding:14px;font-size:0.95rem;}
-  #hotspot-panel{font-size:0.9rem; padding:10px;}
+  #overlay-content{width:70vw;height:auto;padding:14px;font-size:0.95rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
+  #hotspot-panel{font-size:0.9rem; padding:10px;}
 }
 </style>
 </head>
@@ -127,7 +118,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
     <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
-    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>DJI OSMO 360 camera at 120 MP.</p>
+    <p>Hi, Hey, it's Lex. Nobody magician, travelling aerial photographer, techbro and an eternal soul searcher.<br>The photos you are about to view were shot on a DJI OSMO 360 camera at 120 MP. I tried.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer; display:inline-block;">here</span>.</p>
 
     <hr>
@@ -148,11 +139,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
-<div id="hotspot-panel" aria-hidden="true">
-  Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
-  The Ritz-Carlton can be seen on the distant cliffs.<br>
-  The coastal shores are lined with miles of golf courses.
-</div>
+<div id="hotspot-panel" aria-hidden="true"></div>
 
 <div id="video-link-panel" aria-hidden="true">
   <span id="manhattan-video-text">Click Here to Watch a 360 Video of this Location</span>
@@ -163,9 +150,8 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
 <button id="vr-button" aria-hidden="true">VR</button>
 
-<!-- arrow buttons -->
-<button class="arrow-button arrow-left" id="arrow-left">&#8592;</button>
-<button class="arrow-button arrow-right" id="arrow-right">&#8594;</button>
+<button class="arrow-btn" id="arrow-left">&#8592;</button>
+<button class="arrow-btn" id="arrow-right">&#8594;</button>
 
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
@@ -183,18 +169,23 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-const panoURL = "https://i.imgur.com/FYdmUI3.jpeg";
+const images = [
+  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Loading license..."},
+  {url:"https://i.imgur.com/fxvVdGH.jpeg", text:"Pluto's Cave, Siskiyou County near Mt. Shasta, California"},
+  {url:"https://i.imgur.com/5SG1SAF.jpeg", text:"Prairie Creek Redwoods State Park, Humboldt County, California"},
+  {url:"https://i.imgur.com/aKtrmef.jpeg", text:"Golden Gate Beach, San Francisco, California"},
+  {url:"https://i.imgur.com/8Hzld0N.jpeg", text:"Garrapata State Park at Big Sur, Monterey County, California"}
+];
+let currentIndex = 0;
+
 const viewer = pannellum.viewer('panorama', {
-  type:'equirectangular', panorama:panoURL, autoLoad:true,
+  type:'equirectangular', panorama:images[currentIndex].url, autoLoad:true,
   hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
   autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
 
-/* dom refs */
 const overlay = document.getElementById('overlay');
-const overlayContent = document.getElementById('overlay-content');
 const hotspotPanel = document.getElementById('hotspot-panel');
-const videoLinkPanel = document.getElementById('video-link-panel');
 const previewLink = document.getElementById('preview-link');
 const tooltip = document.getElementById('tooltip-preview');
 const tooltipLink = document.getElementById('tooltip-link');
@@ -204,21 +195,14 @@ const qrOverlay = document.getElementById('qr-overlay');
 const qrContent = document.getElementById('qr-content');
 const youtubeOverlay = document.getElementById('youtube-overlay');
 const youtubeFrame = document.getElementById('youtube-frame');
-const licenseBar = document.getElementById('license-bar');
-const introBlack = document.getElementById('intro-black');
-const introIcon = document.getElementById('intro-icon');
 const arrowLeft = document.getElementById('arrow-left');
 const arrowRight = document.getElementById('arrow-right');
+const introBlack = document.getElementById('intro-black');
+const introIcon = document.getElementById('intro-icon');
+const licenseBar = document.getElementById('license-bar');
 
-/* load license */
-fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
-
-/* initial black fade */
-setTimeout(()=>{
-  introBlack.style.transition = 'opacity 2s ease';
-  introBlack.style.opacity = '0';
-  setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
-}, 1000);
+/* set initial hotspot text */
+hotspotPanel.textContent = images[currentIndex].text;
 
 /* overlay dismissal */
 function dismissOverlay(e){
@@ -226,13 +210,24 @@ function dismissOverlay(e){
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
   hotspotPanel.style.display='block';
-  videoLinkPanel.style.display='block';
-  qrBtn.style.display='block';
-  vrBtn.style.display='block';
   arrowLeft.style.display='block';
   arrowRight.style.display='block';
+  qrBtn.style.display='block';
+  vrBtn.style.display='block';
 }
 overlay.addEventListener('click', dismissOverlay);
+
+/* arrow cycling */
+arrowLeft.addEventListener('click', ()=> {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  viewer.loadScene(images[currentIndex].url);
+  hotspotPanel.textContent = images[currentIndex].text;
+});
+arrowRight.addEventListener('click', ()=> {
+  currentIndex = (currentIndex + 1) % images.length;
+  viewer.loadScene(images[currentIndex].url);
+  hotspotPanel.textContent = images[currentIndex].text;
+});
 
 /* tooltip hover */
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
@@ -252,7 +247,8 @@ tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; toolt
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
 if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-/* 360 video modal */
+/* video modal */
+const videoLinkPanel = document.getElementById('video-link-panel');
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
@@ -261,51 +257,22 @@ videoLinkPanel.addEventListener('click', e=>{
   arrowRight.style.display='none';
   requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{
-  youtubeOverlay.style.opacity = 0; 
-  setTimeout(()=>{
-    youtubeOverlay.style.display='none'; 
-    youtubeFrame.src=''; 
-    arrowLeft.style.display='block';
-    arrowRight.style.display='block';
-  }, 280); 
-});
+youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); });
 
 /* QR overlay */
-qrBtn.addEventListener('click', e=>{
-  e.stopPropagation();
-  qrOverlay.style.display='flex'; 
-  arrowLeft.style.display='none';
-  arrowRight.style.display='none';
-  requestAnimationFrame(()=> qrOverlay.style.opacity = 1); 
-});
-qrOverlay.addEventListener('click', ()=>{
-  qrOverlay.style.opacity = 0; 
-  setTimeout(()=>{ 
-    qrOverlay.style.display='none'; 
-    arrowLeft.style.display='block';
-    arrowRight.style.display='block';
-  }, 300); 
-});
-qrContent.addEventListener('click', e=>{ e.stopPropagation(); });
+qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; arrowLeft.style.display='none'; arrowRight.style.display='none'; requestAnimationFrame(()=> qrOverlay.style.opacity = 1); });
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
 
 /* ESC closes modals */
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { 
-      youtubeOverlay.style.opacity = 0; 
-      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); 
-    }
-    if (qrOverlay.style.display === 'flex') { 
-      qrOverlay.style.opacity = 0; 
-      setTimeout(()=> qrOverlay.style.display='none', 280); 
-      arrowLeft.style.display='block';
-      arrowRight.style.display='block';
-    }
+    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); }
+    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 280); arrowLeft.style.display='block'; arrowRight.style.display='block'; }
   }
 });
 
-/* wobble animation for icon */
+/* wobble animation */
 let wobbleAngle = 0;
 let wobbleDirection = 1;
 function wobble(){
@@ -316,6 +283,17 @@ function wobble(){
   requestAnimationFrame(wobble);
 }
 wobble();
+
+/* load license */
+fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
+
+/* initial black fade */
+setTimeout(()=>{
+  introBlack.style.transition = 'opacity 2s ease';
+  introBlack.style.opacity = '0';
+  setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
+}, 1000);
+
 </script>
 </body>
 </html>
