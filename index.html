@@ -9,7 +9,7 @@
 <style>
 * { box-sizing:border-box; }
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
-body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button, .arrow-button { user-select:none; }
+body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
 /* Panorama */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
@@ -23,9 +23,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 /* overlay */
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
+
+/* intro overlay width reduced */
 #overlay-content {
-  width: 32%;        /* reduced from 45% */
-  max-width: 85vw;
+  width:22%;
+  max-width:80vw;
   height:auto;
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(8px);
@@ -41,7 +43,10 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   line-height:1.3;
 }
 #overlay-content p { margin:0; }
-#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; transform-origin:center bottom; }
+#intro-icon {
+  width:80px; height:80px; margin:0 auto 12px auto; display:block;
+  transform-origin:center bottom;
+}
 
 /* instructions header - uppercase & bold, no underline */
 #instructions-line { font-weight:700; margin-top:8px; color:#fff; text-transform:uppercase; text-decoration:none; }
@@ -65,21 +70,6 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #hotspot-panel { position: fixed; top:18px; left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.20); backdrop-filter: blur(10px); padding:12px 18px; border-radius:14px; color:#fff; font-size:0.98rem; text-align:center; max-width:82%; z-index:20; display:none; }
 #video-link-panel { position: fixed; top: calc(48px + 60px + 12px); left:50%; transform:translateX(-50%); background: rgba(0,0,0,0.30); backdrop-filter: blur(10px); padding:10px 14px; border-radius:12px; color:#d0d0d0; font-size:0.96rem; text-align:center; max-width:66%; z-index:20; cursor:pointer; display:none; }
 
-/* youtube modal */
-#youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
-#youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-#youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
-
-/* qr overlay & content */
-#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
-#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
-#qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
-#qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
-
-/* QR & VR buttons hidden until dismiss */
-#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
-#top-qr-button { top:12px; } #vr-button { top:64px; }
-
 /* arrow buttons */
 .arrow-button {
   position: fixed;
@@ -95,22 +85,37 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   cursor: pointer;
   z-index: 85;
   display: none; /* start inactive */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35); /* soft drop shadow */
 }
-#arrow-left { left: 12px; }
-#arrow-right { right: 12px; }
+.arrow-left { left:12px; }
+.arrow-right { right:12px; }
+
+/* youtube modal */
+#youtube-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
+#youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+#youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
+
+/* qr overlay & content */
+#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
+#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
+#qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
+#qr-content p { margin:0; color:#d0d0d0; font-size:0.95rem; text-align:center; }
+
+/* QR & VR buttons hidden until dismiss */
+#top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
+#top-qr-button { top:12px; } #vr-button { top:64px; }
 
 /* fullscreen control style */
 .pannellum-fullscreen-button { padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; box-shadow:none; }
 
 /* responsive */
 @media(max-width:900px){
-  #overlay-content{width:80vw;height:auto;padding:18px;font-size:0.98rem;}
-  #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
+  #overlay-content{width:70vw;height:auto;padding:18px;font-size:0.98rem;}
 }
 @media(max-width:480px){
-  #overlay-content{width:88vw;height:auto;padding:14px;font-size:0.95rem;}
-  #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
+  #overlay-content{width:75vw;height:auto;padding:14px;font-size:0.95rem;}
   #hotspot-panel{font-size:0.9rem; padding:10px;}
+  #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
 }
 </style>
 </head>
@@ -122,7 +127,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <div id="overlay" role="dialog" aria-modal="true">
   <div id="overlay-content" role="document">
     <img id="intro-icon" src="LexIconWhite,png.png" alt="Lex Icon">
-    <p>Hi, I'm Lex, nobody magician, traveller, techbro, rapacious researcher.<br>These photos were taken with a DJI OSMO 360 camera at 120 MP.</p>
+    <p>Hi, I'm Lex, a nobody magician who enjoys travel, tech and research.<br>DJI OSMO 360 camera at 120 MP.</p>
     <p>If you would like to see my other work click <span id="preview-link" style="padding:4px 8px; border-radius:6px; background:rgba(255,255,255,0.18); cursor:pointer; display:inline-block;">here</span>.</p>
 
     <hr>
@@ -159,8 +164,8 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="vr-button" aria-hidden="true">VR</button>
 
 <!-- arrow buttons -->
-<button class="arrow-button" id="arrow-left">&#8592;</button>
-<button class="arrow-button" id="arrow-right">&#8594;</button>
+<button class="arrow-button arrow-left" id="arrow-left">&#8592;</button>
+<button class="arrow-button arrow-right" id="arrow-right">&#8594;</button>
 
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
@@ -256,34 +261,47 @@ videoLinkPanel.addEventListener('click', e=>{
   arrowRight.style.display='none';
   requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{
-  youtubeOverlay.style.display='none';
-  youtubeFrame.src='';
-  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
-}, 280); });
+youtubeOverlay.addEventListener('click', ()=>{
+  youtubeOverlay.style.opacity = 0; 
+  setTimeout(()=>{
+    youtubeOverlay.style.display='none'; 
+    youtubeFrame.src=''; 
+    arrowLeft.style.display='block';
+    arrowRight.style.display='block';
+  }, 280); 
+});
 
 /* QR overlay */
 qrBtn.addEventListener('click', e=>{
   e.stopPropagation();
-  qrOverlay.style.display='flex';
+  qrOverlay.style.display='flex'; 
   arrowLeft.style.display='none';
   arrowRight.style.display='none';
-  requestAnimationFrame(()=> qrOverlay.style.opacity = 1);
+  requestAnimationFrame(()=> qrOverlay.style.opacity = 1); 
 });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=>{
-  qrOverlay.style.display='none';
-  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
-}, 300); });
-qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=>{
-  qrOverlay.style.display='none';
-  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
-}, 300); });
+qrOverlay.addEventListener('click', ()=>{
+  qrOverlay.style.opacity = 0; 
+  setTimeout(()=>{ 
+    qrOverlay.style.display='none'; 
+    arrowLeft.style.display='block';
+    arrowRight.style.display='block';
+  }, 300); 
+});
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); });
 
 /* ESC closes modals */
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; if(overlay.getAttribute('aria-hidden')==='true'){arrowLeft.style.display='block'; arrowRight.style.display='block';} }, 280); }
-    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=>{ qrOverlay.style.display='none'; if(overlay.getAttribute('aria-hidden')==='true'){arrowLeft.style.display='block'; arrowRight.style.display='block';} }, 280); }
+    if (youtubeOverlay.style.display === 'flex') { 
+      youtubeOverlay.style.opacity = 0; 
+      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); 
+    }
+    if (qrOverlay.style.display === 'flex') { 
+      qrOverlay.style.opacity = 0; 
+      setTimeout(()=> qrOverlay.style.display='none', 280); 
+      arrowLeft.style.display='block';
+      arrowRight.style.display='block';
+    }
   }
 });
 
