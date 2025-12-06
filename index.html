@@ -9,7 +9,7 @@
 <style>
 * { box-sizing:border-box; }
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
-body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
+body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #youtube-overlay, #vr-button, #top-qr-button, .arrow-button { user-select:none; }
 
 /* Panorama */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
@@ -24,8 +24,8 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width:45%;
-  max-width:90vw;
+  width: 32%;        /* reduced from 45% */
+  max-width: 85vw;
   height:auto;
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(8px);
@@ -41,10 +41,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   line-height:1.3;
 }
 #overlay-content p { margin:0; }
-#intro-icon {
-  width:80px; height:80px; margin:0 auto 12px auto; display:block;
-  transform-origin:center bottom;
-}
+#intro-icon { width:80px; height:80px; margin:0 auto 12px auto; display:block; transform-origin:center bottom; }
 
 /* instructions header - uppercase & bold, no underline */
 #instructions-line { font-weight:700; margin-top:8px; color:#fff; text-transform:uppercase; text-decoration:none; }
@@ -73,7 +70,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #youtube-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:12px; max-width:90%; width:880px; max-height:80%; height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
 #youtube-content iframe { width:100%; height:100%; border-radius:10px; border:none; }
 
-/* qr overlay & content - qr button hidden initially */
+/* qr overlay & content */
 #qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:70; align-items:center; justify-content:center; opacity:0; transition:opacity .28s; }
 #qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px; border-radius:16px; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); width:max-content; height:max-content; gap:8px; box-shadow:none; }
 #qr-content img { width:512px; height:512px; object-fit:contain; border-radius:32px; }
@@ -83,26 +80,22 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #top-qr-button, #vr-button { position:fixed; right:12px; padding:8px 12px; border-radius:12px; background: rgba(0,0,0,0.18); backdrop-filter: blur(8px); color:#fff; z-index:80; cursor:pointer; font-family:'Saira',sans-serif; font-size:0.95rem; box-shadow:none; display:none; }
 #top-qr-button { top:12px; } #vr-button { top:64px; }
 
-/* Arrow buttons */
-.arrow-btn {
+/* arrow buttons */
+.arrow-button {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
-  border-radius: 25px;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
   background: rgba(255,255,255,0.18);
-  backdrop-filter: blur(8px);
   color: #fff;
-  font-size: 24px;
-  line-height: 50px;
-  text-align: center;
+  font-size: 28px;
+  border: none;
   cursor: pointer;
-  z-index: 90;
-  user-select: none;
-  transition: background 0.2s;
+  z-index: 85;
+  display: none; /* start inactive */
 }
-.arrow-btn:hover { background: rgba(255,255,255,0.28); }
 #arrow-left { left: 12px; }
 #arrow-right { right: 12px; }
 
@@ -111,11 +104,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 /* responsive */
 @media(max-width:900px){
-  #overlay-content{width:86vw;height:auto;padding:18px;font-size:0.98rem;}
+  #overlay-content{width:80vw;height:auto;padding:18px;font-size:0.98rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
 }
 @media(max-width:480px){
-  #overlay-content{width:92vw;height:auto;padding:14px;font-size:0.95rem;}
+  #overlay-content{width:88vw;height:auto;padding:14px;font-size:0.95rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
   #hotspot-panel{font-size:0.9rem; padding:10px;}
 }
@@ -165,9 +158,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button" aria-controls="qr-overlay" aria-expanded="false">QR</button>
 <button id="vr-button" aria-hidden="true">VR</button>
 
-<!-- Arrow buttons -->
-<div id="arrow-left" class="arrow-btn">&#8592;</div>
-<div id="arrow-right" class="arrow-btn">&#8594;</div>
+<!-- arrow buttons -->
+<button class="arrow-button" id="arrow-left">&#8592;</button>
+<button class="arrow-button" id="arrow-right">&#8594;</button>
 
 <div id="youtube-overlay" aria-hidden="true">
   <div id="youtube-content">
@@ -231,6 +224,8 @@ function dismissOverlay(e){
   videoLinkPanel.style.display='block';
   qrBtn.style.display='block';
   vrBtn.style.display='block';
+  arrowLeft.style.display='block';
+  arrowRight.style.display='block';
 }
 overlay.addEventListener('click', dismissOverlay);
 
@@ -257,20 +252,38 @@ videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
   youtubeOverlay.style.display='flex';
+  arrowLeft.style.display='none';
+  arrowRight.style.display='none';
   requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); });
+youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{
+  youtubeOverlay.style.display='none';
+  youtubeFrame.src='';
+  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
+}, 280); });
 
 /* QR overlay */
-qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; requestAnimationFrame(()=> qrOverlay.style.opacity = 1); });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
-qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); });
+qrBtn.addEventListener('click', e=>{
+  e.stopPropagation();
+  qrOverlay.style.display='flex';
+  arrowLeft.style.display='none';
+  arrowRight.style.display='none';
+  requestAnimationFrame(()=> qrOverlay.style.opacity = 1);
+});
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=>{
+  qrOverlay.style.display='none';
+  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
+}, 300); });
+qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=>{
+  qrOverlay.style.display='none';
+  if(overlay.getAttribute('aria-hidden')==='true') { arrowLeft.style.display='block'; arrowRight.style.display='block'; }
+}, 300); });
 
 /* ESC closes modals */
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; }, 280); }
-    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 280); }
+    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; if(overlay.getAttribute('aria-hidden')==='true'){arrowLeft.style.display='block'; arrowRight.style.display='block';} }, 280); }
+    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=>{ qrOverlay.style.display='none'; if(overlay.getAttribute('aria-hidden')==='true'){arrowLeft.style.display='block'; arrowRight.style.display='block';} }, 280); }
   }
 });
 
@@ -285,10 +298,6 @@ function wobble(){
   requestAnimationFrame(wobble);
 }
 wobble();
-
-/* Arrow button functionality */
-arrowLeft.addEventListener('click', ()=>{ viewer.rotateLeft(15); });
-arrowRight.addEventListener('click', ()=>{ viewer.rotateRight(15); });
 </script>
 </body>
 </html>
