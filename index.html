@@ -68,15 +68,16 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #top-qr-button { top:12px; } 
 #vr-button { top:64px; }
 
-/* QR overlay */
-#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index:95; align-items:center; justify-content:center; }
-#qr-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:6px; width:50%; max-width:50vw; height:50%; max-height:50vh; justify-content:center; }
-#qr-content img { max-width:90%; max-height:80%; }
-
 /* VR popup */
 #vr-popup { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:95; align-items:center; justify-content:center; opacity:0; transition:opacity 0.28s; }
 #vr-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:18px; max-width:80%; text-align:center; color:#fff; display:flex; flex-direction:column; gap:8px; }
 #vr-content p { margin:0; }
+
+/* QR overlay */
+#qr-overlay { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index:96; align-items:center; justify-content:center; }
+#qr-content { display:flex; flex-direction:column; align-items:center; justify-content:center; background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:16px; gap:8px; max-width:300px; }
+#qr-content img { width:100%; height:auto; border-radius:10px; }
+#qr-content p { margin:0; color:#fff; font-size:0.95rem; text-align:center; }
 
 /* tooltip */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
@@ -90,13 +91,11 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 @media(max-width:900px){
   #overlay-content{width:50vw;height:auto;padding:18px;font-size:0.98rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:86%;}
-  #qr-content { width:70%; height:50%; }
 }
 @media(max-width:480px){
   #overlay-content{width:70vw;height:auto;padding:14px;font-size:0.95rem;}
   #video-link-panel{top:calc(18px+72px+10px);max-width:88%;}
   #hotspot-panel{font-size:0.9rem; padding:10px;}
-  #qr-content { width:90%; height:50%; }
 }
 </style>
 </head>
@@ -133,17 +132,22 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button">QR</button>
 <button id="vr-button">VR</button>
 
-<div id="qr-overlay">
-  <div id="qr-content">
-    <img src="VRQR.png" alt="QR Code" id="qr-image">
-    <p>Click Anywhere to Dismiss</p>
-  </div>
+<div id="tooltip-preview" role="tooltip" aria-hidden="true">
+  <img src="https://i.imgur.com/eKxOrcZ.jpeg" alt="preview">
+  <div style="font-size:0.9rem;"><a id="tooltip-link" href="https://linktr.ee/lexofdystopia" target="_blank" rel="noopener" style="color:#fff; text-decoration:underline;">https://linktr.ee/lexofdystopia</a></div>
 </div>
 
 <div id="vr-popup">
   <div id="vr-content">
     <p>Feature in Development.</p>
     <p>Click Anywhere to Dismiss.</p>
+  </div>
+</div>
+
+<div id="qr-overlay">
+  <div id="qr-content">
+    <img src="VRQR.png" alt="QR Code">
+    <p>Click Anywhere to Dismiss</p>
   </div>
 </div>
 
@@ -177,27 +181,26 @@ const arrowRight = document.getElementById('arrow-right');
 const qrBtn = document.getElementById('top-qr-button');
 const vrBtn = document.getElementById('vr-button');
 const vrPopup = document.getElementById('vr-popup');
+const qrOverlay = document.getElementById('qr-overlay');
 const licenseBar = document.getElementById('license-bar');
 const youtubeOverlay = document.getElementById('youtube-overlay');
 const youtubeFrame = document.getElementById('youtube-frame');
 const previewLink = document.getElementById('preview-link');
 const tooltip = document.getElementById('tooltip-preview');
 const tooltipLink = document.getElementById('tooltip-link');
-const qrOverlay = document.getElementById('qr-overlay');
 
 // Load license text
 fetch('LICENSE').then(r=>r.text()).then(t=>{ licenseBar.textContent = t; }).catch(()=>{ licenseBar.textContent = "License not found."; });
 
-// Initialize first panorama
+// Initialize panorama
 function loadPanorama(index){
   if(viewer) viewer.destroy();
   viewer = pannellum.viewer('panorama', {
     type:'equirectangular',
     panorama: images[index].url,
     autoLoad:true,
-    hfov:120, // extra zoomed out
-    minHfov:50, 
-    maxHfov:120,
+    hfov:100,
+    minHfov:20, // allow extra zoom out
     showFullscreenCtrl:true,
     showZoomCtrl:false,
     compass:false
@@ -206,7 +209,7 @@ function loadPanorama(index){
   videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
 }
 
-// Show buttons after initial fade
+// Show buttons after intro
 function showButtons(){
   arrowLeft.style.display='block';
   arrowRight.style.display='block';
@@ -215,7 +218,7 @@ function showButtons(){
   hotspotPanel.style.display='block';
 }
 
-// Dismiss overlay
+// Dismiss intro
 overlay.addEventListener('click', ()=>{
   overlay.setAttribute('aria-hidden','true');
   overlay.style.display='none';
@@ -226,7 +229,7 @@ overlay.addEventListener('click', ()=>{
   }, 1500);
 });
 
-// Arrow click handler
+// Arrow navigation
 function handleArrowClick(dir){
   fadeBlack.style.transition='opacity 0.8s';
   fadeBlack.style.opacity=1;
@@ -234,12 +237,12 @@ function handleArrowClick(dir){
     currentIndex = (currentIndex + dir + images.length) % images.length;
     loadPanorama(currentIndex);
     fadeBlack.style.opacity=0;
-  }, 1300); // hold black longer
+  }, 1300); // slightly longer black hold
 }
 arrowLeft.addEventListener('click', ()=>handleArrowClick(-1));
 arrowRight.addEventListener('click', ()=>handleArrowClick(1));
 
-// Tooltip
+// Tooltip preview
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
   const ttW=tooltip.offsetWidth, ttH=tooltip.offsetHeight;
@@ -256,18 +259,16 @@ tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; toolt
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
 tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-// QR button
+// QR overlay
 qrBtn.addEventListener('click', e=>{
   e.stopPropagation();
   qrOverlay.style.display='flex';
-  setTimeout(()=> qrOverlay.style.opacity=1, 20);
 });
 qrOverlay.addEventListener('click', ()=>{
-  qrOverlay.style.opacity=0;
-  setTimeout(()=> qrOverlay.style.display='none', 280);
+  qrOverlay.style.display='none';
 });
 
-// VR button
+// VR popup
 vrBtn.addEventListener('click', e=>{
   e.stopPropagation();
   vrPopup.style.display='flex';
@@ -303,7 +304,7 @@ youtubeOverlay.addEventListener('click', ()=>{
   },280);
 });
 
-// fade black initial 2s delay
+// Initial fade
 setTimeout(()=>{ fadeBlack.style.opacity=0; }, 2000);
 </script>
 </body>
