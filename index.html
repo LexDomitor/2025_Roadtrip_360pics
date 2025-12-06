@@ -140,7 +140,6 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 </div>
 
 <div id="hotspot-panel" aria-hidden="true"></div>
-
 <div id="video-link-panel" aria-hidden="true">
   <span id="manhattan-video-text">Click Here to Watch a 360 Video of this Location</span>
 </div>
@@ -169,14 +168,21 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-// images and descriptions
+// images, hotspot text, and video display flag
 const images = [
-  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Half Moon Bay, California. Famous for its beaches and surfing spots, aerial photography captures the sprawling coastline and dunes, with fog rolling in from the ocean in the early morning light."},
-  {url:"https://i.imgur.com/fxvVdGH.jpeg", text:"Pluto's Cave, Siskiyou County near Mt. Shasta, California"},
-  {url:"https://i.imgur.com/5SG1SAF.jpeg", text:"Prairie Creek Redwoods State Park, Humboldt County, California"},
-  {url:"https://i.imgur.com/aKtrmef.jpeg", text:"Golden Gate Beach, San Francisco, California"},
-  {url:"https://i.imgur.com/8Hzld0N.jpeg", text:"Garrapata State Park at Big Sur, Monterey County, California"}
+  { 
+    url:"https://i.imgur.com/FYdmUI3.jpeg",
+    text:`Manhattan Beach at Half Moon Bay, California located in the San Francisco Bay Area.<br>
+          The Ritz-Carlton can be seen on the distant cliffs.<br>
+          The coastal shores are lined with miles of golf courses.`,
+    showVideo:true
+  },
+  { url:"https://i.imgur.com/fxvVdGH.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/5SG1SAF.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/aKtrmef.jpeg", text:"", showVideo:false },
+  { url:"https://i.imgur.com/8Hzld0N.jpeg", text:"", showVideo:false }
 ];
+
 let currentIndex = 0;
 
 // initialize pannellum viewer
@@ -205,9 +211,6 @@ const introIcon = document.getElementById('intro-icon');
 const licenseBar = document.getElementById('license-bar');
 const videoLinkPanel = document.getElementById('video-link-panel');
 
-// show first hotspot description
-hotspotPanel.textContent = images[currentIndex].text;
-
 // overlay dismissal
 function dismissOverlay(e){
   if (e.target.closest && e.target.closest('#preview-link')) return;
@@ -218,27 +221,21 @@ function dismissOverlay(e){
   arrowRight.style.display='block';
   qrBtn.style.display='block';
   vrBtn.style.display='block';
-  // show video panel only for Half Moon Bay
-  if(currentIndex === 0) videoLinkPanel.style.display='block';
+  updateHotspotAndVideo(currentIndex);
 }
 overlay.addEventListener('click', dismissOverlay);
 
-// arrow cycling
-function loadImage(index){
+// load panorama & update hotspot/video
+function updateHotspotAndVideo(index){
   currentIndex = index;
-  viewer.setPanorama(images[currentIndex].url); // proper panorama swap
-  hotspotPanel.textContent = images[currentIndex].text;
-
-  // Only show video panel for Half Moon Bay
-  if(currentIndex === 0){
-    videoLinkPanel.style.display = 'block';
-  } else {
-    videoLinkPanel.style.display = 'none';
-  }
+  viewer.setPanorama(images[index].url, null, { yaw:0, pitch:0, hfov:100 });
+  hotspotPanel.innerHTML = images[index].text;
+  videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
 }
 
-arrowLeft.addEventListener('click', ()=> loadImage((currentIndex - 1 + images.length) % images.length));
-arrowRight.addEventListener('click', ()=> loadImage((currentIndex + 1) % images.length));
+// arrow cycling
+arrowLeft.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex - 1 + images.length) % images.length));
+arrowRight.addEventListener('click', ()=>updateHotspotAndVideo((currentIndex + 1) % images.length));
 
 // tooltip hover
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
@@ -296,17 +293,21 @@ qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.op
 // ESC closes modals
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display==='flex') youtubeOverlay.click();
-    if (qrOverlay.style.display==='flex') qrOverlay.click();
+    if (youtubeOverlay.style.display === 'flex') { 
+      youtubeOverlay.style.opacity = 0; 
+      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280);
+    }
+    if (qrOverlay.style.display === 'flex') { 
+      qrOverlay.style.opacity = 0; 
+      setTimeout(()=> qrOverlay.style.display='none', 300); 
+      arrowLeft.style.display='block'; arrowRight.style.display='block';
+    }
   }
 });
 
-// license text
-licenseBar.textContent = "All images © Lex of Dystopia, used for educational and demo purposes.";
+// fade intro
+setTimeout(()=>{ introBlack.style.transition='opacity 0.7s'; introBlack.style.opacity=0; setTimeout(()=>{ introBlack.style.display='none'; }, 700); }, 200);
 
-// fade out intro black
-setTimeout(()=>{ introBlack.style.transition='opacity 1s'; introBlack.style.opacity=0; setTimeout(()=>introBlack.style.display='none',1000); },1500);
 </script>
-
 </body>
 </html>
