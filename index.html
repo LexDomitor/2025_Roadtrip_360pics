@@ -24,7 +24,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #overlay { position: fixed; inset:0; background: rgba(0,0,0,0.60); display:flex; align-items:center; justify-content:center; z-index:60; }
 #overlay[aria-hidden="true"] { display:none; }
 #overlay-content {
-  width:22.5%;
+  width:11.25%; /* halved from 22.5% */
   max-width:90vw;
   height:auto;
   background: rgba(255,255,255,0.12);
@@ -46,7 +46,7 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
   transform-origin:center bottom;
 }
 
-/* instructions header - uppercase & bold, no underline */
+/* instructions header */
 #instructions-line { font-weight:700; margin-top:8px; color:#fff; text-transform:uppercase; text-decoration:none; }
 
 /* list */
@@ -169,8 +169,9 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
+// images and descriptions
 const images = [
-  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Loading license..."},
+  {url:"https://i.imgur.com/FYdmUI3.jpeg", text:"Half Moon Bay, California"},
   {url:"https://i.imgur.com/fxvVdGH.jpeg", text:"Pluto's Cave, Siskiyou County near Mt. Shasta, California"},
   {url:"https://i.imgur.com/5SG1SAF.jpeg", text:"Prairie Creek Redwoods State Park, Humboldt County, California"},
   {url:"https://i.imgur.com/aKtrmef.jpeg", text:"Golden Gate Beach, San Francisco, California"},
@@ -178,12 +179,14 @@ const images = [
 ];
 let currentIndex = 0;
 
+// initialize pannellum viewer
 const viewer = pannellum.viewer('panorama', {
   type:'equirectangular', panorama:images[currentIndex].url, autoLoad:true,
   hfov:100, showFullscreenCtrl:true, showZoomCtrl:false, compass:false,
   autoRotate:1, autoRotateInactivityDelay:10000, autoRotateStopDelay:0
 });
 
+// DOM refs
 const overlay = document.getElementById('overlay');
 const hotspotPanel = document.getElementById('hotspot-panel');
 const previewLink = document.getElementById('preview-link');
@@ -200,11 +203,15 @@ const arrowRight = document.getElementById('arrow-right');
 const introBlack = document.getElementById('intro-black');
 const introIcon = document.getElementById('intro-icon');
 const licenseBar = document.getElementById('license-bar');
+const videoLinkPanel = document.getElementById('video-link-panel');
 
-/* set initial hotspot text */
+// show first hotspot description
 hotspotPanel.textContent = images[currentIndex].text;
 
-/* overlay dismissal */
+// show video link panel
+videoLinkPanel.style.display = 'block';
+
+// overlay dismissal
 function dismissOverlay(e){
   if (e.target.closest && e.target.closest('#preview-link')) return;
   overlay.setAttribute('aria-hidden','true');
@@ -217,19 +224,16 @@ function dismissOverlay(e){
 }
 overlay.addEventListener('click', dismissOverlay);
 
-/* arrow cycling */
-arrowLeft.addEventListener('click', ()=> {
-  currentIndex = (currentIndex - 1 + images.length) % images.length;
+// arrow cycling
+function loadImage(index){
+  currentIndex = index;
   viewer.loadScene(images[currentIndex].url);
   hotspotPanel.textContent = images[currentIndex].text;
-});
-arrowRight.addEventListener('click', ()=> {
-  currentIndex = (currentIndex + 1) % images.length;
-  viewer.loadScene(images[currentIndex].url);
-  hotspotPanel.textContent = images[currentIndex].text;
-});
+}
+arrowLeft.addEventListener('click', ()=> loadImage((currentIndex - 1 + images.length) % images.length));
+arrowRight.addEventListener('click', ()=> loadImage((currentIndex + 1) % images.length));
 
-/* tooltip hover */
+// tooltip hover
 previewLink.addEventListener('mouseenter', ()=>{ tooltip.style.display='block'; tooltip.setAttribute('aria-hidden','false'); });
 previewLink.addEventListener('mousemove', e=>{
   const ttW = tooltip.offsetWidth, ttH = tooltip.offsetHeight;
@@ -247,8 +251,7 @@ tooltip.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; toolt
 previewLink.addEventListener('click', e=>{ e.stopPropagation(); e.preventDefault(); window.open('https://linktr.ee/lexofdystopia', '_blank', 'noopener'); });
 if (tooltipLink) tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 
-/* video modal */
-const videoLinkPanel = document.getElementById('video-link-panel');
+// 360 video modal
 videoLinkPanel.addEventListener('click', e=>{
   e.stopPropagation();
   youtubeFrame.src = "https://www.youtube-nocookie.com/embed/sfYM1-_WbWk?rel=0&autoplay=1";
@@ -257,22 +260,49 @@ videoLinkPanel.addEventListener('click', e=>{
   arrowRight.style.display='none';
   requestAnimationFrame(()=> youtubeOverlay.style.opacity = 1);
 });
-youtubeOverlay.addEventListener('click', ()=>{ youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); });
+youtubeOverlay.addEventListener('click', ()=>{ 
+  youtubeOverlay.style.opacity = 0; 
+  setTimeout(()=>{ 
+    youtubeOverlay.style.display='none'; 
+    youtubeFrame.src=''; 
+    arrowLeft.style.display='block'; 
+    arrowRight.style.display='block'; 
+  }, 280); 
+});
 
-/* QR overlay */
-qrBtn.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.display='flex'; arrowLeft.style.display='none'; arrowRight.style.display='none'; requestAnimationFrame(()=> qrOverlay.style.opacity = 1); });
-qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
+// QR overlay
+qrBtn.addEventListener('click', e=>{ 
+  e.stopPropagation(); 
+  qrOverlay.style.display='flex'; 
+  arrowLeft.style.display='none'; 
+  arrowRight.style.display='none'; 
+  requestAnimationFrame(()=> qrOverlay.style.opacity = 1); 
+});
+qrOverlay.addEventListener('click', ()=>{ 
+  qrOverlay.style.opacity = 0; 
+  setTimeout(()=> qrOverlay.style.display='none', 300); 
+  arrowLeft.style.display='block'; 
+  arrowRight.style.display='block'; 
+});
 qrContent.addEventListener('click', e=>{ e.stopPropagation(); qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 300); arrowLeft.style.display='block'; arrowRight.style.display='block'; });
 
-/* ESC closes modals */
+// ESC closes modals
 document.addEventListener('keydown', e=>{
   if (e.key === 'Escape') {
-    if (youtubeOverlay.style.display === 'flex') { youtubeOverlay.style.opacity = 0; setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); }
-    if (qrOverlay.style.display === 'flex') { qrOverlay.style.opacity = 0; setTimeout(()=> qrOverlay.style.display='none', 280); arrowLeft.style.display='block'; arrowRight.style.display='block'; }
+    if (youtubeOverlay.style.display === 'flex') { 
+      youtubeOverlay.style.opacity = 0; 
+      setTimeout(()=>{ youtubeOverlay.style.display='none'; youtubeFrame.src=''; arrowLeft.style.display='block'; arrowRight.style.display='block'; }, 280); 
+    }
+    if (qrOverlay.style.display === 'flex') { 
+      qrOverlay.style.opacity = 0; 
+      setTimeout(()=> qrOverlay.style.display='none', 280); 
+      arrowLeft.style.display='block'; 
+      arrowRight.style.display='block';
+    }
   }
 });
 
-/* wobble animation */
+// wobble animation
 let wobbleAngle = 0;
 let wobbleDirection = 1;
 function wobble(){
@@ -284,16 +314,16 @@ function wobble(){
 }
 wobble();
 
-/* load license */
+// load license
 fetch('LICENSE').then(r=>r.ok?r.text():Promise.reject('no')).then(text=>licenseBar.textContent=text).catch(()=>{licenseBar.textContent='LICENSE file not found.';});
 
-/* initial black fade */
+// initial black fade
 setTimeout(()=>{
   introBlack.style.transition = 'opacity 2s ease';
   introBlack.style.opacity = '0';
   setTimeout(()=> { introBlack.style.display = 'none'; }, 2000);
 }, 1000);
-
 </script>
+
 </body>
 </html>
