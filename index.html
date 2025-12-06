@@ -11,7 +11,10 @@
 html,body { height:100%; margin:0; font-family:'Saira',sans-serif; background:#000; overflow:hidden; user-select:none; }
 body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-bar, #tooltip-preview, #qr-overlay, #vr-popup, #youtube-overlay, #vr-button, #top-qr-button { user-select:none; }
 
+/* Panorama */
 #panorama { width:100vw; height:100vh; position:relative; z-index:0; }
+
+/* black fade layer */
 #fade-black { position:fixed; inset:0; background:#000; z-index:100; pointer-events:none; opacity:1; transition:opacity 1.5s; }
 
 /* intro overlay */
@@ -65,16 +68,42 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 #top-qr-button { top:12px; } 
 #vr-button { top:64px; }
 
+/* QR overlay */
+#qr-overlay {
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:100%;
+  height:50vh;
+  z-index:95;
+  background: rgba(0,0,0,0.5); /* dim background behind glass */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#qr-overlay-content {
+  background: rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  border-radius:16px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  max-width:90vw;
+}
+#qr-overlay-content img { max-height:calc(50vh - 40px); width:auto; border-radius:12px; }
+#qr-overlay-content p { margin:0; font-size:0.95rem; color:#d0d0d0; text-align:center; }
+
 /* VR popup */
 #vr-popup { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.55); z-index:95; align-items:center; justify-content:center; opacity:0; transition:opacity 0.28s; }
 #vr-content { background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:18px; max-width:80%; text-align:center; color:#fff; display:flex; flex-direction:column; gap:8px; }
 #vr-content p { margin:0; }
 
-/* QR overlay panel */
-#qr-overlay { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background: rgba(255,255,255,0.14); backdrop-filter: blur(10px); border-radius:16px; padding:16px; max-width:90%; width:90vw; height:50vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; z-index:95; text-align:center; color:#fff; }
-#qr-overlay img { max-height: calc(50% - 24px); width:auto; border-radius:12px; }
-#qr-overlay p { margin:0; font-size:0.95rem; color:#d0d0d0; }
-
+/* tooltip */
 #tooltip-preview { display:none; position:fixed; width:max-content; max-width:220px; background: rgba(0,0,0,0.9); color:#fff; text-align:center; padding:6px 10px; border-radius:6px; z-index:9999; pointer-events:auto; font-size:0.85rem; line-height:1.2; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
 #tooltip-preview img { width:100%; height:auto; object-fit:contain; border-radius:6px; }
 
@@ -127,9 +156,12 @@ body, #overlay, #overlay-content, #hotspot-panel, #video-link-panel, #license-ba
 <button id="top-qr-button">QR</button>
 <button id="vr-button">VR</button>
 
+<!-- QR Overlay -->
 <div id="qr-overlay">
-  <img src="VRQR.png" alt="QR Code">
-  <p>Click Anywhere to Dismiss</p>
+  <div id="qr-overlay-content">
+    <img src="VRQR.png" alt="QR Code">
+    <p>Click Anywhere to Dismiss</p>
+  </div>
 </div>
 
 <div id="tooltip-preview" role="tooltip" aria-hidden="true">
@@ -185,15 +217,14 @@ const qrOverlay = document.getElementById('qr-overlay');
 // Load license text
 fetch('LICENSE').then(r=>r.text()).then(t=>{ licenseBar.textContent = t; }).catch(()=>{ licenseBar.textContent = "License not found."; });
 
-// Initialize panorama
+// Initialize first panorama
 function loadPanorama(index){
   if(viewer) viewer.destroy();
   viewer = pannellum.viewer('panorama', {
     type:'equirectangular',
     panorama: images[index].url,
     autoLoad:true,
-    hfov:100,
-    minHfov:30, // extra zoom out
+    hfov:120, // extra zoomed out
     showFullscreenCtrl:true,
     showZoomCtrl:false,
     compass:false
@@ -202,7 +233,7 @@ function loadPanorama(index){
   videoLinkPanel.style.display = images[index].showVideo ? 'block' : 'none';
 }
 
-// Show buttons
+// Show buttons after initial fade
 function showButtons(){
   arrowLeft.style.display='block';
   arrowRight.style.display='block';
@@ -219,17 +250,17 @@ overlay.addEventListener('click', ()=>{
     fadeBlack.style.opacity=0; 
     loadPanorama(currentIndex);
     showButtons();
-  }, 1500); // intro fade
+  }, 1500);
 });
 
-// Arrow click
+// Arrow click handler
 function handleArrowClick(dir){
   fadeBlack.style.transition='opacity 0.8s';
-  fadeBlack.style.opacity=1; 
+  fadeBlack.style.opacity=1;
   setTimeout(()=>{
     currentIndex = (currentIndex + dir + images.length) % images.length;
     loadPanorama(currentIndex);
-    setTimeout(()=>{ fadeBlack.style.opacity=0; }, 500); // hold black a bit longer
+    setTimeout(()=>fadeBlack.style.opacity=0, 500); // stay black half sec longer
   }, 800);
 }
 arrowLeft.addEventListener('click', ()=>handleArrowClick(-1));
@@ -256,12 +287,8 @@ tooltipLink.addEventListener('click', e=>{ e.stopPropagation(); });
 qrBtn.addEventListener('click', e=>{
   e.stopPropagation();
   qrOverlay.style.display='flex';
-  fadeBlack.style.pointerEvents='auto';
 });
-qrOverlay.addEventListener('click', ()=>{
-  qrOverlay.style.display='none';
-  fadeBlack.style.pointerEvents='none';
-});
+qrOverlay.addEventListener('click', ()=>{ qrOverlay.style.display='none'; });
 
 // VR button
 vrBtn.addEventListener('click', e=>{
@@ -291,16 +318,17 @@ videoLinkPanel.addEventListener('click', e=>{
 });
 youtubeOverlay.addEventListener('click', ()=>{
   youtubeOverlay.style.opacity=0;
+  youtubeFrame.src='';
   setTimeout(()=>{
     youtubeOverlay.style.display='none';
-    youtubeFrame.src='';
     arrowLeft.style.display='block';
     arrowRight.style.display='block';
   },280);
 });
 
-// initial fade
-setTimeout(()=>{ fadeBlack.style.opacity=0; }, 2000);
+// Initialize first panorama but hidden behind fade
+fadeBlack.style.opacity=1;
+loadPanorama(currentIndex);
 </script>
 </body>
 </html>
